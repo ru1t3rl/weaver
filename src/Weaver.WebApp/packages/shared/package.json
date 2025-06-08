@@ -1,0 +1,16 @@
+{
+  "name": "@remote-code/shared",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate-grpc": "bunx protoc --ts_out src/grpc/generated --ts_opt long_type_string --ts_opt optimize_code_size --ts_opt generate_dependencies --proto_path src/grpc/protos code-completion.proto"
+  },
+  "dependencies": {
+    "@protobuf-ts/grpcweb-transport": "^2.9.4",
+    "@protobuf-ts/runtime-rpc": "^2.9.4",
+    "react-router": "^7.0.1"
+  },
+  "devDependencies": {
+    "@protobuf-ts/plugin": "^2.9.4"
+  }
+}

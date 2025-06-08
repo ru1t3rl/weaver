@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="src/Weaver.AppHost/Weaver.AppHost.csproj" />
+  <Project Path="src/Weaver.ServiceDefaults/Weaver.ServiceDefaults.csproj" />
+  <Project Path="src/Weaver.WebApi/Weaver.WebApi.csproj" />
+  <Project Path="src/Weaver.WebApp/Weaver.WebApp.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
