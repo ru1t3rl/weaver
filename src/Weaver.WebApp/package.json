@@ -1,5 +1,5 @@
 {
-  "name": "remote-code",
+  "name": "weaver",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,8 +13,6 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/joy": "^5.0.0-beta.48",
-    "@remote-code/graph-editor": "workspace:*",
-    "@remote-code/node-editor": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",

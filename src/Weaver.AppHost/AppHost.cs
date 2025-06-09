@@ -2,15 +2,25 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
 
-var apiService = builder.AddProject<Projects.Weaver_WebApi>("webapi")
-    .WithHttpHealthCheck("/health");
+var postgres = builder.AddPostgres("postgres")
+    .WithDbGate()
+    .WithDataVolume()
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithHostPort(5432);
 
-builder.AddProject<Projects.Weaver_WebApp>("webapp")
-    .WithExternalHttpEndpoints()
+var database = postgres
+    .AddDatabase("Weaver");
+
+var apiService = builder.AddProject<Projects.Weaver_WebApi>("webapi")
     .WithHttpHealthCheck("/health")
+    .WithReference(database);
+
+builder.AddBunApp("webapp", "../Weaver.WebApp", "dev", true)
+    .WithExternalHttpEndpoints()
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(apiService)
-    .WaitFor(apiService);
+    .WaitFor(apiService)
+    .WithHttpEndpoint(4200, env: "PORT");
 
 builder.Build().Run();
