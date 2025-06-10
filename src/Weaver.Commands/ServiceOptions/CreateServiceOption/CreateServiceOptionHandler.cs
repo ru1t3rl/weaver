@@ -8,7 +8,7 @@ public class CreateServiceOptionHandler : ICommandHandler<CreateServiceOptionCom
 {
     private readonly WeaverDbContext _dbContext;
 
-    internal CreateServiceOptionHandler(WeaverDbContext dbContext)
+    public CreateServiceOptionHandler(WeaverDbContext dbContext)
     {
         _dbContext = dbContext;
     }

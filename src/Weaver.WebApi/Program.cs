@@ -32,4 +32,11 @@ if (app.Environment.IsDevelopment())
 app.MapDefaultEndpoints();
 app.MapControllers();
 
+app.UseCors(options =>
+    options
+        .SetIsOriginAllowed(_ => true)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+);
+
 app.Run();

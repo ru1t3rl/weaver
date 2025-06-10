@@ -2,7 +2,17 @@
   "name": "@weaver/shared",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "generate-clients": "bun run scripts/generate-client.ts"
+  },
   "dependencies": {
+    "axios": "^1.9.0",
+    "react-query": "^3.39.3",
     "react-router": "^7.0.1"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "orval": "^7.9.0",
+    "tsx": "^4.19.4"
   }
 }

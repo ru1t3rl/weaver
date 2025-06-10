@@ -20,14 +20,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NSwag.MSBuild" Version="14.4.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Scalar.AspNetCore" Version="2.4.13" />
-  </ItemGroup>
-
-  <Target Name="NSwag" AfterTargets="Build">
-    <Exec Command="$(NSwagExe_Net90) run nswag.json"/>
-  </Target>  
+  </ItemGroup>  
 </Project>

@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
             [typeof(Weaver.Commands.NamespaceAnchor)]
             // options => options.AddDefaultBehaviors()
         );
-        
+
         return builder;
     }
 }

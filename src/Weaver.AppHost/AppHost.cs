@@ -13,7 +13,8 @@ var database = postgres
 
 var apiService = builder.AddProject<Projects.Weaver_WebApi>("webapi")
     .WithHttpHealthCheck("/health")
-    .WithReference(database);
+    .WithReference(database)
+    .WithClientGenerator("../Weaver.WebApp/packages/shared");
 
 builder.AddBunApp("webapp", "../Weaver.WebApp", "dev", true)
     .WithExternalHttpEndpoints()
