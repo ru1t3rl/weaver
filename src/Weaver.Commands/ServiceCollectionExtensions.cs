@@ -1,5 +1,4 @@
 using Cortex.Mediator.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 
 namespace Weaver.Commands;

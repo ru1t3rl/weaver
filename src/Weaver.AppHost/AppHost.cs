@@ -17,6 +17,7 @@ var apiService = builder.AddProject<Projects.Weaver_WebApi>("webapi")
     .WithClientGenerator("../Weaver.WebApp/packages/shared");
 
 builder.AddBunApp("webapp", "../Weaver.WebApp", "dev", true)
+    .WithBunPackageInstallation()
     .WithExternalHttpEndpoints()
     .WithReference(cache)
     .WaitFor(cache)
