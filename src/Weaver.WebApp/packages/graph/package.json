@@ -1,0 +1,19 @@
+{
+  "name": "@weaver/graph",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/joy": "^5.0.0-beta.52",
+    "@weaver/shared": "workspace:*",
+    "@xyflow/react": "^12.7.0",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "orval": "^7.9.0",
+    "sass-embedded": "^1.89.2",
+    "tsx": "^4.19.4"
+  }
+}

@@ -1,18 +1,31 @@
 using System.Diagnostics;
+using CommunityToolkit.Aspire.Utils;
 
-internal static class RedisResourceBuilderExtensions
+internal static class ResourceBuilderExtensions
 {
-    public static IResourceBuilder<T> WithClientGenerator<T>(
+    public static IResourceBuilder<T> WithApiClientGenerator<T>(
         this IResourceBuilder<T> builder,
         string workingDirectory,
         string command = "bun",
-        string arguments = "run scripts/generate-clients.ts",
+        string arguments = "run generate-clients",
         string displayName = "Generate Clients"
     ) where T : IResource
     {
+        workingDirectory = Path.Combine(
+            builder.ApplicationBuilder.AppHostDirectory,
+            workingDirectory
+        ).NormalizePathForCurrentPlatform();
+
+        if (!Directory.Exists(workingDirectory))
+        {
+            throw new DirectoryNotFoundException(workingDirectory);
+        }
+
         builder.WithCommand(
             name: "generate-clients",
             displayName: displayName,
+            iconName: "BuildingFactory",
+            iconVariant: IconVariant.Regular,
             executeCommand: context => OnRunGenerateClients(
                 builder,
                 workingDirectory,
@@ -36,11 +49,11 @@ internal static class RedisResourceBuilderExtensions
             Arguments = arguments,
             WorkingDirectory = workingDirectory,
             UseShellExecute = false,
-            RedirectStandardOutput = true,
             RedirectStandardError = true,
+            RedirectStandardOutput = true,
             CreateNoWindow = true
         });
-
+        
         if (process is null)
         {
             return new ExecuteCommandResult
@@ -50,8 +63,19 @@ internal static class RedisResourceBuilderExtensions
             };
         }
 
+        process.ErrorDataReceived += (sender, args) =>
+        {
+            Console.WriteLine(args.Data);
+        };
+
         await process.WaitForExitAsync();
 
+        var y = await process.StandardOutput.ReadToEndAsync();
+        Console.WriteLine(y);
+        
+        var x = await process.StandardError.ReadToEndAsync();
+        Console.WriteLine(x);
+        
         return new ExecuteCommandResult
         {
             Success = process.ExitCode == 0

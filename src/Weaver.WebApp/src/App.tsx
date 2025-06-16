@@ -4,6 +4,7 @@ import {theme} from './themes/theme';
 import ThemeToggle from './themes/theme-toggle';
 import {environment, useGetService} from "@weaver/shared";
 import {QueryClient, QueryClientProvider} from "react-query";
+import { MainGraph } from "@weaver/graph";
 
 function Test() {
     const {data: axiosResponse, isLoading} = useGetService({
@@ -28,7 +29,7 @@ function App() {
             <CssVarsProvider theme={theme}>
                 <CssBaseline/>
                 <Box className={styles['app-container']}>
-                    <Test/>
+                    <MainGraph/>
                 </Box>
                 <ThemeToggle className={styles['theme-toggle']}/>
             </CssVarsProvider>
