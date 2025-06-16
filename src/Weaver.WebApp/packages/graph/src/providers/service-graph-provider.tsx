@@ -1,17 +1,16 @@
-import { NodeProps } from '@xyflow/react';
 import { PropsWithChildren, useRef } from 'react';
+import { ServiceNodeProps } from '../components/nodes/service-node/service-node';
 import { createServiceGraphContext, IServiceGraphContext } from '../contexts';
 import { useNodeEvents } from '../events';
 
-export const ServiceGraphContext = createServiceGraphContext<NodeProps>();
-export function ServiceGraphProvider<TNode extends NodeProps>({
-  children,
-}: PropsWithChildren) {
-  const nodes = useRef<Map<string, TNode>>(new Map());
+export const ServiceGraphContext =
+  createServiceGraphContext<ServiceNodeProps>();
+export function ServiceGraphProvider({ children }: PropsWithChildren) {
+  const nodes = useRef<Map<string, ServiceNodeProps>>(new Map());
 
   const events = useNodeEvents();
 
-  function tryAddNode(node: TNode): boolean {
+  function tryAddNode(node: ServiceNodeProps): boolean {
     if (nodes.current.has(node.id)) {
       return false;
     }
@@ -22,7 +21,7 @@ export function ServiceGraphProvider<TNode extends NodeProps>({
     return true;
   }
 
-  function tryRemoveNode(node: TNode): boolean {
+  function tryRemoveNode(node: ServiceNodeProps): boolean {
     if (!nodes.current.has(node.id)) {
       return false;
     }
@@ -33,7 +32,7 @@ export function ServiceGraphProvider<TNode extends NodeProps>({
     return true;
   }
 
-  const contextValue: IServiceGraphContext<TNode> = {
+  const contextValue: IServiceGraphContext<ServiceNodeProps> = {
     tryAddNode,
     tryRemoveNode,
     nodes: Array.from(nodes.current.values()),

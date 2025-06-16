@@ -1,38 +1,25 @@
-import { Box, Card, CardContent, SvgIcon, Typography } from '@mui/joy';
-import { NodeProps } from '@xyflow/react';
+import { Node, NodeProps } from '@xyflow/react';
 import { ServiceListItemModel } from 'packages/shared';
-import { LuBoxes } from 'react-icons/lu';
-import { State, StateCircle } from '../../state-circle/state-circle';
+import { ServiceInfoCard } from '../../service-info-card/service-info-card';
 
-export interface ServiceNodeProps extends NodeProps {
+type ServiceNodeData = {
   serviceInfo: ServiceListItemModel;
   onClick?: () => void;
-}
+};
 
-export function ServiceNode(props: ServiceNodeProps) {
-  const { data, onClick } = props;
+export type ServiceNode = Node<ServiceNodeData, 'service-node'>;
+
+export function ServiceNode(props: NodeProps<ServiceNode>) {
+  const { data } = props;
+  const serviceInfo = data.serviceInfo;
 
   function handleClick() {
-    if (onClick) {
-      onClick();
+    if (data.onClick) {
+      data.onClick();
     }
   }
 
-  return (
-    <Card variant='soft' onClick={handleClick}>
-      <CardContent orientation='horizontal'>
-        <Box>
-          <SvgIcon>
-            <LuBoxes />
-          </SvgIcon>
-        </Box>
-        <Box>
-          <Typography>{data.name}</Typography>
-          <StateCircle state={State.Offline} />
-        </Box>
-      </CardContent>
-    </Card>
-  );
+  return <ServiceInfoCard name={serviceInfo.name} onClick={handleClick} />;
 }
 
 export default ServiceNode;
