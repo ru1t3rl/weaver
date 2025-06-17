@@ -1,11 +1,11 @@
 .modal-container {
-    width: 100vw;
-    height: 100vh;
     z-index: 999;
 
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
 
     display: flex;
     justify-content: center;
@@ -14,13 +14,17 @@
 }
 
 .services {
-    &-container {
-        flex-grow: 1;
+    &-list {
+        display: flex;
+        flex-direction: column;
+        min-height: 25vh;
         max-height: 50vh;
-        max-width: 750px;
+        padding: .5rem;
     }
 
     &-input {
-        width: 100%;
+        flex-grow: 1;
+        width: 90vw;
+        max-width: 750px;
     }
 }

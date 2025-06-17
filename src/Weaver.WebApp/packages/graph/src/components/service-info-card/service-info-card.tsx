@@ -1,4 +1,11 @@
-import { Box, Card, CardContent, SvgIcon, Typography } from '@mui/joy';
+import {
+  Box,
+  Card,
+  CardContent,
+  SvgIcon,
+  Typography,
+  VariantProp,
+} from '@mui/joy';
 import { ServiceType } from '@weaver/shared';
 import { ReactNode } from 'react';
 import { LuBoxes, LuGlobe } from 'react-icons/lu';
@@ -11,10 +18,11 @@ interface ServiceInfoCardProps {
   state?: State;
   icon?: ReactNode;
   onClick?: () => void;
+  variant?: VariantProp;
 }
 
 export function ServiceInfoCard(props: ServiceInfoCardProps) {
-  const { name, type, state, icon, onClick } = props;
+  const { name, type, state, icon, onClick, variant } = props;
 
   function handleClick() {
     if (onClick) {
@@ -41,7 +49,11 @@ export function ServiceInfoCard(props: ServiceInfoCardProps) {
   }
 
   return (
-    <Card variant='soft' onClick={handleClick}>
+    <Card
+      variant={variant ?? 'soft'}
+      onClick={handleClick}
+      sx={{ padding: '.5rem' }}
+    >
       <CardContent orientation='horizontal' className={styles['card-content']}>
         <SvgIcon>{renderIcon()}</SvgIcon>
         <Box>
