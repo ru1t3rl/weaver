@@ -1,8 +1,9 @@
 import { Box, Card, CardContent, SvgIcon, Typography } from '@mui/joy';
-import { ServiceType } from 'packages/shared';
+import { ServiceType } from '@weaver/shared';
 import { ReactNode } from 'react';
-import { LuBlocks, LuGlobe } from 'react-icons/lu';
+import { LuBoxes, LuGlobe } from 'react-icons/lu';
 import { State, StateCircle } from '../state-circle/state-circle';
+import styles from './service-info-card.module.scss';
 
 interface ServiceInfoCardProps {
   name: string;
@@ -33,7 +34,7 @@ export function ServiceInfoCard(props: ServiceInfoCardProps) {
         break;
       case ServiceType.Custom:
       default:
-        node = <LuBlocks />;
+        node = <LuBoxes />;
     }
 
     return node;
@@ -41,10 +42,8 @@ export function ServiceInfoCard(props: ServiceInfoCardProps) {
 
   return (
     <Card variant='soft' onClick={handleClick}>
-      <CardContent orientation='horizontal'>
-        <Box>
-          <SvgIcon>{renderIcon()}</SvgIcon>
-        </Box>
+      <CardContent orientation='horizontal' className={styles['card-content']}>
+        <SvgIcon>{renderIcon()}</SvgIcon>
         <Box>
           <Typography>{name}</Typography>
           {state && <StateCircle state={state} />}
