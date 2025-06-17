@@ -1,6 +1,7 @@
 import { Box, Card, CardContent, SvgIcon, Typography } from '@mui/joy';
 import { ServiceType } from 'packages/shared';
 import { ReactNode } from 'react';
+import { LuBlocks, LuGlobe } from 'react-icons/lu';
 import { State, StateCircle } from '../state-circle/state-circle';
 
 interface ServiceInfoCardProps {
@@ -25,12 +26,15 @@ export function ServiceInfoCard(props: ServiceInfoCardProps) {
       return icon;
     }
 
-    const node: ReactNode;
-
-    // ServiceType
-    // switch(type) {
-    //     case ServiceType
-    // }
+    let node: ReactNode;
+    switch (type) {
+      case ServiceType.Reference:
+        node = <LuGlobe />;
+        break;
+      case ServiceType.Custom:
+      default:
+        node = <LuBlocks />;
+    }
 
     return node;
   }

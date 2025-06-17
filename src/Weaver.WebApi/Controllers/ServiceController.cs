@@ -18,7 +18,7 @@ public class ServiceController : ControllerBase
     private readonly IMediator _mediator;
     private readonly WeaverDbContext _dbContext;
 
-    public ServiceController(Mediator mediator, WeaverDbContext dbContext)
+    public ServiceController(IMediator mediator, WeaverDbContext dbContext)
     {
         _mediator = mediator;
         _dbContext = dbContext;

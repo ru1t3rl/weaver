@@ -15,10 +15,10 @@ namespace Weaver.WebApi.Controllers;
 [Route("[controller]")]
 public class ServiceOptionController : ControllerBase
 {
-    private readonly Mediator _mediator;
+    private readonly IMediator _mediator;
     private readonly WeaverDbContext _dbContext;
 
-    public ServiceOptionController(Mediator mediator, WeaverDbContext dbContext)
+    public ServiceOptionController(IMediator mediator, WeaverDbContext dbContext)
     {
         _mediator = mediator;
         _dbContext = dbContext;

@@ -31,20 +31,24 @@ export function ServiceModal() {
   }
 
   return (
-    <Card variant='soft'>
-      <Input
-        variant='soft'
-        placeholder='Service Name...'
-        onChange={e => {
-          setFilter(e.currentTarget.value);
-        }}
-      />
-      <Box className={styles['services-container']}>
-        {isLoading && drawSkeletons(5)}
-        {!isLoading &&
-          response &&
-          dataFiltered.map(service => <ServiceInfoCard name={service.name} />)}
-      </Box>
-    </Card>
+    <Box className={styles['modal-contaienr']}>
+      <Card variant='soft'>
+        <Input
+          variant='soft'
+          placeholder='Service Name...'
+          onChange={e => {
+            setFilter(e.currentTarget.value);
+          }}
+        />
+        <Box className={styles['services-container']}>
+          {isLoading && drawSkeletons(5)}
+          {!isLoading &&
+            response &&
+            dataFiltered.map(service => (
+              <ServiceInfoCard name={service.name} type={service.type} />
+            ))}
+        </Box>
+      </Card>
+    </Box>
   );
 }

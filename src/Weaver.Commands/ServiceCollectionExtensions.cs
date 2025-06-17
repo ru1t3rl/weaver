@@ -1,4 +1,6 @@
+using Cortex.Mediator.Commands;
 using Cortex.Mediator.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Weaver.Commands;
@@ -10,9 +12,8 @@ public static class ServiceCollectionExtensions
         builder.Services.AddCortexMediator(
             builder.Configuration,
             [typeof(Weaver.Commands.NamespaceAnchor)]
-            // options => options.AddDefaultBehaviors()
         );
-
+        
         return builder;
     }
 }
