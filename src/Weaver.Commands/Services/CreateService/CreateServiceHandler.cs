@@ -23,6 +23,7 @@ public class CreateServiceHandler : ICommandHandler<CreateServiceCommand>
 
         Service service = new Service
         {
+            Uuid = Guid.NewGuid(),
             Name = command.Name,
             Type = command.Type,
             Config = options,
