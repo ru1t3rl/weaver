@@ -22,9 +22,9 @@ export function StateCircle(props: StateCircleProps) {
     <Box>
       <Box
         className={styles['dot']}
-        sx={{ backgroundColor: color, width: theme.typography['body-xs'] }}
+        sx={{ backgroundColor: color, height: theme.typography['body-xs'] }}
       ></Box>
-      <Typography>{State[state]}</Typography>
+      <Typography level='body-xs'>{State[state]}</Typography>
     </Box>
   );
 }

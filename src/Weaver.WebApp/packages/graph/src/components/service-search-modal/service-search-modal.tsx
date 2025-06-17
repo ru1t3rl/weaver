@@ -1,5 +1,9 @@
 import { Box, Card, Input, Skeleton } from '@mui/joy';
-import { ServiceListItemModel, useGetService } from 'packages/shared';
+import {
+  apiRequestConfig,
+  ServiceListItemModel,
+  useGetService,
+} from '@weaver/shared';
 import { ReactNode, useMemo, useState } from 'react';
 import { useServiceGraph } from '../../hooks/use-service-graph';
 import { ServiceInfoCard } from '../service-info-card/service-info-card';
@@ -7,7 +11,9 @@ import styles from './service-search-modal.module.scss';
 
 export function ServiceModal() {
   const { tryAddNode } = useServiceGraph();
-  const { data: response, isLoading } = useGetService();
+  const { data: response, isLoading } = useGetService({
+    axios: apiRequestConfig,
+  });
 
   const [filter, setFilter] = useState<string>('');
   const dataFiltered = useMemo<ServiceListItemModel[]>(() => {
@@ -19,13 +25,16 @@ export function ServiceModal() {
       return response.data;
     }
 
-    return response.data.filter(service => service.name.includes(filter));
+    const lowerFilter = filter.toLowerCase();
+    return response.data.filter(service =>
+      service.name.toLowerCase().includes(lowerFilter),
+    );
   }, [response, filter]);
 
   function drawSkeletons(amount: number): ReactNode[] {
     const nodes: ReactNode[] = [];
     for (let i = 0; i < amount; i++) {
-      nodes.push(<Skeleton />);
+      nodes.push(<Skeleton key={i} />);
     }
     return nodes;
   }
@@ -36,6 +45,7 @@ export function ServiceModal() {
         <Input
           variant='soft'
           placeholder='Service Name...'
+          className={styles['services-input']}
           onChange={e => {
             setFilter(e.currentTarget.value);
           }}
@@ -44,8 +54,12 @@ export function ServiceModal() {
           {isLoading && drawSkeletons(5)}
           {!isLoading &&
             response &&
-            dataFiltered.map(service => (
-              <ServiceInfoCard name={service.name} type={service.type} />
+            dataFiltered.map((service, index) => (
+              <ServiceInfoCard
+                key={index}
+                name={service.name}
+                type={service.type}
+              />
             ))}
         </Box>
       </Card>

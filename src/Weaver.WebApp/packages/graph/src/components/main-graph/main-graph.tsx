@@ -1,11 +1,10 @@
-import { IconButton } from '@mui/joy';
 import { Background } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useReducer, useRef } from 'react';
-import { LuPlus } from 'react-icons/lu';
 import { useNodeEventListener } from '../../events';
 import { useServiceGraph } from '../../hooks/use-service-graph';
 import ServiceNode from '../nodes/service-node/service-node';
+import { ServiceModal } from '../service-search-modal/service-search-modal';
 import JoyGraph from '../styled/joy-graph';
 import JoyMiniMap from '../styled/mini-map';
 
@@ -27,13 +26,13 @@ export function MainGraph(props: MainGraphProps) {
   });
 
   return (
-    <JoyGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
-      <JoyMiniMap />
-      <Background />
-      <IconButton>
-        <LuPlus />
-      </IconButton>
-    </JoyGraph>
+    <>
+      <ServiceModal />
+      <JoyGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
+        <JoyMiniMap />
+        <Background />
+      </JoyGraph>
+    </>
   );
 }
 
