@@ -52,7 +52,13 @@ export function ServiceInfoCard(props: ServiceInfoCardProps) {
     <Card
       variant={variant ?? 'soft'}
       onClick={handleClick}
-      sx={{ padding: '.5rem' }}
+      sx={{
+        padding: '.5rem',
+        '&:hover': {
+          boxShadow: 'sm',
+          borderColor: 'neutral.outlinedHoverBorder',
+        },
+      }}
     >
       <CardContent orientation='horizontal' className={styles['card-content']}>
         <SvgIcon>{renderIcon()}</SvgIcon>
