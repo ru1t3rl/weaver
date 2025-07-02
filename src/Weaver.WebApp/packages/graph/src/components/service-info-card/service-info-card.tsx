@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, SvgIcon, Typography } from '@mui/joy';
-import { ServiceType } from 'packages/shared';
+import { ServiceType } from '@weaver/shared';
 import { ReactNode } from 'react';
 import { LuBlocks, LuGlobe } from 'react-icons/lu';
 import { State, StateCircle } from '../state-circle/state-circle';

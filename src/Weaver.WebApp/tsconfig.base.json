@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
-    "strict": true
+    "strict": true,    
   },
   "include": ["packages", "src"],
   "exclude": ["node_modules", "tmp"]

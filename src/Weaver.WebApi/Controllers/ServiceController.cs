@@ -67,7 +67,7 @@ public class ServiceController : ControllerBase
     {
         var query = new GetServiceByUuidQuery(uuid);
         var result = await _mediator.SendAsync<GetServiceByUuidQuery, OneOf<Service, None>>(query, cancellationToken);
-
+        
         return result.Match<IActionResult>(
             service => Ok(new ServiceDetailModel
             {

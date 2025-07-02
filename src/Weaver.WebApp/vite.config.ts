@@ -10,6 +10,13 @@ export default defineConfig(({mode}) => {
         define: {
             'process.env': env,
         },
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    api: 'modern'
+                }
+            }
+        },
         server: {
             port: process.env.PORT ? Number(process.env.PORT) : 4200,
             host: 'localhost',
