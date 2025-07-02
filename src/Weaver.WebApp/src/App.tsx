@@ -1,6 +1,6 @@
 import styles from './App.module.scss';
 import {QueryClient, QueryClientProvider} from "react-query";
-import {MainGraph} from "@weaver/graph";
+import {MainGraph, ServiceGraphProvider} from "@weaver/graph";
 import {ThemeProvider, ThemeToggle} from "@weaver/styling";
 
 function App() {
@@ -10,7 +10,9 @@ function App() {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
                 <div className={styles['app-container']}>
-                    <MainGraph/>
+                    <ServiceGraphProvider>
+                        <MainGraph/>
+                    </ServiceGraphProvider>
                 </div>
                 <ThemeToggle className={styles['theme-toggle']}/>
             </ThemeProvider>

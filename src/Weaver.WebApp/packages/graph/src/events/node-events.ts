@@ -1,4 +1,4 @@
-import { NodeProps } from '@xyflow/react';
+import { Node } from '@xyflow/react';
 import { useCallback, useMemo } from 'react';
 
 enum NodeEvents {
@@ -8,14 +8,14 @@ enum NodeEvents {
   AllUpdates = 'all-node-updates',
 }
 
-export interface INodeEvents<TNode extends NodeProps> {
+export interface INodeEvents<TNode extends Node> {
   onAddNode: (node: TNode) => void;
   onUpdateNode: (node: TNode) => void;
   onRemoveNode: (node: TNode) => void;
   onAllNodeUpdates: (nodes: TNode[]) => void;
 }
 
-export function useNodeEvents<TNode extends NodeProps>(): INodeEvents<TNode> {
+export function useNodeEvents<TNode extends Node>(): INodeEvents<TNode> {
   function onAddNode(node: TNode) {
     const event = new CustomEvent<TNode>(NodeEvents.Add, { detail: node });
     window.dispatchEvent(event);
@@ -46,14 +46,14 @@ export function useNodeEvents<TNode extends NodeProps>(): INodeEvents<TNode> {
   };
 }
 
-interface UseNodeEventListener<TNode extends NodeProps> {
+interface UseNodeEventListener<TNode extends Node> {
   onAddNode?: (e: TNode) => void;
   onUpdateNode?: (node: TNode) => void;
   onRemoveNode?: (node: TNode) => void;
   onAllNodeUpdates?: (nodes: TNode[]) => void;
 }
 
-export function useNodeEventListener<TNode extends NodeProps>(
+export function useNodeEventListener<TNode extends Node>(
   callbacks: UseNodeEventListener<TNode>,
 ) {
   const { onAddNode, onUpdateNode, onRemoveNode, onAllNodeUpdates } = callbacks;

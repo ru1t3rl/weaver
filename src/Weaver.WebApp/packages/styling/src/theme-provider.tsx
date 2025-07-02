@@ -4,7 +4,6 @@ import {ConfigProvider} from "antd";
 import {IThemeContext, ThemeContext} from "./theme-context";
 
 
-
 export function ThemeProvider({children}: PropsWithChildren) {
     const [mode, setMode] = useState<ThemeMode>('dark');
     const themeConfig = createTheme(mode);
@@ -25,7 +24,7 @@ export function ThemeProvider({children}: PropsWithChildren) {
 
     return (
         <ThemeContext.Provider value={value}>
-            <ConfigProvider theme={themeConfig}>
+            <ConfigProvider theme={{...themeConfig, cssVar: true}}>
                 {children}
             </ConfigProvider>
         </ThemeContext.Provider>

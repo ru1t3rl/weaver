@@ -19,7 +19,13 @@ export function ServiceNode(props: NodeProps<ServiceNode>) {
     }
   }
 
-  return <ServiceInfoCard name={serviceInfo.name} onClick={handleClick} />;
+  return (
+    <ServiceInfoCard
+      name={serviceInfo.name}
+      onClick={handleClick}
+      type={serviceInfo.type}
+    />
+  );
 }
 
 export default ServiceNode;

@@ -1,17 +1,17 @@
 import { PropsWithChildren, useRef } from 'react';
-import { ServiceNodeProps } from '../components/nodes/service-node/service-node';
+import { ServiceNode } from '../components/nodes/service-node/service-node';
 import { createServiceGraphContext, IServiceGraphContext } from '../contexts';
 import { useNodeEvents } from '../events';
 
-export const ServiceGraphContext =
-  createServiceGraphContext<ServiceNodeProps>();
+export const ServiceGraphContext = createServiceGraphContext<ServiceNode>();
 export function ServiceGraphProvider({ children }: PropsWithChildren) {
-  const nodes = useRef<Map<string, ServiceNodeProps>>(new Map());
+  const nodes = useRef<Map<string, ServiceNode>>(new Map());
 
   const events = useNodeEvents();
 
-  function tryAddNode(node: ServiceNodeProps): boolean {
+  function tryAddNode(node: ServiceNode): boolean {
     if (nodes.current.has(node.id)) {
+      console.log('id exists');
       return false;
     }
 
@@ -21,7 +21,7 @@ export function ServiceGraphProvider({ children }: PropsWithChildren) {
     return true;
   }
 
-  function tryRemoveNode(node: ServiceNodeProps): boolean {
+  function tryRemoveNode(node: ServiceNode): boolean {
     if (!nodes.current.has(node.id)) {
       return false;
     }
@@ -32,7 +32,7 @@ export function ServiceGraphProvider({ children }: PropsWithChildren) {
     return true;
   }
 
-  const contextValue: IServiceGraphContext<ServiceNodeProps> = {
+  const contextValue: IServiceGraphContext<ServiceNode> = {
     tryAddNode,
     tryRemoveNode,
     nodes: Array.from(nodes.current.values()),

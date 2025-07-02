@@ -1,44 +1,51 @@
-import {Background} from '@xyflow/react';
+import { Background, Node } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import {useReducer, useRef} from 'react';
-import {useNodeEventListener} from '../../events';
-import {useServiceGraph} from '../../hooks/use-service-graph';
+import { Flex } from 'antd';
+import { useState } from 'react';
+import { useNodeEventListener } from '../../events';
+import { ServiceSearchModalProvider } from '../../providers/service-search-modal-provider';
 import ServiceNode from '../nodes/service-node/service-node';
-import StyledGraph from "../styled/styled-graph";
-import StyledMiniMap from "../styled/mini-map";
-import {Toolbar} from "../toolbar/toolbar";
-import {Flex} from "antd";
+import StyledMiniMap from '../styled/mini-map';
+import StyledGraph from '../styled/styled-graph';
+import { Toolbar } from '../toolbar/toolbar';
 import styles from './main-graph.module.scss';
 
-interface MainGraphProps {
-}
+interface MainGraphProps {}
 
 const nodeTypes = {
-    serviceNode: ServiceNode,
+  serviceNode: ServiceNode,
 };
 
 export function MainGraph(props: MainGraphProps) {
-    const [, forceRender] = useReducer(x => !x, false);
-    const forceRenderRef = useRef(() => {
-        forceRender();
-    });
+  const [nodes, _setNodes] = useState<Node[]>([]);
 
-    const {nodes} = useServiceGraph();
-    useNodeEventListener({
-        onAllNodeUpdates: () => forceRenderRef.current(),
-    });
+  useNodeEventListener({
+    onAllNodeUpdates: value => _setNodes(value),
+  });
 
-    return (
-        <div style={{width: '100%', height: '100%'}} className={styles['main-graph-container']}>
-            <Flex vertical className={styles['overlay-ui']}>
-                <Toolbar/>
-            </Flex>
-            <StyledGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
-                <StyledMiniMap/>
-                <Background/>
-            </StyledGraph>
-        </div>
-    );
+  console.log(nodes);
+
+  return (
+    <div
+      style={{ width: '100%', height: '100%' }}
+      className={styles['main-graph-container']}
+    >
+      <ServiceSearchModalProvider
+        keybinding={{
+          key: 'space',
+          ctrl: true,
+        }}
+      >
+        <Flex vertical className={styles['overlay-ui']}>
+          <Toolbar />
+        </Flex>
+        <StyledGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
+          <StyledMiniMap />
+          <Background />
+        </StyledGraph>
+      </ServiceSearchModalProvider>
+    </div>
+  );
 }
 
 export default MainGraph;
