@@ -3,6 +3,8 @@ import {createTheme, ThemeMode} from "./theme";
 import {ConfigProvider} from "antd";
 import {IThemeContext, ThemeContext} from "./theme-context";
 
+
+
 export function ThemeProvider({children}: PropsWithChildren) {
     const [mode, setMode] = useState<ThemeMode>('dark');
     const themeConfig = createTheme(mode);

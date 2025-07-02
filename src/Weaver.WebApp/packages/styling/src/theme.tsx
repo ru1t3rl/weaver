@@ -30,3 +30,5 @@ export function createTheme(mode: ThemeMode): ThemeConfig {
         token: getTokens(mode),
     })
 }
+
+export default createTheme;
