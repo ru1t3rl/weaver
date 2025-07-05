@@ -23,8 +23,6 @@ export function MainGraph(props: MainGraphProps) {
     onAllNodeUpdates: value => _setNodes(value),
   });
 
-  console.log(nodes);
-
   return (
     <div
       style={{ width: '100%', height: '100%' }}
@@ -33,7 +31,7 @@ export function MainGraph(props: MainGraphProps) {
       <ReactFlowProvider>
         <ServiceSearchModalProvider
           keybinding={{
-            key: 'space',
+            key: ' ',
             ctrl: true,
           }}
         >

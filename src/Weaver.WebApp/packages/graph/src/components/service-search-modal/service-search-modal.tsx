@@ -78,7 +78,6 @@ export function ServiceSearchModal() {
     }, [dataFiltered]);
 
     useEffect(() => {
-
         window.addEventListener('keydown', handleKeyDown);
 
         return () => {
