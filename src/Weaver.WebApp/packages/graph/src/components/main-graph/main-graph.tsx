@@ -1,4 +1,4 @@
-import { Background, Node } from '@xyflow/react';
+import { Background, Node, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Flex } from 'antd';
 import { useState } from 'react';
@@ -30,20 +30,22 @@ export function MainGraph(props: MainGraphProps) {
       style={{ width: '100%', height: '100%' }}
       className={styles['main-graph-container']}
     >
-      <ServiceSearchModalProvider
-        keybinding={{
-          key: 'space',
-          ctrl: true,
-        }}
-      >
-        <Flex vertical className={styles['overlay-ui']}>
-          <Toolbar />
-        </Flex>
-        <StyledGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
-          <StyledMiniMap />
-          <Background />
-        </StyledGraph>
-      </ServiceSearchModalProvider>
+      <ReactFlowProvider>
+        <ServiceSearchModalProvider
+          keybinding={{
+            key: 'space',
+            ctrl: true,
+          }}
+        >
+          <Flex vertical className={styles['overlay-ui']}>
+            <Toolbar />
+          </Flex>
+          <StyledGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
+            <StyledMiniMap />
+            <Background />
+          </StyledGraph>
+        </ServiceSearchModalProvider>
+      </ReactFlowProvider>
     </div>
   );
 }
