@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Weaver.Migrator\Weaver.Migrator.csproj" />
     <ProjectReference Include="..\Weaver.WebApi\Weaver.WebApi.csproj" />
   </ItemGroup>
 

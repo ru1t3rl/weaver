@@ -7,4 +7,5 @@
   <Project Path="src\Weaver.Commands\Weaver.Commands.csproj" Type="Classic C#" />
   <Project Path="src\Weaver.Domain\Weaver.Domain.csproj" Type="Classic C#" />
   <Project Path="src\Weaver.Infrastructure\Weaver.Infrastructure.csproj" Type="Classic C#" />
+  <Project Path="src\Weaver.Migrator\Weaver.Migrator.csproj" Type="Classic C#" />
 </Solution>

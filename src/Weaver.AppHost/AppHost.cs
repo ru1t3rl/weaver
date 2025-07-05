@@ -1,3 +1,5 @@
+using Weaver.AppHost;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
@@ -13,7 +15,8 @@ var database = postgres
 
 var apiService = builder.AddProject<Projects.Weaver_WebApi>("webapi")
     .WithHttpHealthCheck("/health")
-    .WithReference(database);
+    .WithReference(database)
+    .WithMigrator<Projects.Weaver_Migrator>(database);
 
 builder.AddBunApp("webapp", "../Weaver.WebApp", "dev", true)
     .WithApiClientGenerator("../Weaver.WebApp/packages/shared/")
