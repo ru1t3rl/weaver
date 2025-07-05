@@ -31,7 +31,8 @@ export function MainGraph(props: MainGraphProps) {
       <ReactFlowProvider>
         <ServiceSearchModalProvider
           keybinding={{
-            key: ' '
+            key: ' ',
+            ctrl: true
           }}
         >
           <Flex vertical className={styles['overlay-ui']}>

@@ -1,4 +1,4 @@
-import { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+ import { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { ServiceSearchModal } from '../components/service-search-modal/service-search-modal';
 import { IServiceSearchModalContext, ServiceSearchModalContext } from '../contexts/service-search-modal-context';
 
@@ -23,16 +23,17 @@ export function ServiceSearchModalProvider(props: ServiceSearchModalProviderProp
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const keyMatches = event.key.toLowerCase() === keybinding.key.toLowerCase();
-      const ctrlMatches = event.ctrlKey === keybinding.ctrl;
-      const shiftMatches = event.shiftKey === keybinding.shift;
-      const altMatches = event.altKey === keybinding.alt;
+    const keyMatches = event.key.toLowerCase() === keybinding.key.toLowerCase();
+    const ctrlMatches = keybinding.ctrl ? event.ctrlKey  : true;
+    const shiftMatches = keybinding.shift ? event.shiftKey : true;
+    const altMatches = keybinding.alt ? event.altKey : true;
 
-      if (keyMatches && ctrlMatches && shiftMatches && altMatches) {
-        toggle();
-        event.preventDefault();
-      }
-    };
+    if (keyMatches && ctrlMatches && shiftMatches && altMatches) {
+      toggle();
+      event.preventDefault();
+    }
+  };
+
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
