@@ -1,58 +1,63 @@
-import {ServiceType} from '@weaver/shared';
-import {ReactNode} from 'react';
-import {LuBlocks, LuGlobe} from 'react-icons/lu';
-import {State, StateCircle} from '../state-circle/state-circle';
-import {Card, Flex, theme, Typography} from "antd";
+import { ServiceType } from '@weaver/shared';
+import { Card, Flex, theme, Typography } from 'antd';
+import { ReactNode } from 'react';
+import { LuBlocks, LuGlobe } from 'react-icons/lu';
+import { State, StateCircle } from '../state-circle/state-circle';
 import styles from './service-info-card.module.scss';
 
 interface ServiceInfoCardProps {
-    name: string;
-    type: ServiceType;
-    state?: State;
-    icon?: ReactNode;
-    onClick?: () => void;
+  name: string;
+  type: ServiceType;
+  state?: State;
+  icon?: ReactNode;
+  onClick?: () => void;
+  selected?: boolean;
+  tabIndex?: number;
 }
 
 export function ServiceInfoCard(props: ServiceInfoCardProps) {
-    const {name, type, state, icon, onClick} = props;
-    const {Text} = Typography;
-    
-    const {useToken} = theme;
-    const {token} = useToken();
+  const { name, type, state, icon, onClick, selected, tabIndex } = props;
+  const { Text } = Typography;
 
-    function handleClick() {
-        if (onClick) {
-            onClick();
-        }
+  const { useToken } = theme;
+
+  function handleClick() {
+    if (onClick) {
+      onClick();
+    }
+  }
+
+  function renderIcon(): ReactNode {
+    if (icon) {
+      return icon;
     }
 
-    function renderIcon(): ReactNode {
-        if (icon) {
-            return icon;
-        }
-
-        let node: ReactNode;
-        switch (type) {
-            case ServiceType.Reference:
-                node = <LuGlobe/>;
-                break;
-            case ServiceType.Custom:
-            default:
-                node = <LuBlocks/>;
-        }
-
-        return node;
+    let node: ReactNode;
+    switch (type) {
+      case ServiceType.Reference:
+        node = <LuGlobe />;
+        break;
+      case ServiceType.Custom:
+      default:
+        node = <LuBlocks />;
     }
 
-    return (
-        <Card onClick={handleClick} className={styles['container']} >
-            <Flex align={'center'} gap={10} style={{padding: 0}}>
-                <Text>{renderIcon()}</Text>
-                <Flex justify={'center'} gap={5}>
-                    <Text>{name}</Text>
-                    {state && <StateCircle state={state}/>}
-                </Flex>
-            </Flex>
-        </Card>
-    );
+    return node;
+  }
+
+  return (
+    <Card
+      onClick={handleClick}
+      className={[styles['container'], selected ? styles['selected'] : ''].join(' ')}
+      tabIndex={tabIndex}
+    >
+      <Flex align={'center'} gap={10} style={{ padding: 0 }}>
+        <Text>{renderIcon()}</Text>
+        <Flex justify={'center'} gap={5}>
+          <Text>{name}</Text>
+          {state && <StateCircle state={state} />}
+        </Flex>
+      </Flex>
+    </Card>
+  );
 }

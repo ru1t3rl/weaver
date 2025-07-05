@@ -14,6 +14,8 @@ export function ServiceNode(props: NodeProps<ServiceNode>) {
   const serviceInfo = data.serviceInfo;
 
   function handleClick() {
+    console.log('Clicked');
+
     if (data.onClick) {
       data.onClick();
     }
