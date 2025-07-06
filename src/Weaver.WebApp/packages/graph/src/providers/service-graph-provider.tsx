@@ -1,7 +1,7 @@
 import { NodeChange } from '@xyflow/react';
 import { PropsWithChildren, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
-import { ServiceNode } from '../components/nodes/service-node/service-node';
+import { ServiceNode, nodeName as serviceNodeName } from '../components/nodes/service-node/service-node';
 import { createServiceGraphContext, IServiceGraphContext } from '../contexts';
 import { useNodeEvents } from '../events';
 
@@ -17,7 +17,7 @@ export function ServiceGraphProvider({ children }: PropsWithChildren) {
     selected: false,
     zIndex: 0,
     connectable: true,
-    type: 'serviceNode',
+    type: serviceNodeName,
     id: uuid(),
     position: {
       x: 0,
@@ -70,15 +70,16 @@ export function ServiceGraphProvider({ children }: PropsWithChildren) {
           if (n.selected) {
             events.onUpdateNode(n);
             n.selected = false;
-            console.log(n.selected);
           }
         });
 
-        node.selected = change.selected;
-        nodes.current.set(node.id, node);
-        events.onUpdateNode(node);
+        if (node.selected !== change.selected) {
+          node.selected = change.selected;
+          nodes.current.set(node.id, node);
+          events.onUpdateNode(node);
 
-        console.log('selected: ' + node.selected);
+          events.onSelectionChanged(node.selected ? node : undefined);
+        }
       }
 
       if (change.type === 'position' && (node = nodes.current.get(change.id))) {

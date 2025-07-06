@@ -5,8 +5,8 @@ import { useCallback, useRef } from 'react';
 import { useNodeEventListener } from '../../events';
 import { useServiceGraph } from '../../hooks/use-service-graph';
 import { ServiceSearchModalProvider } from '../../providers/service-search-modal-provider';
+import { NodeInfoPanel } from '../node-info-panel/node-info-panel';
 import ServiceNode from '../nodes/service-node/service-node';
-import StyledMiniMap from '../styled/mini-map';
 import StyledGraph from '../styled/styled-graph';
 import { Toolbar } from '../toolbar/toolbar';
 import styles from './main-graph.module.scss';
@@ -48,9 +48,9 @@ export function MainGraph(props: MainGraphProps) {
         >
           <Flex vertical className={styles['overlay-ui']}>
             <Toolbar />
+            <NodeInfoPanel />
           </Flex>
-          <StyledGraph nodes={nodes} edges={[]} nodeTypes={nodeTypes} onNodesChange={customOnNodesChange}>
-            <StyledMiniMap />
+          <StyledGraph nodes={nodes} edges={[]} nodeTypes={nodeTypes} snapToGrid onNodesChange={customOnNodesChange}>
             <Background />
           </StyledGraph>
         </ServiceSearchModalProvider>

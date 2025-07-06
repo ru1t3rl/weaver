@@ -8,6 +8,7 @@ type ServiceNodeData = {
   onClick?: () => void;
 };
 
+export const nodeName = 'serviceNode';
 export type ServiceNode = Node<ServiceNodeData, 'serviceNode'>;
 
 export function ServiceNode(props: NodeProps<ServiceNode>) {
@@ -36,7 +37,7 @@ export function ServiceNode(props: NodeProps<ServiceNode>) {
   console.log(`In node selected (${id}): ${selected}`);
   return (
     <div>
-      <ServiceInfoCard name={serviceInfo.name} onClick={handleClick} type={serviceInfo.type} selected={selected} />;
+      <ServiceInfoCard name={serviceInfo.name} onClick={handleClick} type={serviceInfo.type} selected={selected} />
     </div>
   );
 }
