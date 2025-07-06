@@ -1,8 +1,9 @@
-import { Background, Node, ReactFlowProvider } from '@xyflow/react';
+import { Background, Node, NodeChange, ReactFlowProvider, useNodesState } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Flex } from 'antd';
-import { useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { useNodeEventListener } from '../../events';
+import { useServiceGraph } from '../../hooks/use-service-graph';
 import { ServiceSearchModalProvider } from '../../providers/service-search-modal-provider';
 import ServiceNode from '../nodes/service-node/service-node';
 import StyledMiniMap from '../styled/mini-map';
@@ -17,28 +18,38 @@ const nodeTypes = {
 };
 
 export function MainGraph(props: MainGraphProps) {
-  const [nodes, _setNodes] = useState<Node[]>([]);
+  const [nodes, _setNodes, onNodesChange] = useNodesState([] as Node[]);
+  const { tryUpdateNodes } = useServiceGraph();
 
-  useNodeEventListener({
-    onAllNodeUpdates: value => _setNodes(value),
+  const setNodes = useRef((nodes: Node[]) => {
+    _setNodes(nodes);
   });
 
+  useNodeEventListener({
+    onAllNodeUpdates: value => setNodes.current(value),
+  });
+
+  const customOnNodesChange = useCallback(
+    (changes: NodeChange<Node>[]) => {
+      tryUpdateNodes(changes as NodeChange<ServiceNode>[]);
+      onNodesChange(changes);
+    },
+    [onNodesChange, tryUpdateNodes],
+  );
+
   return (
-    <div
-      style={{ width: '100%', height: '100%' }}
-      className={styles['main-graph-container']}
-    >
+    <div style={{ width: '100%', height: '100%' }} className={styles['main-graph-container']}>
       <ReactFlowProvider>
         <ServiceSearchModalProvider
           keybinding={{
             key: ' ',
-            ctrl: true
+            ctrl: true,
           }}
         >
           <Flex vertical className={styles['overlay-ui']}>
             <Toolbar />
           </Flex>
-          <StyledGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
+          <StyledGraph nodes={nodes} edges={[]} nodeTypes={nodeTypes} onNodesChange={customOnNodesChange}>
             <StyledMiniMap />
             <Background />
           </StyledGraph>
