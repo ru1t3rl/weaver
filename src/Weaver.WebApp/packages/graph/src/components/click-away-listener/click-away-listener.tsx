@@ -1,109 +1,109 @@
-import React, {useRef, useEffect, ReactNode} from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
 interface ClickAwayListenerProps {
-    onClickAway: (event: MouseEvent | TouchEvent | FocusEvent) => void;
-    children: ReactNode;
-    mouseEvent?: 'mousedown' | 'mouseup' | 'click' | false;
-    touchEvent?: 'touchstart' | 'touchend' | false;
-    disableReactTree?: boolean;
+  onClickAway: (event: MouseEvent | TouchEvent | FocusEvent) => void;
+  children: ReactNode;
+  mouseEvent?: 'mousedown' | 'mouseup' | 'click' | false;
+  touchEvent?: 'touchstart' | 'touchend' | false;
+  disableReactTree?: boolean;
 }
 
 function isTouchEvent(event: Event): event is TouchEvent {
-    return 'touches' in event;
+  return 'touches' in event;
 }
 
 function ClickAwayListener({
-                               onClickAway,
-                               children,
-                               mouseEvent = 'mousedown',
-                               touchEvent = 'touchstart',
-                               disableReactTree = false,
-                           }: ClickAwayListenerProps) {
-    const nodeRef = useRef<HTMLDivElement>(null);
-    const previousActiveElement = useRef<Element | null>(null);
+  onClickAway,
+  children,
+  mouseEvent = 'mousedown',
+  touchEvent = 'touchstart',
+  disableReactTree = false,
+}: ClickAwayListenerProps) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<Element | null>(null);
 
-    useEffect(() => {
-        function handleClickAway(event: Event) {
-            if (!(event instanceof MouseEvent || isTouchEvent(event))) {
-                return;
-            }
+  useEffect(() => {
+    function handleClickAway(event: Event) {
+      if (!(event instanceof MouseEvent || isTouchEvent(event))) {
+        return;
+      }
 
-            if (!nodeRef.current || !event.target) {
-                return;
-            }
+      if (!nodeRef.current || !event.target) {
+        return;
+      }
 
-            if (nodeRef.current.contains(event.target as Node)) {
-                return;
-            }
+      if (nodeRef.current.contains(event.target as Node)) {
+        return;
+      }
 
-            if (!disableReactTree) {
-                const root = nodeRef.current.ownerDocument;
-                const portal = root.getElementById('ant-design-root-portal');
+      if (!disableReactTree) {
+        const root = nodeRef.current.ownerDocument;
+        const portal = root.getElementById('ant-design-root-portal');
 
-                if (portal && portal.contains(event.target as Node)) {
-                    return;
-                }
-            }
-
-            onClickAway(event);
-        };
-
-        function handleFocusChange(event: FocusEvent) {
-            if (!nodeRef.current || !event.target) {
-                return;
-            }
-
-            if (nodeRef.current.contains(event.target as Node)) {
-                previousActiveElement.current = event.target as Element;
-                return;
-            }
-
-            if (!disableReactTree) {
-                const root = nodeRef.current.ownerDocument;
-                const portal = root.getElementById('ant-design-root-portal');
-                if (portal && portal.contains(event.target as Node)) {
-                    previousActiveElement.current = event.target as Element;
-                    return;
-                }
-            }
-
-            onClickAway(event);
-            previousActiveElement.current = event.target as Element;
+        if (portal && portal.contains(event.target as Node)) {
+          return;
         }
+      }
 
-        function handleWindowBlur() {
-            const evt = new FocusEvent('blur', {relatedTarget: null});
-            onClickAway(evt);
+      onClickAway(event);
+    }
+
+    function handleFocusChange(event: FocusEvent) {
+      if (!nodeRef.current || !event.target) {
+        return;
+      }
+
+      if (nodeRef.current.contains(event.target as Node)) {
+        previousActiveElement.current = event.target as Element;
+        return;
+      }
+
+      if (!disableReactTree) {
+        const root = nodeRef.current.ownerDocument;
+        const portal = root.getElementById('ant-design-root-portal');
+        if (portal && portal.contains(event.target as Node)) {
+          previousActiveElement.current = event.target as Element;
+          return;
         }
+      }
 
-        const eventListeners: Array<[string, EventListener]> = [];
+      onClickAway(event);
+      previousActiveElement.current = event.target as Element;
+    }
 
-        if (mouseEvent !== false) {
-            eventListeners.push([mouseEvent, handleClickAway as EventListener]);
-        }
+    function handleWindowBlur() {
+      const evt = new FocusEvent('blur', { relatedTarget: null });
+      onClickAway(evt);
+    }
 
-        if (touchEvent !== false) {
-            eventListeners.push([touchEvent, handleClickAway as EventListener]);
-        }
+    const eventListeners: Array<[string, EventListener]> = [];
 
-        eventListeners.push(['focusin', handleFocusChange as EventListener]);
+    if (mouseEvent !== false) {
+      eventListeners.push([mouseEvent, handleClickAway as EventListener]);
+    }
 
-        window.addEventListener('blur', handleWindowBlur);
+    if (touchEvent !== false) {
+      eventListeners.push([touchEvent, handleClickAway as EventListener]);
+    }
 
-        eventListeners.forEach(([eventName, listener]) => {
-            document.addEventListener(eventName, listener, {capture: true});
-        });
+    eventListeners.push(['focusin', handleFocusChange as EventListener]);
 
-        return () => {
-            eventListeners.forEach(([eventName, listener]) => {
-                document.removeEventListener(eventName, listener, {capture: true});
-            });
+    window.addEventListener('blur', handleWindowBlur);
 
-            window.removeEventListener('blur', handleWindowBlur);
-        };
-    }, [onClickAway, mouseEvent, touchEvent, disableReactTree]);
+    eventListeners.forEach(([eventName, listener]) => {
+      document.addEventListener(eventName, listener, { capture: true });
+    });
 
-    return <div ref={nodeRef}>{children}</div>;
-};
+    return () => {
+      eventListeners.forEach(([eventName, listener]) => {
+        document.removeEventListener(eventName, listener, { capture: true });
+      });
+
+      window.removeEventListener('blur', handleWindowBlur);
+    };
+  }, [onClickAway, mouseEvent, touchEvent, disableReactTree]);
+
+  return <div ref={nodeRef}>{children}</div>;
+}
 
 export default ClickAwayListener;
