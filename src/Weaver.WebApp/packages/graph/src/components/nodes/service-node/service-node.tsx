@@ -7,7 +7,7 @@ type ServiceNodeData = {
   onClick?: () => void;
 };
 
-export type ServiceNode = Node<ServiceNodeData, 'service-node'>;
+export type ServiceNode = Node<ServiceNodeData, 'serviceNode'>;
 
 export function ServiceNode(props: NodeProps<ServiceNode>) {
   const { data } = props;
