@@ -34,7 +34,6 @@ export function ServiceNode(props: NodeProps<ServiceNode>) {
     tryUpdateNodes([change]);
   }
 
-  console.log(`In node selected (${id}): ${selected}`);
   return (
     <div>
       <ServiceInfoCard name={serviceInfo.name} onClick={handleClick} type={serviceInfo.type} selected={selected} />

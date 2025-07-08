@@ -91,7 +91,7 @@ export function ServiceSearchModal() {
   function drawSkeletons(amount: number): ReactNode[] {
     const nodes: ReactNode[] = [];
     for (let i = 0; i < amount; i++) {
-      nodes.push(<Skeleton key={i} />);
+      nodes.push(<Skeleton.Input key={i} />);
     }
     return nodes;
   }

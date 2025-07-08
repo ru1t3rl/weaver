@@ -41,7 +41,6 @@ export function ServiceGraphProvider({ children }: PropsWithChildren) {
     };
 
     if (nodes.current.has(newNode.id)) {
-      console.log('id exists');
       return false;
     }
 
@@ -70,6 +69,8 @@ export function ServiceGraphProvider({ children }: PropsWithChildren) {
           if (n.selected) {
             events.onUpdateNode(n);
             n.selected = false;
+
+            events.onSelectionChanged(undefined);
           }
         });
 
