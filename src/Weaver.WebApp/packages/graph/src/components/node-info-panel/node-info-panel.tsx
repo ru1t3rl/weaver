@@ -1,6 +1,6 @@
 import { axiosGetRequestConfig, ServiceDetailModel, ServiceListItemModel, useGetServiceUuid } from '@weaver/shared';
 import { Node } from '@xyflow/react';
-import { Card, Input, Spin } from 'antd';
+import { Card, Flex, Input, Spin } from 'antd';
 import { useRef, useState } from 'react';
 import { useNodeEventListener } from '../../events';
 import ServiceNode, { nodeName as serviceNodeName } from '../nodes/service-node/service-node';
@@ -42,7 +42,11 @@ export function NodeInfoPanel() {
   return (
     nodeListItemModel && (
       <Card className={styles['container']}>
-        {isLoading && <Spin tip={'Loading'} />}
+        {isLoading && (
+          <Flex className={styles['container-loading']} justify='center' align='center'>
+            <Spin />
+          </Flex>
+        )}
         {!isLoading && nodeDetail && <Input value={nodeDetail.name} readOnly />}
       </Card>
     )
