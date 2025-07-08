@@ -145,6 +145,7 @@ export function ServiceSearchModal() {
       <Card className={styles['modal-container']}>
         <Flex vertical gap={10}>
           <Input
+            autoFocus
             placeholder='Service Name...'
             onChange={e => {
               setFilter(e.currentTarget.value);

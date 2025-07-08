@@ -1,9 +1,18 @@
-import { axiosGetRequestConfig, ServiceDetailModel, ServiceListItemModel, useGetServiceUuid } from '@weaver/shared';
+import {
+  axiosGetRequestConfig,
+  ServiceDetailModel,
+  ServiceListItemModel,
+  ServiceType,
+  useGetServiceUuid,
+} from '@weaver/shared';
 import { Node } from '@xyflow/react';
-import { Card, Flex, Input, Spin } from 'antd';
+import { Card, Divider, Flex, Input, Spin, Tag, Typography } from 'antd';
+import { PresetColorType, PresetStatusColorType } from 'antd/es/_util/colors';
+import { LiteralUnion } from 'antd/es/_util/type';
 import { useRef, useState } from 'react';
 import { useNodeEventListener } from '../../events';
 import ServiceNode, { nodeName as serviceNodeName } from '../nodes/service-node/service-node';
+import { ServiceOption } from '../service-option/service-option';
 import styles from './node-info-panel.module.scss';
 
 export function NodeInfoPanel() {
@@ -39,6 +48,17 @@ export function NodeInfoPanel() {
     return node.type === serviceNodeName;
   }
 
+  function getServiceTypeColor(serviceType: ServiceType): LiteralUnion<PresetColorType | PresetStatusColorType> {
+    switch (serviceType) {
+      case 'Custom':
+        return 'lime';
+      case 'Reference':
+        return 'cyan';
+      default:
+        return '';
+    }
+  }
+
   return (
     nodeListItemModel && (
       <Card className={styles['container']}>
@@ -47,7 +67,24 @@ export function NodeInfoPanel() {
             <Spin />
           </Flex>
         )}
-        {!isLoading && nodeDetail && <Input value={nodeDetail.name} readOnly />}
+        {!isLoading && nodeDetail && (
+          <Flex vertical gap={10}>
+            <Typography.Title level={2} style={{ margin: 0, marginBottom: 5 }}>
+              Inspector
+            </Typography.Title>
+            <Flex vertical gap={5}>
+              <Input value={nodeDetail.name} readOnly variant={'filled'} />
+              <Typography.Text>
+                Type: <Tag color={getServiceTypeColor(nodeDetail.type)}>{nodeDetail.type}</Tag>
+              </Typography.Text>
+            </Flex>
+            <Divider size='small' />
+            <Flex vertical>
+              {nodeDetail.config &&
+                nodeDetail.config.map((serviceOption, index) => <ServiceOption key={index} value={serviceOption} />)}
+            </Flex>
+          </Flex>
+        )}
       </Card>
     )
   );
