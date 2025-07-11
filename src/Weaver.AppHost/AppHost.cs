@@ -1,6 +1,7 @@
 using Weaver.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
+builder.AddDockerComposeEnvironment("compose");
 
 var cache = builder.AddRedis("cache");
 
