@@ -1,7 +1,7 @@
 using Weaver.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
-builder.AddDockerComposeEnvironment("compose");
+var composeEnv = builder.AddDockerComposeEnvironment("compose");
 
 var cache = builder.AddRedis("cache");
 
@@ -22,11 +22,12 @@ var apiService = builder.AddProject<Projects.Weaver_WebApi>("webapi")
 builder.AddBunApp("webapp", "../Weaver.WebApp", "dev", true)
     .WithApiClientGenerator("../Weaver.WebApp/packages/shared/")
     .WithBunPackageInstallation()
-    .WithExternalHttpEndpoints()
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(apiService)
     .WaitFor(apiService)
-    .WithHttpEndpoint(4200, env: "PORT");
+    .PublishAsDockerFile()
+    .WithHttpEndpoint(4200, env: "PORT")
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();

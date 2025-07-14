@@ -1,0 +1,66 @@
+services:
+  cache:
+    image: "docker.io/library/redis:7.4"
+    command:
+      - "-c"
+      - "redis-server --requirepass $$REDIS_PASSWORD"
+    entrypoint:
+      - "/bin/sh"
+    environment:
+      REDIS_PASSWORD: "${CACHE_PASSWORD}"
+    ports:
+      - "8000:6379"
+    networks:
+      - "aspire"
+  postgres:
+    image: "docker.io/library/postgres:17.4"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/postgresql/data"
+        source: "weaver.apphost-cd2488ed06-postgres-data"
+        read_only: false
+    networks:
+      - "aspire"
+  webapi:
+    image: "${WEBAPI_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "8001"
+      ConnectionStrings__Weaver: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=Weaver"
+    ports:
+      - "8002:8001"
+      - "8004:8003"
+    networks:
+      - "aspire"
+  webapp:
+    image: "${WEBAPP_IMAGE}"
+    environment:
+      NODE_ENV: "production"
+      ConnectionStrings__cache: "cache:6379,password=${CACHE_PASSWORD}"
+      services__webapi__http__0: "http://webapi:8001"
+      PORT: "8005"
+    ports:
+      - "4200:8005"
+    depends_on:
+      cache:
+        condition: "service_started"
+      webapi:
+        condition: "service_started"
+    networks:
+      - "aspire"
+networks:
+  aspire:
+    driver: "bridge"
+volumes:
+  weaver.apphost-cd2488ed06-postgres-data:
+    driver: "local"
