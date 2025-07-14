@@ -10,7 +10,7 @@
     }
   ],
   "paths": {
-    "/Service": {
+    "/Service/with-references": {
       "put": {
         "tags": [
           "Service"
@@ -27,7 +27,7 @@
             "name": "type",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/ServiceType2"
+              "$ref": "#/components/schemas/ServiceType"
             }
           }
         ],
@@ -57,6 +57,83 @@
                 "items": {
                   "type": "string",
                   "format": "uuid"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Service": {
+      "put": {
+        "tags": [
+          "Service"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ServiceType"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ServiceOption"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ServiceOption"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ServiceOption"
                 }
               }
             }
@@ -203,7 +280,7 @@
             "name": "type",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/OptionType2"
+              "type": "integer"
             }
           }
         ],
@@ -381,9 +458,6 @@
         ],
         "type": "string"
       },
-      "OptionType2": {
-        "type": "integer"
-      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -425,7 +499,7 @@
             "type": "string"
           },
           "type": {
-            "$ref": "#/components/schemas/ServiceType"
+            "$ref": "#/components/schemas/ServiceType2"
           },
           "config": {
             "type": "array",
@@ -450,7 +524,7 @@
             "type": "string"
           },
           "type": {
-            "$ref": "#/components/schemas/ServiceType"
+            "$ref": "#/components/schemas/ServiceType2"
           }
         }
       },
@@ -498,14 +572,14 @@
         }
       },
       "ServiceType": {
+        "type": "integer"
+      },
+      "ServiceType2": {
         "enum": [
           "Reference",
           "Custom"
         ],
         "type": "string"
-      },
-      "ServiceType2": {
-        "type": "integer"
       }
     }
   },

@@ -4,9 +4,9 @@ import { Flex } from 'antd';
 import { useCallback, useRef } from 'react';
 import { useNodeEventListener } from '../../events';
 import { useServiceGraph } from '../../hooks/use-service-graph';
-import { ServiceSearchModalProvider } from '../../providers/service-search-modal-provider';
+import { NotificationProvider } from '../../providers';
+import { ModalsProvider } from '../../providers/modals-provider';
 import { GraphContextMenu } from '../graph-context-menu/graph-context-menu';
-import { CreateTemplateModal } from '../modals';
 import { NodeInfoPanel } from '../node-info-panel/node-info-panel';
 import ServiceNode from '../nodes/service-node/service-node';
 import StyledGraph from '../styled/styled-graph';
@@ -57,32 +57,28 @@ export function MainGraph() {
   return (
     <div style={{ width: '100%', height: '100%' }} className={styles['main-graph-container']}>
       <ReactFlowProvider>
-        <ServiceSearchModalProvider
-          keybinding={{
-            key: ' ',
-            ctrl: true,
-          }}
-        >
-          <Flex vertical className={styles['overlay-ui']}>
-            <Toolbar />
-            <NodeInfoPanel />
-            <CreateTemplateModal />
-          </Flex>
-          <GraphContextMenu>
-            <StyledGraph
-              nodes={nodes}
-              edges={[]}
-              nodeTypes={nodeTypes}
-              snapToGrid
-              onNodesChange={customOnNodesChange}
-              onSelectionChange={customOnNodeSelectionChange}
-              multiSelectionKeyCode={'Ctrl'}
-              selectionKeyCode={'Shift'}
-            >
-              <Background />
-            </StyledGraph>
-          </GraphContextMenu>
-        </ServiceSearchModalProvider>
+        <NotificationProvider>
+          <ModalsProvider>
+            <Flex vertical className={styles['overlay-ui']}>
+              <Toolbar />
+              <NodeInfoPanel />
+            </Flex>
+            <GraphContextMenu>
+              <StyledGraph
+                nodes={nodes}
+                edges={[]}
+                nodeTypes={nodeTypes}
+                snapToGrid
+                onNodesChange={customOnNodesChange}
+                onSelectionChange={customOnNodeSelectionChange}
+                multiSelectionKeyCode={'Ctrl'}
+                selectionKeyCode={'Shift'}
+              >
+                <Background />
+              </StyledGraph>
+            </GraphContextMenu>
+          </ModalsProvider>
+        </NotificationProvider>
       </ReactFlowProvider>
     </div>
   );

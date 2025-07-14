@@ -10,6 +10,7 @@ export * from './option-type2';
 export * from './problem-details';
 export * from './put-service-option-params';
 export * from './put-service-params';
+export * from './put-service-with-references-params';
 export * from './service-detail-model';
 export * from './service-list-item-model';
 export * from './service-option';

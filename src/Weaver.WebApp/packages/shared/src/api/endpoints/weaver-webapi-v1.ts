@@ -29,8 +29,10 @@ import type {
   ProblemDetails,
   PutServiceOptionParams,
   PutServiceParams,
+  PutServiceWithReferencesParams,
   ServiceDetailModel,
   ServiceListItemModel,
+  ServiceOption,
   ServiceOptionModel
 } from '../models';
 
@@ -42,15 +44,74 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 
 
 
+export const putServiceWithReferences = (
+    putServiceWithReferencesBody: string[],
+    params?: PutServiceWithReferencesParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.put(
+      `/Service/with-references`,
+      putServiceWithReferencesBody,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+export const getPutServiceWithReferencesMutationOptions = <TError = AxiosError<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putServiceWithReferences>>, TError,{data: string[];params?: PutServiceWithReferencesParams}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putServiceWithReferences>>, TError,{data: string[];params?: PutServiceWithReferencesParams}, TContext> => {
+
+const mutationKey = ['putServiceWithReferences'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putServiceWithReferences>>, {data: string[];params?: PutServiceWithReferencesParams}> = (props) => {
+          const {data,params} = props ?? {};
+
+          return  putServiceWithReferences(data,params,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutServiceWithReferencesMutationResult = NonNullable<Awaited<ReturnType<typeof putServiceWithReferences>>>
+    export type PutServiceWithReferencesMutationBody = string[]
+    export type PutServiceWithReferencesMutationError = AxiosError<ProblemDetails>
+
+    export const usePutServiceWithReferences = <TError = AxiosError<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putServiceWithReferences>>, TError,{data: string[];params?: PutServiceWithReferencesParams}, TContext>, axios?: AxiosRequestConfig}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof putServiceWithReferences>>,
+        TError,
+        {data: string[];params?: PutServiceWithReferencesParams},
+        TContext
+      > => {
+
+      const mutationOptions = getPutServiceWithReferencesMutationOptions(options);
+
+      return useMutation(mutationOptions );
+    }
+    
 export const putService = (
-    putServiceBody: string[],
+    serviceOption: ServiceOption[],
     params?: PutServiceParams, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {
     
     
     return axios.put(
       `/Service`,
-      putServiceBody,{
+      serviceOption,{
     ...options,
         params: {...params, ...options?.params},}
     );
@@ -59,8 +120,8 @@ export const putService = (
 
 
 export const getPutServiceMutationOptions = <TError = AxiosError<ProblemDetails>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putService>>, TError,{data: string[];params?: PutServiceParams}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof putService>>, TError,{data: string[];params?: PutServiceParams}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putService>>, TError,{data: ServiceOption[];params?: PutServiceParams}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putService>>, TError,{data: ServiceOption[];params?: PutServiceParams}, TContext> => {
 
 const mutationKey = ['putService'];
 const {mutation: mutationOptions, axios: axiosOptions} = options ?
@@ -72,7 +133,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putService>>, {data: string[];params?: PutServiceParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putService>>, {data: ServiceOption[];params?: PutServiceParams}> = (props) => {
           const {data,params} = props ?? {};
 
           return  putService(data,params,axiosOptions)
@@ -84,15 +145,15 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PutServiceMutationResult = NonNullable<Awaited<ReturnType<typeof putService>>>
-    export type PutServiceMutationBody = string[]
+    export type PutServiceMutationBody = ServiceOption[]
     export type PutServiceMutationError = AxiosError<ProblemDetails>
 
     export const usePutService = <TError = AxiosError<ProblemDetails>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putService>>, TError,{data: string[];params?: PutServiceParams}, TContext>, axios?: AxiosRequestConfig}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putService>>, TError,{data: ServiceOption[];params?: PutServiceParams}, TContext>, axios?: AxiosRequestConfig}
  ): UseMutationResult<
         Awaited<ReturnType<typeof putService>>,
         TError,
-        {data: string[];params?: PutServiceParams},
+        {data: ServiceOption[];params?: PutServiceParams},
         TContext
       > => {
 

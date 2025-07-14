@@ -1,18 +1,19 @@
 import { Button, Dropdown, Flex, MenuProps } from 'antd';
 import { LuFolderOpen, LuMenu, LuPencil, LuPlus, LuSave } from 'react-icons/lu';
-import { useServiceSearchModal } from '../../hooks/use-service-search-modal';
+import { useModals } from '../../hooks';
 import styles from './toolbar.module.scss';
 
 export function Toolbar() {
-  const { show: showModal } = useServiceSearchModal();
-
-  function handleAddNewClicked() {
-    showModal();
-  }
+  const { showAddServiceTemplate, showCreateServiceTemplate } = useModals();
 
   const menuItems: MenuProps['items'] = [
-    { label: 'New Service Template', icon: <LuPencil />, key: 'create-service-template' },
-    { label: 'Add Service Template', icon: <LuPlus />, key: 'add-service', onClick: handleAddNewClicked },
+    {
+      label: 'New Service Template',
+      icon: <LuPencil />,
+      key: 'create-service-template',
+      onClick: showCreateServiceTemplate,
+    },
+    { label: 'Add Service Template', icon: <LuPlus />, key: 'add-service', onClick: showAddServiceTemplate },
   ];
 
   return (
@@ -22,7 +23,7 @@ export function Toolbar() {
       </Dropdown>
       <Button shape='round' icon={<LuFolderOpen />} />
       <Button shape='round' icon={<LuSave />} />
-      <Button shape='round' icon={<LuPlus />} onClick={handleAddNewClicked} />
+      <Button shape='round' icon={<LuPlus />} onClick={showAddServiceTemplate} />
     </Flex>
   );
 }

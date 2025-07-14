@@ -14,7 +14,12 @@ internal class ServiceConfiguration : IEntityTypeConfiguration<Service>
         builder
             .HasIndex(s => s.Uuid)
             .IsUnique();
-        
+
         builder.HasIndex(s => s.Name);
+
+        builder
+            .HasMany(s => s.Config)
+            .WithMany()
+            .UsingEntity(j => j.ToTable(nameof(Service) + nameof(ServiceOption)));
     }
 }

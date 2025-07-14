@@ -22,6 +22,21 @@ namespace Weaver.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ServiceServiceOption", b =>
+                {
+                    b.Property<long>("ConfigId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ServiceId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ConfigId", "ServiceId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceServiceOption", (string)null);
+                });
+
             modelBuilder.Entity("Weaver.Domain.Entities.Service", b =>
                 {
                     b.Property<long>("Id")
@@ -62,9 +77,6 @@ namespace Weaver.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("ServiceId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -76,24 +88,25 @@ namespace Weaver.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.HasIndex("ServiceId");
-
                     b.HasIndex("Uuid")
                         .IsUnique();
 
                     b.ToTable("ServiceOptions", (string)null);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOption", b =>
+            modelBuilder.Entity("ServiceServiceOption", b =>
                 {
-                    b.HasOne("Weaver.Domain.Entities.Service", null)
-                        .WithMany("Config")
-                        .HasForeignKey("ServiceId");
-                });
+                    b.HasOne("Weaver.Domain.Entities.ServiceOption", null)
+                        .WithMany()
+                        .HasForeignKey("ConfigId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("Weaver.Domain.Entities.Service", b =>
-                {
-                    b.Navigation("Config");
+                    b.HasOne("Weaver.Domain.Entities.Service", null)
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

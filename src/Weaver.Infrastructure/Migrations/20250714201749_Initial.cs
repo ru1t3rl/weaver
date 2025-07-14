@@ -13,6 +13,21 @@ namespace Weaver.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "ServiceOptions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServiceOptions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -28,24 +43,27 @@ namespace Weaver.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServiceOptions",
+                name: "ServiceServiceOption",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    ServiceId = table.Column<long>(type: "bigint", nullable: true),
-                    Uuid = table.Column<Guid>(type: "uuid", nullable: false)
+                    ConfigId = table.Column<long>(type: "bigint", nullable: false),
+                    ServiceId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServiceOptions", x => x.Id);
+                    table.PrimaryKey("PK_ServiceServiceOption", x => new { x.ConfigId, x.ServiceId });
                     table.ForeignKey(
-                        name: "FK_ServiceOptions_Services_ServiceId",
+                        name: "FK_ServiceServiceOption_ServiceOptions_ConfigId",
+                        column: x => x.ConfigId,
+                        principalTable: "ServiceOptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ServiceServiceOption_Services_ServiceId",
                         column: x => x.ServiceId,
                         principalTable: "Services",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -53,11 +71,6 @@ namespace Weaver.Infrastructure.Migrations
                 table: "ServiceOptions",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceOptions_ServiceId",
-                table: "ServiceOptions",
-                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ServiceOptions_Uuid",
@@ -75,11 +88,19 @@ namespace Weaver.Infrastructure.Migrations
                 table: "Services",
                 column: "Uuid",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceServiceOption_ServiceId",
+                table: "ServiceServiceOption",
+                column: "ServiceId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ServiceServiceOption");
+
             migrationBuilder.DropTable(
                 name: "ServiceOptions");
 

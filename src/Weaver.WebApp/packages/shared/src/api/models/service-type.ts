@@ -5,11 +5,4 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ServiceType = typeof ServiceType[keyof typeof ServiceType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ServiceType = {
-  Reference: 'Reference',
-  Custom: 'Custom',
-} as const;
+export type ServiceType = number;

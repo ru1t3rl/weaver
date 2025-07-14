@@ -1,5 +1,13 @@
+.container {
+  flex-grow: 1;
+}
+
 .label {
   text-transform: capitalize;
   flex-grow: 1;
-  width: 100px;
+  margin-bottom: 0 !important;
+}
+
+.type-select {
+  width: 8rem;
 }
