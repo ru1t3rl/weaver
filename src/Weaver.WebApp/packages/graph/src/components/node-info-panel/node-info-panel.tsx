@@ -6,10 +6,11 @@ import {
   useGetServiceUuid,
 } from '@weaver/shared';
 import { Node } from '@xyflow/react';
-import { Card, Divider, Flex, Input, Spin, Tag, Typography } from 'antd';
+import { Button, Card, Divider, Flex, Input, Spin, Tag, Typography } from 'antd';
 import { PresetColorType, PresetStatusColorType } from 'antd/es/_util/colors';
 import { LiteralUnion } from 'antd/es/_util/type';
 import { useRef, useState } from 'react';
+import { LuPlus } from 'react-icons/lu';
 import { useNodeEventListener } from '../../events';
 import ServiceNode, { nodeName as serviceNodeName } from '../nodes/service-node/service-node';
 import { ServiceOption } from '../service-option/service-option';
@@ -83,6 +84,8 @@ export function NodeInfoPanel() {
               {nodeDetail.config &&
                 nodeDetail.config.map((serviceOption, index) => <ServiceOption key={index} value={serviceOption} />)}
             </Flex>
+            <Divider />
+            <Button icon={<LuPlus />}>Add Extra</Button>
           </Flex>
         )}
       </Card>

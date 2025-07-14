@@ -5,20 +5,19 @@ import { useCallback, useRef } from 'react';
 import { useNodeEventListener } from '../../events';
 import { useServiceGraph } from '../../hooks/use-service-graph';
 import { ServiceSearchModalProvider } from '../../providers/service-search-modal-provider';
+import { GraphContextMenu } from '../graph-context-menu/graph-context-menu';
+import { CreateTemplateModal } from '../modals';
 import { NodeInfoPanel } from '../node-info-panel/node-info-panel';
 import ServiceNode from '../nodes/service-node/service-node';
 import StyledGraph from '../styled/styled-graph';
 import { Toolbar } from '../toolbar/toolbar';
 import styles from './main-graph.module.scss';
-import { GraphContextMenu } from '../graph-context-menu/graph-context-menu';
-
-interface MainGraphProps {}
 
 const nodeTypes = {
   serviceNode: ServiceNode,
 };
 
-export function MainGraph(props: MainGraphProps) {
+export function MainGraph() {
   const [nodes, _setNodes, onNodesChange] = useNodesState([] as Node[]);
   const { tryUpdateNodes } = useServiceGraph();
 
@@ -67,6 +66,7 @@ export function MainGraph(props: MainGraphProps) {
           <Flex vertical className={styles['overlay-ui']}>
             <Toolbar />
             <NodeInfoPanel />
+            <CreateTemplateModal />
           </Flex>
           <GraphContextMenu>
             <StyledGraph

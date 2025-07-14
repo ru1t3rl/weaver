@@ -1,5 +1,5 @@
 import { ServiceType } from '@weaver/shared';
-import { Card, Flex, theme, Typography } from 'antd';
+import { Card, Flex, Typography } from 'antd';
 import { ReactNode } from 'react';
 import { LuBlocks, LuGlobe } from 'react-icons/lu';
 import { State, StateCircle } from '../state-circle/state-circle';
@@ -18,8 +18,6 @@ interface ServiceInfoCardProps {
 export function ServiceInfoCard(props: ServiceInfoCardProps) {
   const { name, type, state, icon, onClick, selected, tabIndex } = props;
   const { Text } = Typography;
-
-  const { useToken } = theme;
 
   function handleClick() {
     if (onClick) {
