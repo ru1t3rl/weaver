@@ -8,19 +8,21 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_API: ${{ github.repository }}/api
+  IMAGE_NAME_API: ${{ github.repository }}/webapi
   IMAGE_NAME_WEBAPP: ${{ github.repository }}/webapp
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -36,9 +38,15 @@ jobs:
       - name: Build Aspire application
         run: |
           dotnet restore
-          # Build the Aspire app which will create docker-compose and .env files
-          # and push images to the local registry
-          aspire publish --output-path ./aspire-output
+          aspire publish -o aspire-output
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.0.1
+        with:
+          versionSpec: '6.3.x'
+      - name: Determine Version
+        id: version_step 
+        uses: gittools/actions/gitversion/execute@v4.0.1
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -55,7 +63,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=next
-            type=sha,prefix={{branch}}-
+            type=raw,value=${{ steps.version_step.outputs.semVer }}
 
       - name: Extract metadata for WebApp image
         id: meta-webapp
@@ -65,32 +73,73 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=next
-            type=sha,prefix={{branch}}-
+            type=raw,value=${{ steps.version_step.outputs.semVer }}
 
-      - name: Pull images from local registry and retag for GitHub Registry
-        run: |
-          # Pull the images that were pushed to local registry by aspire build
-          docker pull localhost:5000/api:latest
-          docker pull localhost:5000/webapp:latest
-          
-          # Tag and push API image with all required tags
+      - name: Retag images for GitHub Registry
+        run: |          
           for tag in $(echo '${{ steps.meta-api.outputs.tags }}' | tr '\n' ' '); do
-            docker tag localhost:5000/api:latest $tag
+            docker tag webapi:latest $tag
             docker push $tag
           done
           
-          # Tag and push WebApp image with all required tags
           for tag in $(echo '${{ steps.meta-webapp.outputs.tags }}' | tr '\n' ' '); do
-            docker tag localhost:5000/webapp:latest $tag
+            docker tag webapp:latest $tag
             docker push $tag
           done
 
-      - name: Clean up local registry
-        if: always()
+      - name: Prepare release artifacts
         run: |
-          docker stop registry || true
-          docker rm registry || true
+          mkdir -p release-artifacts
+          
+          cp aspire-output/docker-compose.yaml release-artifacts/ || echo "docker-compose.yaml not found"
+          cp aspire-output/.env release-artifacts/ || echo ".env not found"
+          
+          echo "=== Release artifacts prepared ==="
+          ls -la release-artifacts/
 
+      - name: Generate changelog from commits
+        id: changelog
+        run: |
+          # Get commits since last release (or all commits if no releases)
+          if git describe --tags --abbrev=0 2>/dev/null; then
+            LAST_TAG=$(git describe --tags --abbrev=0)
+            echo "Generating changelog since $LAST_TAG"
+            CHANGELOG=$(git log $LAST_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          else
+            echo "No previous tags found, generating changelog from all commits"
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          fi
+                    
+          # Set output for use in release
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version_step.outputs.semVer }}
+          name: Release ${{ steps.version_step.outputs.semVer }}
+          body: |
+            
+            ## Changes
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Docker Images
+            
+            ### API Image Tags
+            ${{ steps.meta-api.outputs.tags }}
+            
+            ### WebApp Image Tags
+            ${{ steps.meta-webapp.outputs.tags }}
+            
+          files: |
+            release-artifacts/*
+          draft: false
+          prerelease: ${{ github.ref_name != 'main' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
+          
       - name: Output image information
         run: |
           echo "API Image Tags:"
