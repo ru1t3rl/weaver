@@ -67,30 +67,19 @@ jobs:
             type=raw,value=next
             type=sha,prefix={{branch}}-
 
-      - name: Pull images from local registry and retag for GitHub Registry
-        run: |
-          # Pull the images that were pushed to local registry by aspire build
-          docker pull localhost:5000/api:latest
-          docker pull localhost:5000/webapp:latest
-          
-          # Tag and push API image with all required tags
+      - name: Retag images for GitHub Registry
+        run: |          
           for tag in $(echo '${{ steps.meta-api.outputs.tags }}' | tr '\n' ' '); do
-            docker tag localhost:5000/api:latest $tag
+            docker tag webapi:latest $tag
             docker push $tag
           done
           
           # Tag and push WebApp image with all required tags
           for tag in $(echo '${{ steps.meta-webapp.outputs.tags }}' | tr '\n' ' '); do
-            docker tag localhost:5000/webapp:latest $tag
+            docker tag webapp:latest $tag
             docker push $tag
           done
-
-      - name: Clean up local registry
-        if: always()
-        run: |
-          docker stop registry || true
-          docker rm registry || true
-
+          
       - name: Output image information
         run: |
           echo "API Image Tags:"
