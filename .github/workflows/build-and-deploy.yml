@@ -36,7 +36,8 @@ jobs:
       - name: Build Aspire application
         run: |
           dotnet restore
-          aspire publish --output-path ./aspire-output
+          aspire publish -o aspire-output
+          ls aspire-output
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -81,16 +82,8 @@ jobs:
         run: |
           mkdir -p release-artifacts
           
-          cp ./aspire-output/docker-compose.yml release-artifacts/ || echo "docker-compose.yml not found"
-          cp ./aspire-output/.env release-artifacts/ || echo ".env not found"
-          
-          echo "# Image Tags for this release" > release-artifacts/image-tags.md
-          echo "" >> release-artifacts/image-tags.md
-          echo "## API Image Tags:" >> release-artifacts/image-tags.md
-          echo '${{ steps.meta-api.outputs.tags }}' | sed 's/^/- /' >> release-artifacts/image-tags.md
-          echo "" >> release-artifacts/image-tags.md
-          echo "## WebApp Image Tags:" >> release-artifacts/image-tags.md
-          echo '${{ steps.meta-webapp.outputs.tags }}' | sed 's/^/- /' >> release-artifacts/image-tags.md
+          cp aspire-output/docker-compose.yml release-artifacts/ || echo "docker-compose.yml not found"
+          cp aspire-output/.env release-artifacts/ || echo ".env not found"
           
           echo "=== Release artifacts prepared ==="
           ls -la release-artifacts/
@@ -107,14 +100,7 @@ jobs:
             echo "No previous tags found, generating changelog from all commits"
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
           fi
-          
-          # Create changelog file
-          echo "# Changelog" > release-artifacts/CHANGELOG.md
-          echo "" >> release-artifacts/CHANGELOG.md
-          echo "## Changes in this release:" >> release-artifacts/CHANGELOG.md
-          echo "" >> release-artifacts/CHANGELOG.md
-          echo "$CHANGELOG" >> release-artifacts/CHANGELOG.md
-          
+                    
           # Set output for use in release
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
@@ -126,7 +112,9 @@ jobs:
           tag_name: ${{ github.ref_name }}-${{ github.sha }}
           name: Release ${{ github.ref_name }}-${{ github.sha }}
           body: |
-            # Release ${{ github.ref_name }}-${{ github.sha }}
+            
+            ## Changes
+            ${{ steps.changelog.outputs.changelog }}
             
             ## Docker Images
             
@@ -136,14 +124,6 @@ jobs:
             ### WebApp Image Tags:
             ${{ steps.meta-webapp.outputs.tags }}
             
-            ## Changes
-            ${{ steps.changelog.outputs.changelog }}
-            
-            ## Files
-            This release includes:
-            - `docker-compose.yml` - Docker compose configuration
-            - `.env` - Environment variables
-            - `CHANGELOG.md` - Detailed changelog
           files: |
             release-artifacts/*
           draft: false
