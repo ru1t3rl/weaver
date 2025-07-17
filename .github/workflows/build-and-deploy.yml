@@ -40,6 +40,7 @@ jobs:
 
       - name: Build Aspire application
         run: |
+          dotnet restore
           # Build the Aspire app which will create docker-compose and .env files
           # and push images to the local registry
           aspire publish --output-path ./aspire-output
