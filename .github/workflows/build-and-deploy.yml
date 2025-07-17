@@ -118,8 +118,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}-${{ github.sha }}
-          name: Release ${{ github.ref_name }}-${{ github.sha }}
+          tag_name: ${{ steps.version_step.outputs.semVer }}
+          name: Release ${{ steps.version_step.outputs.semVer }}
           body: |
             
             ## Changes
