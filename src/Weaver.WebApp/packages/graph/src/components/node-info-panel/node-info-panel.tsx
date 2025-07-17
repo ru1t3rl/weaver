@@ -2,7 +2,7 @@ import {
   axiosGetRequestConfig,
   ServiceDetailModel,
   ServiceListItemModel,
-  ServiceType,
+  ServiceType2 as ServiceType,
   useGetServiceUuid,
 } from '@weaver/shared';
 import { Node } from '@xyflow/react';
