@@ -33,11 +33,6 @@ jobs:
       - name: Setup Docker
         uses: docker/setup-docker-action@v3
 
-      - name: Start local Docker registry
-        run: |
-          docker run -d -p 5000:5000 --name registry registry:2
-          echo "ASPIRE_CONTAINER_REGISTRY=localhost:5000" >> $GITHUB_ENV
-
       - name: Build Aspire application
         run: |
           dotnet restore
