@@ -134,6 +134,7 @@ jobs:
             ${{ steps.meta-webapp.outputs.tags }}
             
           files: |
+            release-artifacts/.env
             release-artifacts/*
           draft: false
           prerelease: ${{ github.ref_name != 'main' }}
