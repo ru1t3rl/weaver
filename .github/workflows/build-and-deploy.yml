@@ -63,7 +63,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=next
-            type=raw,prefix=${{ steps.version_step.outputs.semVer }}
+            type=raw,value=${{ steps.version_step.outputs.semVer }}
 
       - name: Extract metadata for WebApp image
         id: meta-webapp
@@ -73,7 +73,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=next
-            type=raw,prefix=${{ steps.version_step.outputs.semVer }}
+            type=raw,value=${{ steps.version_step.outputs.semVer }}
 
       - name: Retag images for GitHub Registry
         run: |          
