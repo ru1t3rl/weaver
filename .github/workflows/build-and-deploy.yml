@@ -42,7 +42,7 @@ jobs:
         run: |
           # Build the Aspire app which will create docker-compose and .env files
           # and push images to the local registry
-          aspire build --output-path ./aspire-output
+          aspire publish --output-path ./aspire-output
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
