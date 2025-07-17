@@ -1,0 +1,104 @@
+name: Build and Deploy Aspire App
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_API: ${{ github.repository }}/api
+  IMAGE_NAME_WEBAPP: ${{ github.repository }}/webapp
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Install Aspire CLI
+        run: dotnet tool install -g aspire.cli --prerelease
+
+      - name: Setup Docker
+        uses: docker/setup-docker-action@v3
+
+      - name: Start local Docker registry
+        run: |
+          docker run -d -p 5000:5000 --name registry registry:2
+          echo "ASPIRE_CONTAINER_REGISTRY=localhost:5000" >> $GITHUB_ENV
+
+      - name: Build Aspire application
+        run: |
+          # Build the Aspire app which will create docker-compose and .env files
+          # and push images to the local registry
+          aspire build --output-path ./aspire-output
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for API image
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=next
+            type=sha,prefix={{branch}}-
+
+      - name: Extract metadata for WebApp image
+        id: meta-webapp
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=next
+            type=sha,prefix={{branch}}-
+
+      - name: Pull images from local registry and retag for GitHub Registry
+        run: |
+          # Pull the images that were pushed to local registry by aspire build
+          docker pull localhost:5000/api:latest
+          docker pull localhost:5000/webapp:latest
+          
+          # Tag and push API image with all required tags
+          for tag in $(echo '${{ steps.meta-api.outputs.tags }}' | tr '\n' ' '); do
+            docker tag localhost:5000/api:latest $tag
+            docker push $tag
+          done
+          
+          # Tag and push WebApp image with all required tags
+          for tag in $(echo '${{ steps.meta-webapp.outputs.tags }}' | tr '\n' ' '); do
+            docker tag localhost:5000/webapp:latest $tag
+            docker push $tag
+          done
+
+      - name: Clean up local registry
+        if: always()
+        run: |
+          docker stop registry || true
+          docker rm registry || true
+
+      - name: Output image information
+        run: |
+          echo "API Image Tags:"
+          echo '${{ steps.meta-api.outputs.tags }}'
+          echo ""
+          echo "WebApp Image Tags:"
+          echo '${{ steps.meta-webapp.outputs.tags }}'
