@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_API: ${{ github.repository }}/api
+  IMAGE_NAME_API: ${{ github.repository }}/webapi
   IMAGE_NAME_WEBAPP: ${{ github.repository }}/webapp
 
 jobs:
@@ -36,8 +36,6 @@ jobs:
       - name: Build Aspire application
         run: |
           dotnet restore
-          # Build the Aspire app which will create docker-compose and .env files
-          # and push images to the local registry
           aspire publish --output-path ./aspire-output
 
       - name: Log in to GitHub Container Registry
@@ -74,11 +72,84 @@ jobs:
             docker push $tag
           done
           
-          # Tag and push WebApp image with all required tags
           for tag in $(echo '${{ steps.meta-webapp.outputs.tags }}' | tr '\n' ' '); do
             docker tag webapp:latest $tag
             docker push $tag
           done
+
+      - name: Prepare release artifacts
+        run: |
+          mkdir -p release-artifacts
+          
+          cp ./aspire-output/docker-compose.yml release-artifacts/ || echo "docker-compose.yml not found"
+          cp ./aspire-output/.env release-artifacts/ || echo ".env not found"
+          
+          echo "# Image Tags for this release" > release-artifacts/image-tags.md
+          echo "" >> release-artifacts/image-tags.md
+          echo "## API Image Tags:" >> release-artifacts/image-tags.md
+          echo '${{ steps.meta-api.outputs.tags }}' | sed 's/^/- /' >> release-artifacts/image-tags.md
+          echo "" >> release-artifacts/image-tags.md
+          echo "## WebApp Image Tags:" >> release-artifacts/image-tags.md
+          echo '${{ steps.meta-webapp.outputs.tags }}' | sed 's/^/- /' >> release-artifacts/image-tags.md
+          
+          echo "=== Release artifacts prepared ==="
+          ls -la release-artifacts/
+
+      - name: Generate changelog from commits
+        id: changelog
+        run: |
+          # Get commits since last release (or all commits if no releases)
+          if git describe --tags --abbrev=0 2>/dev/null; then
+            LAST_TAG=$(git describe --tags --abbrev=0)
+            echo "Generating changelog since $LAST_TAG"
+            CHANGELOG=$(git log $LAST_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          else
+            echo "No previous tags found, generating changelog from all commits"
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          # Create changelog file
+          echo "# Changelog" > release-artifacts/CHANGELOG.md
+          echo "" >> release-artifacts/CHANGELOG.md
+          echo "## Changes in this release:" >> release-artifacts/CHANGELOG.md
+          echo "" >> release-artifacts/CHANGELOG.md
+          echo "$CHANGELOG" >> release-artifacts/CHANGELOG.md
+          
+          # Set output for use in release
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}-${{ github.sha }}
+          name: Release ${{ github.ref_name }}-${{ github.sha }}
+          body: |
+            # Release ${{ github.ref_name }}-${{ github.sha }}
+            
+            ## Docker Images
+            
+            ### API Image Tags:
+            ${{ steps.meta-api.outputs.tags }}
+            
+            ### WebApp Image Tags:
+            ${{ steps.meta-webapp.outputs.tags }}
+            
+            ## Changes
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Files
+            This release includes:
+            - `docker-compose.yml` - Docker compose configuration
+            - `.env` - Environment variables
+            - `CHANGELOG.md` - Detailed changelog
+          files: |
+            release-artifacts/*
+          draft: false
+          prerelease: ${{ github.ref_name != 'main' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
           
       - name: Output image information
         run: |
