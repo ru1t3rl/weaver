@@ -18,7 +18,7 @@ export function ServiceSearchModal() {
   const store = useStoreApi();
   const { screenToFlowPosition } = useReactFlow();
 
-  const { tryAddNode } = useServiceGraph();
+  const { tryAddServiceNode } = useServiceGraph();
   const { data: response, isLoading } = useGetServiceTemplate({
     axios: axiosGetRequestConfig,
   });
@@ -120,7 +120,7 @@ export function ServiceSearchModal() {
     const { x: viewportX, y: viewportY } = getViewportCenter();
 
     if (
-      tryAddNode({
+      tryAddServiceNode({
         type: 'serviceNode',
         data: {
           serviceInfo: {

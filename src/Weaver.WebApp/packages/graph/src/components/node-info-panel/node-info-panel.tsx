@@ -42,6 +42,7 @@ export function NodeInfoPanel() {
       return;
     }
 
+    console.log('');
     setNodeListItemModel.current(node.data.serviceInfo);
   }
 
