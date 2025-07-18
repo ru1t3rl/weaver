@@ -1,26 +1,49 @@
-FROM oven/bun:1 AS deps
-WORKDIR /usr/src/app
+FROM node:24-alpine as build-env
 
-COPY package.json bun.lock ./
-COPY packages ./packages
-RUN bun install --frozen-lockfile
+# Set environment variable
+ARG APP_ENV_PREFIX
+ 
 
-FROM deps AS builder
-WORKDIR /usr/src/app
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the entire application code to the container
 COPY . .
-ENV NODE_ENV=production
-RUN bun run build
 
-FROM nginx:stable-alpine AS release
+RUN npm run -- nx build ${NPM_RUN_NX_BUILD_ARGS}
+
+# Build runtime image
+FROM nginx:latest
+
+# Gettext enables the use of envsubst.
+RUN apt-get -qq update && \
+    apt-get -yq install gettext && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
+# Set environment variables (again, because they're not preserved between stages)    
+ARG APP_ENV_PREFIX
+
+# Copy nginx configuration file
+WORKDIR /etc/nginx/
+COPY ./.nginx/${NGINX_CONFIG_FILE:-nginx.conf} nginx.conf
+
+## Remove default nginx index page
 RUN rm -rf /usr/share/nginx/html/*
-COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
 
-# Copy the entrypoint script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Copy app built artifacts to serving folder
+COPY --from=build-env /app/dist/weaver /usr/share/nginx/html/weaver
 
-EXPOSE 80
+# Copy app build artifacts to template folder so docker-entrypoint.sh can use it to perform env var substitution
+COPY --from=build-env /app/dist/weaver /tmpl/dist/weaver/
 
-# Use the custom entrypoint
+COPY docker-entrypoint.sh /
+RUN chmod 500 /docker-entrypoint.sh
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
