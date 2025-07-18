@@ -11,8 +11,8 @@ for i in $(env | grep "^$APP_ENV_PREFIX"); do
 
     echo "$key=$value"
 
-    find "/usr/share/nginx/html/dpbdt" -type f -exec sed -i 's|'"${key}"'|'"${value}"'|g' {} \;
-    find "/tmpl/dist/dpbdt/" -type f -exec sed -i 's|'"${key}"'|'"${value}"'|g' {} \;  
+    find "/usr/share/nginx/html/weaver" -type f -exec sed -i 's|'"${key}"'|'"${value}"'|g' {} \;
+    find "/tmpl/dist/weaver/" -type f -exec sed -i 's|'"${key}"'|'"${value}"'|g' {} \;  
 done
 
 # Start nginx
