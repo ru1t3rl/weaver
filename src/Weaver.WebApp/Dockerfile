@@ -1,17 +1,17 @@
-FROM node:24-alpine as build-env
+FROM oven/bun:1 AS build-env
 
 # Set environment variable
-ARG APP_ENV_PREFIX
- 
+ARG APP_ENV_PREFIX 
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
+COPY package.json bun.lock ./
+COPY packages ./packages
 
 # Install dependencies
-RUN bun install
+RUN bun install --frozen-lockfile
 
 # Copy the entire application code to the container
 COPY . .
