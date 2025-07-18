@@ -1,0 +1,6 @@
+using Cortex.Mediator.Commands;
+using Weaver.Domain.Entities;
+
+namespace Weaver.Commands.ServiceOptions;
+
+public record CreateServiceTemplateOptionCommand(string Name, OptionType Type) : ICommand;

@@ -60,10 +60,4 @@ app.UseCors(options =>
         .AllowAnyMethod()
 );
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<WeaverDbContext>();
-    dbContext.Database.Migrate();
-}
-
 app.Run();
