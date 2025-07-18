@@ -11,12 +11,12 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN bun install
 
 # Copy the entire application code to the container
 COPY . .
 
-RUN npm run -- nx build ${NPM_RUN_NX_BUILD_ARGS}
+RUN bun run build
 
 # Build runtime image
 FROM nginx:latest
