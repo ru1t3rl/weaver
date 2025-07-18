@@ -4,8 +4,9 @@
  * Weaver.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { ServiceType } from './service-type';
 
-export type PutServiceOptionParams = {
+export type PutServiceTemplateParams = {
 name?: string;
-type?: number;
+type?: ServiceType;
 };

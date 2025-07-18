@@ -1,6 +1,9 @@
 import { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { ServiceSearchModal } from '../components/modals';
-import { IServiceSearchModalContext, ServiceSearchModalContext } from '../contexts/service-search-modal-context';
+import {
+  IServiceTemplateSearchModalContext,
+  ServiceTemplateSearchModalContext,
+} from '../contexts/service-template-search-modal-context';
 
 interface Keybinding {
   key: string;
@@ -13,7 +16,7 @@ interface ServiceSearchModalProviderProps {
   keybinding: Keybinding;
 }
 
-export function ServiceSearchModalProvider(props: ServiceSearchModalProviderProps & PropsWithChildren) {
+export function ServiceTemplateSearchModalProvider(props: ServiceSearchModalProviderProps & PropsWithChildren) {
   const { keybinding, children } = props;
   const [open, setOpen] = useState(false);
 
@@ -48,16 +51,16 @@ export function ServiceSearchModalProvider(props: ServiceSearchModalProviderProp
     setOpen(false);
   }
 
-  const value: IServiceSearchModalContext = {
+  const value: IServiceTemplateSearchModalContext = {
     show,
     hide,
     toggle,
   };
 
   return (
-    <ServiceSearchModalContext.Provider value={value}>
+    <ServiceTemplateSearchModalContext.Provider value={value}>
       {open && <ServiceSearchModal />}
       {children}
-    </ServiceSearchModalContext.Provider>
+    </ServiceTemplateSearchModalContext.Provider>
   );
 }

@@ -4,10 +4,10 @@
  * Weaver.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { OptionType } from './option-type';
+import type { ServiceType2 } from './service-type2';
 
-export interface ServiceOptionModel {
-  id: string;
+export interface ServiceTemplateListItemModel {
+  id?: string;
   name: string;
-  type: OptionType;
+  type: ServiceType2;
 }

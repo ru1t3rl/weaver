@@ -2,17 +2,17 @@ import {
   axiosGetRequestConfig,
   axiosPostRequestConfig,
   OptionType,
-  ServiceDetailModel,
-  ServiceOption,
+  ServiceTemplateDetailModel,
+  ServiceTemplateOption,
   ServiceType2 as ServiceType,
-  useGetServiceUuid,
-  usePutService,
+  useGetServiceTemplateUuid,
+  usePutServiceTemplate,
 } from '@weaver/shared';
 import { AutoComplete, Button, Col, Divider, Flex, Input, Modal, Row, Spin, Typography } from 'antd';
 import { useState } from 'react';
 import { LuPlus, LuSave, LuSquareX } from 'react-icons/lu';
 import { useNotification } from '../../../hooks';
-import { ServiceOption as ServiceOptionComponent } from '../../service-option/service-option';
+import { ServiceTemplateOption as ServiceTemplateOptionComponent } from '../../service-template-option/service-template-option';
 import styles from './create-template-modal.module.scss';
 
 interface CreateTemplateModalProps {
@@ -25,9 +25,9 @@ interface CreateTemplateModalProps {
 export function CreateTemplateModal(props: CreateTemplateModalProps) {
   const { showNotification } = useNotification();
   const { open, templateUuid = '', onOk, onCancel } = props;
-  const { isLoading } = useGetServiceUuid(templateUuid, { axios: axiosGetRequestConfig });
+  const { isLoading } = useGetServiceTemplateUuid(templateUuid, { axios: axiosGetRequestConfig });
 
-  const { mutate: saveService, isLoading: isSaving } = usePutService({
+  const { mutate: saveService, isLoading: isSaving } = usePutServiceTemplate({
     mutation: {
       onSuccess: () => {
         showNotification('Template saved successfully', '', 'success');
@@ -39,11 +39,11 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
     axios: axiosPostRequestConfig,
   });
 
-  const [template, setTemplate] = useState<ServiceDetailModel>({
+  const [template, setTemplate] = useState<ServiceTemplateDetailModel>({
     name: '',
     type: ServiceType.Custom,
     config: [],
-  } as ServiceDetailModel);
+  } as ServiceTemplateDetailModel);
 
   const [tempType, setTempType] = useState<ServiceType>(template.type);
 
@@ -63,7 +63,7 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
     setTempType(value);
   }
 
-  function handleConfigInputChange(value: ServiceOption, index: number) {
+  function handleConfigInputChange(value: ServiceTemplateOption, index: number) {
     const updatedArray = template.config ? [...template.config] : [];
     updatedArray[index] = value;
 
@@ -171,7 +171,10 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
                     flexShrink: 1,
                   }}
                 />
-                <ServiceOptionComponent value={value} onChange={value => handleConfigInputChange(value, index)} />
+                <ServiceTemplateOptionComponent
+                  value={value}
+                  onChange={value => handleConfigInputChange(value, index)}
+                />
               </Flex>
               {index !== (template.config?.length ?? 1) - 1 && <Divider />}
             </Flex>

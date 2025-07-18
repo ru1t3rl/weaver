@@ -1,16 +1,16 @@
-import { OptionType, ServiceOption as ServiceOptionModel } from '@weaver/shared';
+import { OptionType, ServiceTemplateOption as ServiceTemplateOptionModel } from '@weaver/shared';
 import { Col, Flex, Input, Row, Select, Typography } from 'antd';
-import styles from './service-option.module.scss';
+import styles from './service-template-option.module.scss';
 
-interface ServiceOptionProps {
-  value: ServiceOptionModel;
-  onChange?: (value: ServiceOptionModel) => void;
+interface ServiceTemplateOptionProps {
+  value: ServiceTemplateOptionModel;
+  onChange?: (value: ServiceTemplateOptionModel) => void;
 }
 
-export function ServiceOption(props: ServiceOptionProps) {
+export function ServiceTemplateOption(props: ServiceTemplateOptionProps) {
   const { value, onChange } = props;
 
-  function handleChange(key: keyof ServiceOptionModel, inputValue: unknown) {
+  function handleChange(key: keyof ServiceTemplateOptionModel, inputValue: unknown) {
     const updatedValue = {
       ...value,
       [key]: inputValue,
@@ -51,4 +51,4 @@ export function ServiceOption(props: ServiceOptionProps) {
   );
 }
 
-export default ServiceOption;
+export default ServiceTemplateOption;

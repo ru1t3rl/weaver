@@ -6,7 +6,7 @@
  */
 import type { OptionType } from './option-type';
 
-export interface ServiceOption {
+export interface ServiceTemplateOption {
   name: string;
   type: OptionType;
   id?: number;

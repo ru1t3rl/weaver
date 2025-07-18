@@ -5,11 +5,11 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ServiceType2 } from './service-type2';
-import type { ServiceOption } from './service-option';
+import type { ServiceTemplateOption } from './service-template-option';
 
-export interface ServiceDetailModel {
+export interface ServiceTemplateDetailModel {
   id?: string;
   name: string;
   type: ServiceType2;
-  config?: ServiceOption[];
+  config?: ServiceTemplateOption[];
 }

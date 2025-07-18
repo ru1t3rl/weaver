@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from 'react';
 import { CreateTemplateModal } from '../components/modals';
 import { IModalsContext, ModalsContext } from '../contexts';
-import { ServiceSearchModalProvider } from './service-search-modal-provider';
+import { ServiceTemplateSearchModalProvider } from './service-template-search-modal-provider';
 
 export function ModalsProvider(props: PropsWithChildren) {
   const [createTemplateOpen, setCreateTemplateOpen] = useState<boolean>(false);
@@ -16,7 +16,7 @@ export function ModalsProvider(props: PropsWithChildren) {
 
   return (
     <ModalsContext.Provider value={value}>
-      <ServiceSearchModalProvider
+      <ServiceTemplateSearchModalProvider
         keybinding={{
           key: ' ',
           ctrl: true,
@@ -24,7 +24,7 @@ export function ModalsProvider(props: PropsWithChildren) {
       >
         <CreateTemplateModal open={createTemplateOpen} onCancel={() => setCreateTemplateOpen(false)} />
         {props.children}
-      </ServiceSearchModalProvider>
+      </ServiceTemplateSearchModalProvider>
     </ModalsContext.Provider>
   );
 }

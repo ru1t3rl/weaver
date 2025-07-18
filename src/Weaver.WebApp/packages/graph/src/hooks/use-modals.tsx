@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { ModalsContext } from '../contexts';
-import { useServiceSearchModal } from './use-service-search-modal';
+import { useServiceTemplateSearchModal } from './use-service-template-search-modal';
 
 interface UseModals {
   showCreateServiceTemplate: () => void;
@@ -9,7 +9,7 @@ interface UseModals {
 
 export function useModals(): UseModals {
   const { openCreateTemplateModal: showCreateServiceTemplate } = useContext(ModalsContext);
-  const { show: showAddServiceTemplate } = useServiceSearchModal();
+  const { show: showAddServiceTemplate } = useServiceTemplateSearchModal();
 
   return {
     showCreateServiceTemplate,

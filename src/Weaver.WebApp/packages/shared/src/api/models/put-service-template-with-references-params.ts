@@ -6,7 +6,7 @@
  */
 import type { ServiceType } from './service-type';
 
-export type PutServiceWithReferencesParams = {
+export type PutServiceTemplateWithReferencesParams = {
 name?: string;
 type?: ServiceType;
 };

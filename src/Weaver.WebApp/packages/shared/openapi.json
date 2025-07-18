@@ -10,10 +10,10 @@
     }
   ],
   "paths": {
-    "/Service/with-references": {
+    "/ServiceTemplate/with-references": {
       "put": {
         "tags": [
-          "Service"
+          "ServiceTemplate"
         ],
         "parameters": [
           {
@@ -90,10 +90,10 @@
         }
       }
     },
-    "/Service": {
+    "/ServiceTemplate": {
       "put": {
         "tags": [
-          "Service"
+          "ServiceTemplate"
         ],
         "parameters": [
           {
@@ -117,7 +117,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/ServiceOption"
+                  "$ref": "#/components/schemas/ServiceTemplateOption"
                 }
               }
             },
@@ -125,7 +125,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/ServiceOption"
+                  "$ref": "#/components/schemas/ServiceTemplateOption"
                 }
               }
             },
@@ -133,7 +133,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/ServiceOption"
+                  "$ref": "#/components/schemas/ServiceTemplateOption"
                 }
               }
             }
@@ -168,7 +168,7 @@
       },
       "get": {
         "tags": [
-          "Service"
+          "ServiceTemplate"
         ],
         "responses": {
           "200": {
@@ -178,7 +178,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ServiceListItemModel"
+                    "$ref": "#/components/schemas/ServiceTemplateListItemModel"
                   }
                 }
               },
@@ -186,7 +186,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ServiceListItemModel"
+                    "$ref": "#/components/schemas/ServiceTemplateListItemModel"
                   }
                 }
               },
@@ -194,7 +194,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ServiceListItemModel"
+                    "$ref": "#/components/schemas/ServiceTemplateListItemModel"
                   }
                 }
               }
@@ -203,10 +203,10 @@
         }
       }
     },
-    "/Service/{uuid}": {
+    "/ServiceTemplate/{uuid}": {
       "get": {
         "tags": [
-          "Service"
+          "ServiceTemplate"
         ],
         "parameters": [
           {
@@ -225,17 +225,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceDetailModel"
+                  "$ref": "#/components/schemas/ServiceTemplateDetailModel"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceDetailModel"
+                  "$ref": "#/components/schemas/ServiceTemplateDetailModel"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceDetailModel"
+                  "$ref": "#/components/schemas/ServiceTemplateDetailModel"
                 }
               }
             }
@@ -263,10 +263,10 @@
         }
       }
     },
-    "/ServiceOption": {
+    "/ServiceTemplateOption": {
       "put": {
         "tags": [
-          "ServiceOption"
+          "ServiceTemplateOption"
         ],
         "parameters": [
           {
@@ -280,7 +280,7 @@
             "name": "type",
             "in": "query",
             "schema": {
-              "type": "integer"
+              "$ref": "#/components/schemas/OptionType2"
             }
           }
         ],
@@ -312,7 +312,7 @@
       },
       "get": {
         "tags": [
-          "ServiceOption"
+          "ServiceTemplateOption"
         ],
         "responses": {
           "200": {
@@ -322,7 +322,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ServiceOptionModel"
+                    "$ref": "#/components/schemas/ServiceTemplateOptionModel"
                   }
                 }
               },
@@ -330,7 +330,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ServiceOptionModel"
+                    "$ref": "#/components/schemas/ServiceTemplateOptionModel"
                   }
                 }
               },
@@ -338,7 +338,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ServiceOptionModel"
+                    "$ref": "#/components/schemas/ServiceTemplateOptionModel"
                   }
                 }
               }
@@ -347,10 +347,10 @@
         }
       }
     },
-    "/ServiceOption/{uuid}": {
+    "/ServiceTemplateOption/{uuid}": {
       "get": {
         "tags": [
-          "ServiceOption"
+          "ServiceTemplateOption"
         ],
         "parameters": [
           {
@@ -369,17 +369,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOptionModel"
+                  "$ref": "#/components/schemas/ServiceTemplateOptionModel"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOptionModel"
+                  "$ref": "#/components/schemas/ServiceTemplateOptionModel"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ServiceOptionModel"
+                  "$ref": "#/components/schemas/ServiceTemplateOptionModel"
                 }
               }
             }
@@ -400,44 +400,6 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Test": {
-      "get": {
-        "tags": [
-          "Test"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ServiceOptionModel"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ServiceOptionModel"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ServiceOptionModel"
-                  }
                 }
               }
             }
@@ -457,6 +419,9 @@
           "NumberArray"
         ],
         "type": "string"
+      },
+      "OptionType2": {
+        "type": "integer"
       },
       "ProblemDetails": {
         "type": "object",
@@ -484,7 +449,7 @@
           }
         }
       },
-      "ServiceDetailModel": {
+      "ServiceTemplateDetailModel": {
         "required": [
           "name",
           "type"
@@ -504,12 +469,12 @@
           "config": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ServiceOption"
+              "$ref": "#/components/schemas/ServiceTemplateOption"
             }
           }
         }
       },
-      "ServiceListItemModel": {
+      "ServiceTemplateListItemModel": {
         "required": [
           "name",
           "type"
@@ -528,7 +493,7 @@
           }
         }
       },
-      "ServiceOption": {
+      "ServiceTemplateOption": {
         "required": [
           "name",
           "type"
@@ -551,7 +516,7 @@
           }
         }
       },
-      "ServiceOptionModel": {
+      "ServiceTemplateOptionModel": {
         "required": [
           "id",
           "name",
@@ -585,13 +550,10 @@
   },
   "tags": [
     {
-      "name": "Service"
+      "name": "ServiceTemplate"
     },
     {
-      "name": "ServiceOption"
-    },
-    {
-      "name": "Test"
+      "name": "ServiceTemplateOption"
     }
   ]
 }
