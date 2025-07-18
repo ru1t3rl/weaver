@@ -38,10 +38,10 @@ COPY ./.nginx/${NGINX_CONFIG_FILE:-nginx.conf} nginx.conf
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy app built artifacts to serving folder
-COPY --from=build-env /app/dist/weaver /usr/share/nginx/html/weaver
+COPY --from=build-env /app/dist /usr/share/nginx/html/weaver
 
 # Copy app build artifacts to template folder so docker-entrypoint.sh can use it to perform env var substitution
-COPY --from=build-env /app/dist/weaver /tmpl/dist/weaver/
+COPY --from=build-env /app/dist /tmpl/dist/weaver/
 
 COPY docker-entrypoint.sh /
 RUN chmod 500 /docker-entrypoint.sh
