@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
 using Scalar.AspNetCore;
 using Weaver.Commands;
@@ -58,5 +59,11 @@ app.UseCors(options =>
         .AllowAnyHeader()
         .AllowAnyMethod()
 );
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<WeaverDbContext>();
+    dbContext.Database.Migrate();
+}
 
 app.Run();
