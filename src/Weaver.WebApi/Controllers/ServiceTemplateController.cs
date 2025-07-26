@@ -34,7 +34,7 @@ public class ServiceTemplateController : ControllerBase
 
         try
         {
-            await _mediator.SendAsync(command);
+            await _mediator.SendCommandAsync<CreateServiceTemplateCommand, ServiceTemplate>(command);
         }
         catch (ValidationException e)
         {
@@ -62,13 +62,12 @@ public class ServiceTemplateController : ControllerBase
         foreach (ServiceTemplateOption option in optionsToCreate)
         {
             var optionCommand = new CreateServiceTemplateOptionCommand(option.Name, option.Type);
-            await _mediator.SendAsync(optionCommand);
+            var templateOption = await _mediator.SendCommandAsync<CreateServiceTemplateOptionCommand, ServiceTemplateOption>(optionCommand);
+            
+            serviceOptions.Add(templateOption);
         }
 
-        HashSet<ServiceTemplateOption> all = await _dbContext.ServiceOptions
-            .AsNoTracking()
-            .ToHashSetAsync();
-        Guid[] optionUuids = all
+        Guid[] optionUuids = serviceOptions
             .Where(s => serviceOptions.Any(o => s.Name == o.Name && s.Type == o.Type))
             .Select(s => s.Uuid)
             .ToArray();
@@ -76,7 +75,7 @@ public class ServiceTemplateController : ControllerBase
         var command = new CreateServiceTemplateCommand(name, type, optionUuids);
         try
         {
-            await _mediator.SendAsync(command);
+            await _mediator.SendCommandAsync<CreateServiceTemplateCommand, ServiceTemplate>(command);
         }
         catch (ValidationException e)
         {
@@ -109,7 +108,9 @@ public class ServiceTemplateController : ControllerBase
     public async Task<IActionResult> Get(Guid uuid, CancellationToken cancellationToken = default)
     {
         var query = new GetServiceTemplateByUuidQuery(uuid);
-        var result = await _mediator.SendAsync<GetServiceTemplateByUuidQuery, OneOf<ServiceTemplate, None>>(query, cancellationToken);
+        var result =
+            await _mediator.SendQueryAsync<GetServiceTemplateByUuidQuery, OneOf<ServiceTemplate, None>>(query,
+                cancellationToken);
 
         return result.Match<IActionResult>(
             service => Ok(new ServiceTemplateDetailModel

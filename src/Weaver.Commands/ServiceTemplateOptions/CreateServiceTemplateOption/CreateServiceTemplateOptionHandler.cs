@@ -4,7 +4,7 @@ using Weaver.Infrastructure;
 
 namespace Weaver.Commands.ServiceOptions;
 
-public class CreateServiceTemplateOptionHandler : ICommandHandler<CreateServiceTemplateOptionCommand>
+public class CreateServiceTemplateOptionHandler : ICommandHandler<CreateServiceTemplateOptionCommand, ServiceTemplateOption>
 {
     private readonly WeaverDbContext _dbContext;
 
@@ -13,7 +13,7 @@ public class CreateServiceTemplateOptionHandler : ICommandHandler<CreateServiceT
         _dbContext = dbContext;
     }
 
-    public async Task Handle(CreateServiceTemplateOptionCommand command, CancellationToken cancellationToken)
+    public async Task<ServiceTemplateOption> Handle(CreateServiceTemplateOptionCommand command, CancellationToken cancellationToken)
     {
         ServiceTemplateOption templateOption = new ServiceTemplateOption()
         {
@@ -24,5 +24,7 @@ public class CreateServiceTemplateOptionHandler : ICommandHandler<CreateServiceT
 
         await _dbContext.ServiceOptions.AddAsync(templateOption, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return templateOption;
     }
 }

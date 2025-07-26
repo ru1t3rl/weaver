@@ -5,7 +5,7 @@ using Weaver.Infrastructure;
 
 namespace Weaver.Commands.Services;
 
-public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplateCommand>
+public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplateCommand, ServiceTemplate>
 {
     private readonly WeaverDbContext _dbContext;
 
@@ -14,7 +14,8 @@ public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplat
         _dbContext = dbContext;
     }
 
-    public async Task Handle(CreateServiceTemplateCommand templateCommand, CancellationToken cancellationToken)
+    public async Task<ServiceTemplate> Handle(CreateServiceTemplateCommand templateCommand,
+        CancellationToken cancellationToken)
     {
         var options = await Task.WhenAll(
             templateCommand.Options.Select(async optionUuid => await _dbContext.ServiceOptions
@@ -31,5 +32,6 @@ public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplat
 
         await _dbContext.Services.AddAsync(serviceTemplate, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        return serviceTemplate;
     }
 }

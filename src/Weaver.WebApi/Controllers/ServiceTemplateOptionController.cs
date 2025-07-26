@@ -33,7 +33,7 @@ public class ServiceTemplateOptionController : ControllerBase
 
         try
         {
-            await _mediator.SendAsync(command);
+            await _mediator.SendCommandAsync<CreateServiceTemplateOptionCommand, ServiceTemplateOption>(command);
         }
         catch (ValidationException e)
         {
@@ -66,7 +66,8 @@ public class ServiceTemplateOptionController : ControllerBase
     public async Task<IActionResult> Get(Guid uuid)
     {
         var query = new GetServiceOptionByUuidQuery(uuid);
-        var result = await _mediator.SendAsync<GetServiceOptionByUuidQuery, OneOf<ServiceTemplateOption, None>>(query);
+        var result =
+            await _mediator.SendQueryAsync<GetServiceOptionByUuidQuery, OneOf<ServiceTemplateOption, None>>(query);
 
         return result.Match<IActionResult>(
             option => Ok(new ServiceTemplateOptionModel
