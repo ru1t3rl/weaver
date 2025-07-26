@@ -22,7 +22,7 @@ public class CreateServiceTemplateOptionHandler : ICommandHandler<CreateServiceT
             Type = command.Type,
         };
 
-        await _dbContext.ServiceOptions.AddAsync(templateOption, cancellationToken);
+        await _dbContext.ServiceTemplateOptions.AddAsync(templateOption, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return templateOption;

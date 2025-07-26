@@ -2,10 +2,11 @@ using Cortex.Mediator.Queries;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
+using Weaver.Commands.ServiceOptions;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 
-namespace Weaver.Commands.ServiceOptions;
+namespace Weaver.Commands.ServiceTemplateOptions;
 
 public class GetServiceOptionByUuidHandler : IQueryHandler<GetServiceOptionByUuidQuery, OneOf<ServiceTemplateOption, None>>
 {
@@ -18,7 +19,7 @@ public class GetServiceOptionByUuidHandler : IQueryHandler<GetServiceOptionByUui
 
     public async Task<OneOf<ServiceTemplateOption, None>> Handle(GetServiceOptionByUuidQuery query, CancellationToken cancellationToken)
     {
-        ServiceTemplateOption? option = await _dbContext.ServiceOptions
+        ServiceTemplateOption? option = await _dbContext.ServiceTemplateOptions
             .AsNoTracking()
             .SingleOrDefaultAsync(s => s.Uuid == query.Uuid, cancellationToken);
         

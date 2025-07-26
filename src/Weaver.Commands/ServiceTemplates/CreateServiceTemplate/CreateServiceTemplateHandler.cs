@@ -18,7 +18,7 @@ public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplat
         CancellationToken cancellationToken)
     {
         var options = await Task.WhenAll(
-            templateCommand.Options.Select(async optionUuid => await _dbContext.ServiceOptions
+            templateCommand.Options.Select(async optionUuid => await _dbContext.ServiceTemplateOptions
                 .SingleAsync(x => x.Uuid == optionUuid, cancellationToken))
         );
 
@@ -30,7 +30,7 @@ public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplat
             Config = options,
         };
 
-        await _dbContext.Services.AddAsync(serviceTemplate, cancellationToken);
+        await _dbContext.ServicesTemplates.AddAsync(serviceTemplate, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return serviceTemplate;
     }

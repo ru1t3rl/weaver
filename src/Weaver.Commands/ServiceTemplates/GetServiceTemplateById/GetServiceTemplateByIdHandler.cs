@@ -18,7 +18,7 @@ public class GetServiceTemplateByIdHandler : IQueryHandler<GetServiceTemplateByI
 
     public async Task<OneOf<ServiceTemplate, None>> Handle(GetServiceTemplateByIdQuery query, CancellationToken cancellationToken)
     {
-        ServiceTemplate? service = await _dbContext.Services
+        ServiceTemplate? service = await _dbContext.ServicesTemplates
             .Include(s => s.Config)
             .FirstOrDefaultAsync(s => s.Id == query.Id, cancellationToken);
         

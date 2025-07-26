@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Weaver.Common\Weaver.Common.csproj" />
       <ProjectReference Include="..\Weaver.Domain\Weaver.Domain.csproj" />
       <ProjectReference Include="..\Weaver.Infrastructure\Weaver.Infrastructure.csproj" />
     </ItemGroup>

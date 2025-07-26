@@ -18,7 +18,7 @@ public class GetServiceTemplateOptionByIdHandler : IQueryHandler<GetServiceTempl
 
     public async Task<OneOf<ServiceTemplateOption, None>> Handle(GetServiceTemplateOptionByIdQuery query, CancellationToken cancellationToken)
     {
-        ServiceTemplateOption? option = await _dbContext.ServiceOptions
+        ServiceTemplateOption? option = await _dbContext.ServiceTemplateOptions
             .SingleOrDefaultAsync(s => s.Id == query.Id, cancellationToken);
         
         return option is not null ? option : new None();

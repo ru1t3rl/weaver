@@ -50,7 +50,7 @@ public class ServiceTemplateController : ControllerBase
     public async Task<IActionResult> Create(string name, ServiceType type, IEnumerable<ServiceTemplateOption> options)
     {
         HashSet<ServiceTemplateOption> serviceOptions = options.ToHashSet();
-        var existingServiceOptions = await _dbContext.ServiceOptions
+        var existingServiceOptions = await _dbContext.ServiceTemplateOptions
             .AsNoTracking()
             .Select(s => new { s.Name, s.Type })
             .ToHashSetAsync();
@@ -89,7 +89,7 @@ public class ServiceTemplateController : ControllerBase
     [ProducesResponseType<IEnumerable<ServiceTemplateListItemModel>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
-        IEnumerable<ServiceTemplateListItemModel> services = await _dbContext.Services
+        IEnumerable<ServiceTemplateListItemModel> services = await _dbContext.ServicesTemplates
             .AsNoTracking()
             .Select(s => new ServiceTemplateListItemModel
             {

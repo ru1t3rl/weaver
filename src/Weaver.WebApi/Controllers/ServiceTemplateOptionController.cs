@@ -47,7 +47,7 @@ public class ServiceTemplateOptionController : ControllerBase
     [ProducesResponseType<IEnumerable<ServiceTemplateOptionModel>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
-        List<ServiceTemplateOptionModel> options = await _dbContext.ServiceOptions
+        List<ServiceTemplateOptionModel> options = await _dbContext.ServiceTemplateOptions
             .AsNoTracking()
             .Select(option => new ServiceTemplateOptionModel
             {
