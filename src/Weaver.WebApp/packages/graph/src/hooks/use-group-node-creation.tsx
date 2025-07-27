@@ -13,8 +13,8 @@ export function useGroupNodeCreation() {
   useNodeEventListener<ServiceNode>({
     onSelectionChanged: () => {
       // Update selected nodes based on all nodes
-      const currentSelected = nodes.filter(n => n.selected);
-      setSelectedNodes(currentSelected);
+      const currentSelected = nodes.filter(n => n.selected && n.type == 'serviceNode');
+      setSelectedNodes(currentSelected as ServiceNode[]);
     },
     onAllNodeUpdates: updatedNodes => {
       const currentSelected = updatedNodes.filter(n => n.selected);
@@ -30,7 +30,7 @@ export function useGroupNodeCreation() {
       }
 
       // Create a new group node
-      const groupNode: Partial<GroupNode> = {
+      const groupNode: GroupNode = {
         id: uuid(),
         type: nodeName,
         position: { x: 0, y: 0 }, // Position will be calculated by the component

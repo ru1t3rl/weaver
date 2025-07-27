@@ -1,4 +1,4 @@
-import { OptionType, ServiceTemplateOption as ServiceTemplateOptionModel } from '@weaver/shared';
+import { OptionType, ServiceTemplateOptionModel } from '@weaver/shared';
 import { Col, Flex, Input, Row, Select, Typography } from 'antd';
 import styles from './service-template-option.module.scss';
 
