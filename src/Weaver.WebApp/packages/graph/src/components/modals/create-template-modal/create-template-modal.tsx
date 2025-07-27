@@ -126,12 +126,11 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
       onOk={onOk}
       onCancel={onCancel}
     >
-      {isLoading ||
-        (isSaving && (
-          <Spin>
-            <div className={styles['loading-overlay']}></div>
-          </Spin>
-        ))}
+      {(isLoading || isSaving) && (
+        <div className={styles['loading-overlay']}>
+          <Spin />
+        </div>
+      )}
       {!isLoading && (
         <Flex vertical gap={5}>
           <Typography.Title level={4}>General</Typography.Title>
