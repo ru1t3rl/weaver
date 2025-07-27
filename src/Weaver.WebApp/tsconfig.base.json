@@ -1,22 +1,33 @@
 {
-  "compileOnSave": true,
   "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
     "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Path mapping */
     "baseUrl": ".",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,    
-  },
-  "include": ["packages", "src"],
-  "exclude": ["node_modules", "tmp"]
+    "paths": {
+      "@weaver/graph": ["./packages/graph/src/index.ts"],
+      "@weaver/shared": ["./packages/shared/src/index.ts"],
+      "@weaver/styling": ["./packages/styling/src/index.ts"]
+    }
+  }
 }

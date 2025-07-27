@@ -1,11 +1,12 @@
 using Cortex.Mediator;
-using Cortex.Mediator.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 using Weaver.Commands.ServiceOptions;
+using Weaver.Commands.ServiceOptions.UpdateServiceOptions;
 using Weaver.Commands.Services;
+using Weaver.Domain.Common.ServiceOptions;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 using Weaver.WebApi.Models;
@@ -25,101 +26,156 @@ public class ServiceController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpPut("with-references")]
+    [HttpPut]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(string name, ServiceType type, IEnumerable<Guid> options)
+    public async Task<IActionResult> Create(Guid templateId, string name, List<ServiceOptionModel> serviceOptions)
     {
-        var command = new CreateServiceCommand(name, type, options);
+        var options = await CreateOrUpdateServiceOptionsCommand(serviceOptions);
+        if (options.Any(o => o.IsT1))
+        {
+            var exceptions = options
+                .Where(o => o.IsT1)
+                .Select(o => o.AsT1);
 
-        try
-        {
-            await _mediator.SendAsync(command);
+            return BadRequest(exceptions);
         }
-        catch (ValidationException e)
-        {
-            return BadRequest(e.Message);
-        }
+
+        CreateServiceCommand createServiceCommand =
+            new CreateServiceCommand(name, templateId, options.Select(s => s.AsT0).ToList());
+        await _mediator.SendCommandAsync<CreateServiceCommand, OneOf<Service, Error<Exception>>>(createServiceCommand);
 
         return Created();
     }
 
-    [HttpPut]
+    [HttpPatch]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(string name, ServiceType type, IEnumerable<ServiceOption> options)
+    public async Task<IActionResult> Update(Guid serviceId, string name,
+        List<ServiceOptionModel> serviceOptions)
     {
-        HashSet<ServiceOption> serviceOptions = options.ToHashSet();
-        var existingServiceOptions = await _dbContext.ServiceOptions
-            .AsNoTracking()
-            .Select(s => new { s.Name, s.Type })
-            .ToHashSetAsync();
-
-        ServiceOption[] optionsToCreate = serviceOptions.Where(o =>
-            existingServiceOptions.All(s => s.Name != o.Name && s.Type != o.Type)
-        ).ToArray();
-
-        foreach (ServiceOption option in optionsToCreate)
+        var options = await CreateOrUpdateServiceOptionsCommand(serviceOptions);
+        if (options.Any(o => o.IsT1))
         {
-            var optionCommand = new CreateServiceOptionCommand(option.Name, option.Type);
-            await _mediator.SendAsync(optionCommand);
+            var exceptions = options
+                .Where(o => o.IsT1)
+                .Select(o => o.AsT1);
+
+            return BadRequest(exceptions);
         }
 
-        HashSet<ServiceOption> all = await _dbContext.ServiceOptions
-            .AsNoTracking()
-            .ToHashSetAsync();
-        Guid[] optionUuids = all
-            .Where(s => serviceOptions.Any(o => s.Name == o.Name && s.Type == o.Type))
-            .Select(s => s.Uuid)
-            .ToArray();
+        UpdateServiceCommand updateServiceCommand = new UpdateServiceCommand(
+            serviceId, name, options.Select(s => s.AsT0).ToList()
+        );
+        await _mediator.SendCommandAsync<UpdateServiceCommand, OneOf<Service, Error<Exception>>>(updateServiceCommand);
+        return Ok();
+    }
 
-        var command = new CreateServiceCommand(name, type, optionUuids);
-        try
-        {
-            await _mediator.SendAsync(command);
-        }
-        catch (ValidationException e)
-        {
-            return BadRequest(e.Message);
-        }
+    private async Task<List<OneOf<ServiceOption, Error<Exception>>>> CreateOrUpdateServiceOptionsCommand(
+        List<ServiceOptionModel> serviceOptions)
+    {
+        List<ServiceOptionModel> toCreate = serviceOptions.Where(s => s.Id is null).ToList();
+        List<ServiceOptionModel> toUpdate = serviceOptions.Where(s => s.Id is not null).ToList();
 
-        return Created();
+        CreateServiceOptionsCommand createServiceOptionsCommand = new CreateServiceOptionsCommand(
+            toCreate.Select(s => new CreateServiceOptionModel(
+                s.Type,
+                s.Name,
+                s.Type switch
+                {
+                    OptionType.String => (string)s.Value,
+                    OptionType.Number => (double)s.Value,
+                    OptionType.Boolean => (bool)s.Value,
+                    OptionType.StringArray => (string[])s.Value,
+                    OptionType.NumberArray => (double[])s.Value
+                }
+            )).ToList()
+        );
+
+        var createdOptions = await _mediator
+            .SendCommandAsync<CreateServiceOptionsCommand, List<OneOf<ServiceOption, Error<Exception>>>>(
+                createServiceOptionsCommand
+            );
+
+        UpdateServiceOptionsCommand optionsCommand = new UpdateServiceOptionsCommand(
+            toUpdate.Select(s => new UpdateServiceOptionModel(
+                s.Id!.Value,
+                s.Type,
+                s.Name,
+                s.Type switch
+                {
+                    OptionType.String => (string)s.Value,
+                    OptionType.Number => (double)s.Value,
+                    OptionType.Boolean => (bool)s.Value,
+                    OptionType.StringArray => (string[])s.Value,
+                    OptionType.NumberArray => (double[])s.Value
+                }
+            )).ToList()
+        );
+
+        var updatedOptions = await _mediator.SendCommandAsync<
+            UpdateServiceOptionsCommand,
+            List<OneOf<ServiceOption, Error<Exception>>>
+        >(optionsCommand);
+
+        return [..createdOptions, ..updatedOptions];
     }
 
     [HttpGet]
     [ProducesResponseType<IEnumerable<ServiceListItemModel>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
-        IEnumerable<ServiceListItemModel> services = await _dbContext.Services
+        List<ServiceListItemModel> options = await _dbContext.Services
+            .Include(s => s.Template)
             .AsNoTracking()
             .Select(s => new ServiceListItemModel
             {
                 Id = s.Uuid,
+                TemplateId = s.Template.Uuid,
                 Name = s.Name,
-                Type = s.Type
             })
             .ToListAsync();
 
-        return Ok(services);
+        return Ok(options);
     }
 
     [HttpGet("{uuid:guid}")]
     [ProducesResponseType<ServiceDetailModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(Guid uuid, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Get(Guid uuid)
     {
-        var query = new GetServiceByUuidQuery(uuid);
-        var result = await _mediator.SendAsync<GetServiceByUuidQuery, OneOf<Service, None>>(query, cancellationToken);
+        Service? service = await _dbContext.Services
+            .Include(s => s.Template)
+            .Include(s => s.Options)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Uuid == uuid);
 
-        return result.Match<IActionResult>(
-            service => Ok(new ServiceDetailModel
+        if (service is null)
+        {
+            return NotFound();
+        }
+
+        List<ServiceOptionModel> options = service.Options.Select(o => new ServiceOptionModel
+        {
+            Id = o.Uuid,
+            Name = o.Name,
+            Type = o.Type,
+            Value = o switch
             {
-                Id = service.Uuid,
-                Name = service.Name,
-                Type = service.Type,
-                Config = service.Config
-            }),
-            none => NotFound()
-        );
+                ServiceOption<string> s => s.Value,
+                ServiceOption<double> d => d.Value,
+                ServiceOption<bool> b => b.Value,
+                ServiceOption<string[]> s => s.Value,
+                ServiceOption<double[]> d => d.Value
+            }
+        }).ToList();
+
+        return Ok(new ServiceDetailModel
+        {
+            Id = service.Uuid,
+            Name = service.Name,
+            TemplateId = service.Template.Uuid,
+            Options = options
+        });
     }
 }

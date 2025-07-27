@@ -1,8 +1,8 @@
-import { axiosGetRequestConfig, ServiceListItemModel, useGetService } from '@weaver/shared';
+import { axiosGetRequestConfig, ServiceTemplateListItemModel, useGetServiceTemplate } from '@weaver/shared';
 import { useReactFlow, useStoreApi } from '@xyflow/react';
 import { Card, Flex, Input, Skeleton } from 'antd';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { useServiceGraph, useServiceSearchModal } from '../../../hooks';
+import { useServiceGraph, useServiceTemplateSearchModal } from '../../../hooks';
 import ClickAwayListener from '../../click-away-listener/click-away-listener';
 import { ServiceInfoCard } from '../../service-info-card/service-info-card';
 import styles from './service-search-modal.module.scss';
@@ -13,21 +13,21 @@ type position = {
 };
 
 export function ServiceSearchModal() {
-  const { hide } = useServiceSearchModal();
+  const { hide } = useServiceTemplateSearchModal();
 
   const store = useStoreApi();
   const { screenToFlowPosition } = useReactFlow();
 
-  const { tryAddNode } = useServiceGraph();
-  const { data: response, isLoading } = useGetService({
+  const { tryAddServiceNode } = useServiceGraph();
+  const { data: response, isLoading } = useGetServiceTemplate({
     axios: axiosGetRequestConfig,
   });
 
-  const [selectedNode, setSelectedNode] = useState<ServiceListItemModel | null>(null);
+  const [selectedNode, setSelectedNode] = useState<ServiceTemplateListItemModel | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
 
   const [filter, setFilter] = useState<string>('');
-  const dataFiltered = useMemo<ServiceListItemModel[]>(() => {
+  const dataFiltered = useMemo<ServiceTemplateListItemModel[]>(() => {
     if (!response || isLoading) {
       return [];
     }
@@ -116,11 +116,11 @@ export function ServiceSearchModal() {
     return position;
   }
 
-  function handleAddService(service: ServiceListItemModel) {
+  function handleAddService(service: ServiceTemplateListItemModel) {
     const { x: viewportX, y: viewportY } = getViewportCenter();
 
     if (
-      tryAddNode({
+      tryAddServiceNode({
         type: 'serviceNode',
         data: {
           serviceInfo: {

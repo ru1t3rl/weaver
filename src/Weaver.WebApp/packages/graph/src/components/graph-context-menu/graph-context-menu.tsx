@@ -1,10 +1,10 @@
 import { Dropdown, MenuProps } from 'antd';
 import { PropsWithChildren } from 'react';
 import { LuPlus } from 'react-icons/lu';
-import { useServiceSearchModal } from '../../hooks/use-service-search-modal';
+import { useServiceTemplateSearchModal } from '../../hooks/use-service-template-search-modal';
 
 export function GraphContextMenu(props: PropsWithChildren) {
-  const { show: showServiceModal } = useServiceSearchModal();
+  const { show: showServiceModal } = useServiceTemplateSearchModal();
 
   const items: MenuProps['items'] = [
     {

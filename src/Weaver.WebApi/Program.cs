@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
 using Scalar.AspNetCore;
 using Weaver.Commands;

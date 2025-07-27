@@ -1,2 +1,3 @@
-export * from './endpoints/weaver-webapi-v1';
+export * from './endpoints/service-template';
+export * from './endpoints/service-template-option';
 export * from './models';

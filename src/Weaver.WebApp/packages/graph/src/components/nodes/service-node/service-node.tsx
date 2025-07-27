@@ -1,10 +1,10 @@
-import { ServiceListItemModel } from '@weaver/shared';
+import { ServiceTemplateListItemModel } from '@weaver/shared';
 import { Node, NodeChange, NodeProps } from '@xyflow/react';
 import { useServiceGraph } from '../../../hooks/use-service-graph';
 import { ServiceInfoCard } from '../../service-info-card/service-info-card';
 
 type ServiceNodeData = {
-  serviceInfo: ServiceListItemModel;
+  serviceInfo: ServiceTemplateListItemModel;
   onClick?: () => void;
 };
 

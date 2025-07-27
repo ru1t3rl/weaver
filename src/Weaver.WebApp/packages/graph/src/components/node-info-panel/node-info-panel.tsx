@@ -1,9 +1,9 @@
 import {
   axiosGetRequestConfig,
-  ServiceDetailModel,
-  ServiceListItemModel,
+  ServiceTemplateDetailModel,
+  ServiceTemplateListItemModel,
   ServiceType2 as ServiceType,
-  useGetServiceUuid,
+  useGetServiceTemplateUuid,
 } from '@weaver/shared';
 import { Node } from '@xyflow/react';
 import { Button, Card, Divider, Flex, Input, Spin, Tag, Typography } from 'antd';
@@ -13,20 +13,20 @@ import { useRef, useState } from 'react';
 import { LuPlus } from 'react-icons/lu';
 import { useNodeEventListener } from '../../events';
 import ServiceNode, { nodeName as serviceNodeName } from '../nodes/service-node/service-node';
-import { ServiceOption } from '../service-option/service-option';
+import { ServiceTemplateOption } from '../service-template-option/service-template-option';
 import styles from './node-info-panel.module.scss';
 
 export function NodeInfoPanel() {
-  const [nodeListItemModel, _setNodeListItemModel] = useState<ServiceListItemModel | undefined>(undefined);
-  const setNodeListItemModel = useRef((node: ServiceListItemModel | undefined) => {
+  const [nodeListItemModel, _setNodeListItemModel] = useState<ServiceTemplateListItemModel | undefined>(undefined);
+  const setNodeListItemModel = useRef((node: ServiceTemplateListItemModel | undefined) => {
     _setNodeListItemModel(node);
   });
 
-  const { data, isLoading } = useGetServiceUuid(nodeListItemModel?.id ?? '', {
+  const { data, isLoading } = useGetServiceTemplateUuid(nodeListItemModel?.id ?? '', {
     query: { queryKey: [nodeListItemModel?.name] },
     axios: axiosGetRequestConfig,
   });
-  const nodeDetail: ServiceDetailModel | undefined = data?.data;
+  const nodeDetail: ServiceTemplateDetailModel | undefined = data?.data;
 
   useNodeEventListener({
     onSelectionChanged: handleSelectionChanged,
@@ -42,6 +42,7 @@ export function NodeInfoPanel() {
       return;
     }
 
+    console.log('');
     setNodeListItemModel.current(node.data.serviceInfo);
   }
 
@@ -82,7 +83,9 @@ export function NodeInfoPanel() {
             <Divider size='small' />
             <Flex vertical>
               {nodeDetail.config &&
-                nodeDetail.config.map((serviceOption, index) => <ServiceOption key={index} value={serviceOption} />)}
+                nodeDetail.config.map((serviceOption, index) => (
+                  <ServiceTemplateOption key={index} value={serviceOption} />
+                ))}
             </Flex>
             <Divider />
             <Button icon={<LuPlus />}>Add Extra</Button>

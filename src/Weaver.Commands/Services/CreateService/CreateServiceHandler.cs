@@ -1,11 +1,15 @@
 using Cortex.Mediator.Commands;
 using Microsoft.EntityFrameworkCore;
+using OneOf;
+using OneOf.Types;
+using Weaver.Common.Exceptions;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 
 namespace Weaver.Commands.Services;
 
-public class CreateServiceHandler : ICommandHandler<CreateServiceCommand>
+public class CreateServiceHandler :
+    ICommandHandler<CreateServiceCommand, OneOf<Service, Error<Exception>>>
 {
     private readonly WeaverDbContext _dbContext;
 
@@ -14,22 +18,26 @@ public class CreateServiceHandler : ICommandHandler<CreateServiceCommand>
         _dbContext = dbContext;
     }
 
-    public async Task Handle(CreateServiceCommand command, CancellationToken cancellationToken)
+    public async Task<OneOf<Service, Error<Exception>>> Handle(CreateServiceCommand command,
+        CancellationToken cancellationToken)
     {
-        var options = await Task.WhenAll(
-            command.Options.Select(async optionUuid => await _dbContext.ServiceOptions
-                .SingleAsync(x => x.Uuid == optionUuid, cancellationToken))
-        );
+        ServiceTemplate? template = await _dbContext.ServicesTemplates
+            .SingleOrDefaultAsync(s => s.Uuid == command.TemplateUuid, cancellationToken);
+
+        if (template is null)
+        {
+            return new Error<Exception>(
+                new EntityNotFoundException("Template entity not found with uuid: " + command.TemplateUuid)
+            );
+        }
 
         Service service = new Service
         {
-            Uuid = Guid.NewGuid(),
+            Template = template,
             Name = command.Name,
-            Type = command.Type,
-            Config = options,
+            Options = command.Options
         };
 
-        await _dbContext.Services.AddAsync(service, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        return service;
     }
 }
