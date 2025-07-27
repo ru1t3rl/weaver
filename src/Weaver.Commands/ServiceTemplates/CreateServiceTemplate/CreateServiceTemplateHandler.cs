@@ -17,10 +17,12 @@ public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplat
     public async Task<ServiceTemplate> Handle(CreateServiceTemplateCommand templateCommand,
         CancellationToken cancellationToken)
     {
-        var options = await Task.WhenAll(
-            templateCommand.Options.Select(async optionUuid => await _dbContext.ServiceTemplateOptions
-                .SingleAsync(x => x.Uuid == optionUuid, cancellationToken))
-        );
+        var options = templateCommand.Options.Count() <= 0
+            ? []
+            : await Task.WhenAll(
+                templateCommand.Options.Select(async optionUuid => await _dbContext.ServiceTemplateOptions
+                    .SingleAsync(x => x.Uuid == optionUuid, cancellationToken))
+            );
 
         ServiceTemplate serviceTemplate = new ServiceTemplate
         {

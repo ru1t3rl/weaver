@@ -7,7 +7,6 @@ using Weaver.Domain.Entities;
 namespace Weaver.Commands.Services;
 
 public record CreateServiceCommand(
-    Guid? Uuid,
     string Name,
     Guid TemplateUuid,
     List<ServiceOption> Options

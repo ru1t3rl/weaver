@@ -5,4 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type OptionType2 = number;
+export type PatchServiceParams = {
+serviceId?: string;
+name?: string;
+};

@@ -3,7 +3,7 @@ import {
   axiosPostRequestConfig,
   OptionType,
   ServiceTemplateDetailModel,
-  ServiceTemplateOption,
+  ServiceTemplateOptionModel,
   ServiceType2 as ServiceType,
   useGetServiceTemplateUuid,
   usePutServiceTemplate,
@@ -63,7 +63,7 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
     setTempType(value);
   }
 
-  function handleConfigInputChange(value: ServiceTemplateOption, index: number) {
+  function handleConfigInputChange(value: ServiceTemplateOptionModel, index: number) {
     const updatedArray = template.config ? [...template.config] : [];
     updatedArray[index] = value;
 
@@ -79,6 +79,7 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
       config: [
         ...(prev.config ?? []),
         {
+          id: null,
           name: '',
           type: OptionType.String,
         },

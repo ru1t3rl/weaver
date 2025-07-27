@@ -6,9 +6,10 @@
  */
 import type { OptionType } from './option-type';
 
-export interface ServiceTemplateOption {
-  name: string;
-  type: OptionType;
-  id?: number;
-  uuid?: string;
+export interface ServiceOptionModel {
+  name?: string;
+  type?: OptionType;
+  value?: unknown;
+  /** @nullable */
+  id?: string | null;
 }

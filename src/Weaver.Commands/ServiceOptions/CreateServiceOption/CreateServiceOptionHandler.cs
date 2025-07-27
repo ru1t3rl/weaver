@@ -3,8 +3,6 @@ using Npgsql;
 using OneOf;
 using OneOf.Types;
 using Weaver.Domain.Common.ServiceOptions;
-using Weaver.Domain.Entities;
-using Weaver.Domain.Entities.ServiceOptions;
 using Weaver.Infrastructure;
 
 namespace Weaver.Commands.ServiceOptions;
@@ -26,34 +24,38 @@ public class CreateServiceOptionHandler : ICommandHandler<
     {
         try
         {
-            ServiceOption serviceOption = command.Type switch
-            {
-                OptionType.String => new ServiceOptionString
+            ServiceOption serviceOption = command.Value.Match<ServiceOption>(
+                stringValue => new ServiceOption<string>
                 {
+                    Type = command.Type,
                     Name = command.Name,
-                    Value = command.StringValue!
+                    Value = stringValue
                 },
-                OptionType.Number => new ServiceOptionNumber
+                doubleValue => new ServiceOption<double>
                 {
+                    Type = command.Type,
                     Name = command.Name,
-                    Value = command.NumberValue!.Value
+                    Value = doubleValue
                 },
-                OptionType.Boolean => new ServiceOptionBoolean
+                boolValue => new ServiceOption<bool>
                 {
+                    Type = command.Type,
                     Name = command.Name,
-                    Value = command.BooleanValue!.Value
+                    Value = boolValue
                 },
-                OptionType.StringArray => new ServiceOptionStringArray
+                stringArrayValue => new ServiceOption<string[]>
                 {
+                    Type = command.Type,
                     Name = command.Name,
-                    Value = command.StringArrayValue!
+                    Value = stringArrayValue
                 },
-                OptionType.NumberArray => new ServiceOptionNumberArray
+                doubleArrayValue => new ServiceOption<double[]>
                 {
+                    Type = command.Type,
                     Name = command.Name,
-                    Value = command.NumberArrayValue!
+                    Value = doubleArrayValue
                 }
-            };
+            );
 
             serviceOption = (await _dbContext.ServiceOptions.AddAsync(serviceOption, cancellationToken)).Entity;
             await _dbContext.SaveChangesAsync(cancellationToken);

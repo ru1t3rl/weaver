@@ -8,10 +8,7 @@ namespace Weaver.Commands.ServiceOptions;
 
 public record UpdateServiceOptionCommand(
     Guid Uuid,
+    OptionType Type,
     string Name,
-    string? StringValue = null,
-    double? NumberValue = null,
-    bool? BooleanValue = null,
-    string[]? StringArrayValue = null,
-    double[]? NumberArrayValue = null
-) : ICommand<OneOf<ServiceOption, Error<Exception>>>;
+    OneOf<string, double, bool, string[], double[]> Value
+) : UpdateServiceOptionModel(Uuid, Type, Name, Value), ICommand<OneOf<ServiceOption, Error<Exception>>>;

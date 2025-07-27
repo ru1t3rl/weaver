@@ -2,11 +2,9 @@ using Cortex.Mediator.Commands;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
-using Weaver.Commands.Services;
 using Weaver.Common.Exceptions;
 using Weaver.Domain.Common.ServiceOptions;
 using Weaver.Domain.Entities;
-using Weaver.Domain.Entities.ServiceOptions;
 using Weaver.Infrastructure;
 
 namespace Weaver.Commands.ServiceOptions;
@@ -27,7 +25,7 @@ public class UpdateServiceOptionHandler : ICommandHandler<
         CancellationToken cancellationToken)
     {
         ServiceOption? serviceOption = await _dbContext.ServiceOptions
-            .SingleOrDefaultAsync(s => s.Uuid == command.Uuid);
+            .SingleOrDefaultAsync(s => s.Uuid == command.Uuid, cancellationToken);
 
         if (serviceOption is null)
         {
@@ -35,28 +33,37 @@ public class UpdateServiceOptionHandler : ICommandHandler<
         }
 
         serviceOption.Name = command.Name;
-        switch (serviceOption.Type)
-        {
-            case OptionType.String:
-                (serviceOption as ServiceOptionString).Value = command.StringValue!;
-                break;
-            case OptionType.Number:
-                (serviceOption as ServiceOptionNumber).Value = command.NumberValue!.Value;
-                break;
-            case OptionType.Boolean:
-                (serviceOption as ServiceOptionBoolean).Value = command.BooleanValue!.Value;
-                break;
-            case OptionType.StringArray:
-                (serviceOption as ServiceOptionStringArray).Value = command.StringArrayValue!;
-                break;
-            case OptionType.NumberArray:
-                (serviceOption as ServiceOptionNumberArray).Value = command.NumberArrayValue!;
-                break;
-            default:
-                return new Error<Exception>(new NotImplementedException());
-        }
+        UpdateServiceOptionValue(command, serviceOption);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return serviceOption;
+    }
+
+    private void UpdateServiceOptionValue(UpdateServiceOptionCommand command, ServiceOption serviceOption)
+    {
+        if (command.Value.Value is string stringValue)
+        {
+            (serviceOption as ServiceOption<string>).Value = stringValue;
+        }
+
+        if (command.Value.Value is double doubleValue)
+        {
+            (serviceOption as ServiceOption<double>).Value = doubleValue;
+        }
+
+        if (command.Value.Value is bool boolValue)
+        {
+            (serviceOption as ServiceOption<bool>).Value = boolValue;
+        }
+
+        if (command.Value.Value is string[] stringArrayValue)
+        {
+            (serviceOption as ServiceOption<string[]>).Value = stringArrayValue;
+        }
+
+        if (command.Value.Value is double[] doubleArrayValue)
+        {
+            (serviceOption as ServiceOption<double[]>).Value = doubleArrayValue;
+        }
     }
 }

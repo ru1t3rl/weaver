@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Weaver.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddServiceEntity : Migration
+    public partial class AddServicEntity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,10 +43,10 @@ namespace Weaver.Infrastructure.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     ServiceId = table.Column<long>(type: "bigint", nullable: true),
                     Value = table.Column<bool>(type: "boolean", nullable: true),
-                    ServiceOptionNumber_Value = table.Column<double>(type: "double precision", nullable: true),
-                    ServiceOptionNumberArray_Value = table.Column<double[]>(type: "double precision[]", nullable: true),
-                    ServiceOptionString_Value = table.Column<string>(type: "text", nullable: true),
-                    ServiceOptionStringArray_Value = table.Column<string[]>(type: "text[]", nullable: true),
+                    ServiceOption_Value = table.Column<double>(type: "double precision", nullable: true),
+                    ServiceOption_Value1 = table.Column<double[]>(type: "double precision[]", nullable: true),
+                    ServiceOption_Value2 = table.Column<string>(type: "text", nullable: true),
+                    ServiceOption_Value3 = table.Column<string[]>(type: "text[]", nullable: true),
                     Uuid = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

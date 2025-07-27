@@ -12,8 +12,8 @@ using Weaver.Infrastructure;
 namespace Weaver.Infrastructure.Migrations
 {
     [DbContext(typeof(WeaverDbContext))]
-    [Migration("20250726180939_AddServiceEntity")]
-    partial class AddServiceEntity
+    [Migration("20250727131902_AddServicEntity")]
+    partial class AddServicEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,7 +157,7 @@ namespace Weaver.Infrastructure.Migrations
                     b.ToTable("ServiceTemplateOptions", (string)null);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOptions.ServiceOptionBoolean", b =>
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<bool>", b =>
                 {
                     b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
 
@@ -167,7 +167,7 @@ namespace Weaver.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue(2);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOptions.ServiceOptionNumber", b =>
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<double>", b =>
                 {
                     b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
 
@@ -177,58 +177,55 @@ namespace Weaver.Infrastructure.Migrations
                     b.ToTable("ServiceOptions", t =>
                         {
                             t.Property("Value")
-                                .HasColumnName("ServiceOptionNumber_Value");
+                                .HasColumnName("ServiceOption_Value");
                         });
 
                     b.HasDiscriminator().HasValue(0);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOptions.ServiceOptionNumberArray", b =>
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<double[]>", b =>
                 {
                     b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
 
                     b.PrimitiveCollection<double[]>("Value")
-                        .IsRequired()
                         .HasColumnType("double precision[]");
 
                     b.ToTable("ServiceOptions", t =>
                         {
                             t.Property("Value")
-                                .HasColumnName("ServiceOptionNumberArray_Value");
+                                .HasColumnName("ServiceOption_Value1");
                         });
 
                     b.HasDiscriminator().HasValue(4);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOptions.ServiceOptionString", b =>
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<string>", b =>
                 {
                     b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
 
                     b.Property<string>("Value")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.ToTable("ServiceOptions", t =>
                         {
                             t.Property("Value")
-                                .HasColumnName("ServiceOptionString_Value");
+                                .HasColumnName("ServiceOption_Value2");
                         });
 
                     b.HasDiscriminator().HasValue(1);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOptions.ServiceOptionStringArray", b =>
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<string[]>", b =>
                 {
                     b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
 
                     b.PrimitiveCollection<string[]>("Value")
-                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.ToTable("ServiceOptions", t =>
                         {
                             t.Property("Value")
-                                .HasColumnName("ServiceOptionStringArray_Value");
+                                .HasColumnName("ServiceOption_Value3");
                         });
 
                     b.HasDiscriminator().HasValue(3);

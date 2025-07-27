@@ -49,28 +49,30 @@ public class ServiceTemplateController : ControllerBase
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(string name, ServiceType type, IEnumerable<ServiceTemplateOption> options)
+    public async Task<IActionResult> Create(string name, ServiceType type,
+        IEnumerable<ServiceTemplateOptionModel> options)
     {
-        HashSet<ServiceTemplateOption> serviceOptions = options.ToHashSet();
+        HashSet<ServiceTemplateOptionModel> serviceOptions = options.ToHashSet();
         var existingServiceOptions = await _dbContext.ServiceTemplateOptions
             .AsNoTracking()
-            .Select(s => new { s.Name, s.Type })
             .ToHashSetAsync();
 
-        ServiceTemplateOption[] optionsToCreate = serviceOptions.Where(o =>
-            existingServiceOptions.All(s => s.Name != o.Name && s.Type != o.Type)
+        ServiceTemplateOptionModel[] optionsToCreate = serviceOptions.Where(o =>
+            existingServiceOptions.Any(s => s.Name != o.Name && s.Type != o.Type)
         ).ToArray();
 
-        foreach (ServiceTemplateOption option in optionsToCreate)
+        foreach (ServiceTemplateOptionModel option in optionsToCreate)
         {
             var optionCommand = new CreateServiceTemplateOptionCommand(option.Name, option.Type);
-            var templateOption = await _mediator.SendCommandAsync<CreateServiceTemplateOptionCommand, ServiceTemplateOption>(optionCommand);
-            
-            serviceOptions.Add(templateOption);
+            var templateOption =
+                await _mediator.SendCommandAsync<CreateServiceTemplateOptionCommand, ServiceTemplateOption>(
+                    optionCommand);
+
+            existingServiceOptions.Add(templateOption);
         }
 
-        Guid[] optionUuids = serviceOptions
-            .Where(s => serviceOptions.Any(o => s.Name == o.Name && s.Type == o.Type))
+        Guid[] optionUuids = existingServiceOptions
+            .Where(s => existingServiceOptions.Any(o => s.Name == o.Name && s.Type == o.Type))
             .Select(s => s.Uuid)
             .ToArray();
 
@@ -120,7 +122,12 @@ public class ServiceTemplateController : ControllerBase
                 Id = service.Uuid,
                 Name = service.Name,
                 Type = service.Type,
-                Config = service.Config
+                Config = service.Config.Select(o => new ServiceTemplateOptionModel
+                {
+                    Id = o.Uuid,
+                    Name = o.Name,
+                    Type = o.Type
+                })
             }),
             none => NotFound()
         );

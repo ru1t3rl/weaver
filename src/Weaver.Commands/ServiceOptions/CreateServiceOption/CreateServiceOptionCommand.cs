@@ -9,9 +9,5 @@ namespace Weaver.Commands.ServiceOptions;
 public record CreateServiceOptionCommand(
     OptionType Type,
     string Name,
-    string? StringValue = null,
-    double? NumberValue = null,
-    bool? BooleanValue = null,
-    string[]? StringArrayValue = null,
-    double[]? NumberArrayValue = null
-) : ICommand<OneOf<ServiceOption, Error<Exception>>>;
+    OneOf<string, double, bool, string[], double[]> Value
+) : CreateServiceOptionModel(Type, Name, Value), ICommand<OneOf<ServiceOption, Error<Exception>>>;

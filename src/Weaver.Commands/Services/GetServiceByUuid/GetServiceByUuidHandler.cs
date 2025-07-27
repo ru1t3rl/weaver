@@ -19,6 +19,8 @@ public class GetServiceByUuidHandler : IQueryHandler<GetServiceByUuidQuery, OneO
     public async Task<OneOf<Service, None>> Handle(GetServiceByUuidQuery query, CancellationToken cancellationToken)
     {
         Service? service = await _dbContext.Services
+            .Include(s => s.Template)
+            .Include(s => s.Options)
             .AsNoTracking()
             .SingleOrDefaultAsync(s => s.Uuid == query.Uuid, cancellationToken);
 

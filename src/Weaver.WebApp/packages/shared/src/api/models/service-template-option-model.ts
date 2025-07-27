@@ -7,7 +7,8 @@
 import type { OptionType } from './option-type';
 
 export interface ServiceTemplateOptionModel {
-  id: string;
+  /** @nullable */
+  id: string | null;
   name: string;
   type: OptionType;
 }

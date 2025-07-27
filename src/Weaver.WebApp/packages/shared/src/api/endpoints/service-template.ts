@@ -31,7 +31,7 @@ import type {
   PutServiceTemplateWithReferencesParams,
   ServiceTemplateDetailModel,
   ServiceTemplateListItemModel,
-  ServiceTemplateOption
+  ServiceTemplateOptionModel
 } from '../models';
 
 
@@ -102,14 +102,14 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       return useMutation(mutationOptions );
     }
     export const putServiceTemplate = (
-    serviceTemplateOption: ServiceTemplateOption[],
+    serviceTemplateOptionModel: ServiceTemplateOptionModel[],
     params?: PutServiceTemplateParams, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {
     
     
     return axios.put(
       `/ServiceTemplate`,
-      serviceTemplateOption,{
+      serviceTemplateOptionModel,{
     ...options,
         params: {...params, ...options?.params},}
     );
@@ -118,8 +118,8 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 export const getPutServiceTemplateMutationOptions = <TError = AxiosError<ProblemDetails>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putServiceTemplate>>, TError,{data: ServiceTemplateOption[];params?: PutServiceTemplateParams}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof putServiceTemplate>>, TError,{data: ServiceTemplateOption[];params?: PutServiceTemplateParams}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putServiceTemplate>>, TError,{data: ServiceTemplateOptionModel[];params?: PutServiceTemplateParams}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putServiceTemplate>>, TError,{data: ServiceTemplateOptionModel[];params?: PutServiceTemplateParams}, TContext> => {
 
 const mutationKey = ['putServiceTemplate'];
 const {mutation: mutationOptions, axios: axiosOptions} = options ?
@@ -131,7 +131,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putServiceTemplate>>, {data: ServiceTemplateOption[];params?: PutServiceTemplateParams}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putServiceTemplate>>, {data: ServiceTemplateOptionModel[];params?: PutServiceTemplateParams}> = (props) => {
           const {data,params} = props ?? {};
 
           return  putServiceTemplate(data,params,axiosOptions)
@@ -143,15 +143,15 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PutServiceTemplateMutationResult = NonNullable<Awaited<ReturnType<typeof putServiceTemplate>>>
-    export type PutServiceTemplateMutationBody = ServiceTemplateOption[]
+    export type PutServiceTemplateMutationBody = ServiceTemplateOptionModel[]
     export type PutServiceTemplateMutationError = AxiosError<ProblemDetails>
 
     export const usePutServiceTemplate = <TError = AxiosError<ProblemDetails>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putServiceTemplate>>, TError,{data: ServiceTemplateOption[];params?: PutServiceTemplateParams}, TContext>, axios?: AxiosRequestConfig}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putServiceTemplate>>, TError,{data: ServiceTemplateOptionModel[];params?: PutServiceTemplateParams}, TContext>, axios?: AxiosRequestConfig}
  ): UseMutationResult<
         Awaited<ReturnType<typeof putServiceTemplate>>,
         TError,
-        {data: ServiceTemplateOption[];params?: PutServiceTemplateParams},
+        {data: ServiceTemplateOptionModel[];params?: PutServiceTemplateParams},
         TContext
       > => {
 

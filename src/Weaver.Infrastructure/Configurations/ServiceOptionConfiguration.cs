@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Weaver.Domain.Common.ServiceOptions;
 using Weaver.Domain.Entities;
-using Weaver.Domain.Entities.ServiceOptions;
 
 namespace Weaver.Infrastructure.Configurations;
 
@@ -15,11 +14,11 @@ public class ServiceOptionConfiguration : IEntityTypeConfiguration<ServiceOption
         
         builder
             .HasDiscriminator(s => s.Type)
-            .HasValue<ServiceOptionString>(OptionType.String)
-            .HasValue<ServiceOptionNumber>(OptionType.Number)
-            .HasValue<ServiceOptionBoolean>(OptionType.Boolean)
-            .HasValue<ServiceOptionStringArray>(OptionType.StringArray)
-            .HasValue<ServiceOptionNumberArray>(OptionType.NumberArray);
+            .HasValue<ServiceOption<string>>(OptionType.String)
+            .HasValue<ServiceOption<double>>(OptionType.Number)
+            .HasValue<ServiceOption<bool>>(OptionType.Boolean)
+            .HasValue<ServiceOption<string[]>>(OptionType.StringArray)
+            .HasValue<ServiceOption<double[]>>(OptionType.NumberArray);
 
         builder
             .Property(s => s.Type)

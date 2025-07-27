@@ -16,7 +16,7 @@ internal class ServiceTemplateOptionConfiguration : IEntityTypeConfiguration<Ser
             .IsUnique();
 
         builder
-            .HasIndex(s => s.Name)
+            .HasIndex(s => new {s.Name, s.Type})
             .IsUnique();
     }
 }
