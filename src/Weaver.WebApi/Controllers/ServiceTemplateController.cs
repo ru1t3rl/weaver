@@ -58,7 +58,7 @@ public class ServiceTemplateController : ControllerBase
             .ToHashSetAsync();
 
         ServiceTemplateOptionModel[] optionsToCreate = serviceOptions.Where(o =>
-            existingServiceOptions.Any(s => s.Name != o.Name && s.Type != o.Type)
+            !existingServiceOptions.Any(s => s.Name == o.Name && s.Type == o.Type)
         ).ToArray();
 
         foreach (ServiceTemplateOptionModel option in optionsToCreate)
@@ -72,7 +72,7 @@ public class ServiceTemplateController : ControllerBase
         }
 
         Guid[] optionUuids = existingServiceOptions
-            .Where(s => existingServiceOptions.Any(o => s.Name == o.Name && s.Type == o.Type))
+            .Where(s => serviceOptions.Any(o => s.Name == o.Name && s.Type == o.Type))
             .Select(s => s.Uuid)
             .ToArray();
 
