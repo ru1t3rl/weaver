@@ -9,10 +9,10 @@
 
     /* Bundler mode */
     "moduleResolution": "Bundler",
-    // "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    // "noEmit": true,
+    "noEmit": true,
 
     /* Linting */
     "strict": true,
@@ -21,5 +21,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "eslint.config.js"]
 }
