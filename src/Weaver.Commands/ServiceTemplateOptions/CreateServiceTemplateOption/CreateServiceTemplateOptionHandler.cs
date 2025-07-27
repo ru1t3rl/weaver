@@ -2,7 +2,7 @@ using Cortex.Mediator.Commands;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 
-namespace Weaver.Commands.ServiceOptions;
+namespace Weaver.Commands.ServiceTemplateOptions;
 
 public class CreateServiceTemplateOptionHandler : ICommandHandler<CreateServiceTemplateOptionCommand, ServiceTemplateOption>
 {

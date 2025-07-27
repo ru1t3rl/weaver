@@ -8,16 +8,16 @@ using Weaver.Infrastructure;
 
 namespace Weaver.Commands.ServiceTemplateOptions;
 
-public class GetServiceOptionByUuidHandler : IQueryHandler<GetServiceOptionByUuidQuery, OneOf<ServiceTemplateOption, None>>
+public class GetServiceTemplateOptionByUuidHandler : IQueryHandler<GetServiceTemplateOptionByUuidQuery, OneOf<ServiceTemplateOption, None>>
 {
     private readonly WeaverDbContext _dbContext;
 
-    public GetServiceOptionByUuidHandler(WeaverDbContext dbContext)
+    public GetServiceTemplateOptionByUuidHandler(WeaverDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<OneOf<ServiceTemplateOption, None>> Handle(GetServiceOptionByUuidQuery query, CancellationToken cancellationToken)
+    public async Task<OneOf<ServiceTemplateOption, None>> Handle(GetServiceTemplateOptionByUuidQuery query, CancellationToken cancellationToken)
     {
         ServiceTemplateOption? option = await _dbContext.ServiceTemplateOptions
             .AsNoTracking()

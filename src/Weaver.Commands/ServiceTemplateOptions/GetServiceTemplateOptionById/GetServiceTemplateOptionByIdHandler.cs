@@ -5,7 +5,7 @@ using OneOf.Types;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 
-namespace Weaver.Commands.ServiceOptions;
+namespace Weaver.Commands.ServiceTemplateOptions;
 
 public class GetServiceTemplateOptionByIdHandler : IQueryHandler<GetServiceTemplateOptionByIdQuery, OneOf<ServiceTemplateOption, None>>
 {

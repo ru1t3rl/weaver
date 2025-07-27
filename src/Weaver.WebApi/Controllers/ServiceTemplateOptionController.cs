@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
-using Weaver.Commands.ServiceOptions;
+using Weaver.Commands.ServiceTemplateOptions;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 using Weaver.WebApi.Models;
@@ -65,9 +65,10 @@ public class ServiceTemplateOptionController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid uuid)
     {
-        var query = new GetServiceOptionByUuidQuery(uuid);
+        var query = new GetServiceTemplateOptionByUuidQuery(uuid);
         var result =
-            await _mediator.SendQueryAsync<GetServiceOptionByUuidQuery, OneOf<ServiceTemplateOption, None>>(query);
+            await _mediator
+                .SendQueryAsync<GetServiceTemplateOptionByUuidQuery, OneOf<ServiceTemplateOption, None>>(query);
 
         return result.Match<IActionResult>(
             option => Ok(new ServiceTemplateOptionModel

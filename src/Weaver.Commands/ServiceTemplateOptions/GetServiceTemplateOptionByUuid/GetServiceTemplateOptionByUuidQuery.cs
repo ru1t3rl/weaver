@@ -5,4 +5,4 @@ using Weaver.Domain.Entities;
 
 namespace Weaver.Commands.ServiceTemplateOptions;
 
-public record GetServiceTemplateOptionByIdQuery(long Id) : IQuery<OneOf<ServiceTemplateOption, None>>;
+public record GetServiceTemplateOptionByUuidQuery(Guid Uuid) : IQuery<OneOf<ServiceTemplateOption, None>>;

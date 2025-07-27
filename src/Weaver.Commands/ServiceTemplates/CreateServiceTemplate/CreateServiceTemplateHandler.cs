@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 
-namespace Weaver.Commands.Services;
+namespace Weaver.Commands.ServicesTemplates;
 
 public class CreateServiceTemplateHandler : ICommandHandler<CreateServiceTemplateCommand, ServiceTemplate>
 {

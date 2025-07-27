@@ -6,6 +6,8 @@ using OneOf;
 using OneOf.Types;
 using Weaver.Commands.ServiceOptions;
 using Weaver.Commands.Services;
+using Weaver.Commands.ServicesTemplates;
+using Weaver.Commands.ServiceTemplateOptions;
 using Weaver.Domain.Entities;
 using Weaver.Infrastructure;
 using Weaver.WebApi.Models;

@@ -1,7 +1,7 @@
 using Cortex.Mediator.Commands;
 using Weaver.Domain.Entities;
 
-namespace Weaver.Commands.Services;
+namespace Weaver.Commands.ServicesTemplates;
 
 public record CreateServiceTemplateCommand(
     string Name,
