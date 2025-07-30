@@ -1,72 +1,61 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  SvgIcon,
-  Typography,
-  VariantProp,
-} from '@mui/joy';
-import { ServiceType } from '@weaver/shared';
-import { ReactNode } from 'react';
-import { LuBoxes, LuGlobe } from 'react-icons/lu';
-import { State, StateCircle } from '../state-circle/state-circle';
+import {ServiceType2 as ServiceType} from '@weaver/shared';
+import {Card, Flex, Typography} from 'antd';
+import {ReactNode} from 'react';
+import {LuBlocks, LuGlobe} from 'react-icons/lu';
+import {State, StateCircle} from '../state-circle/state-circle';
 import styles from './service-info-card.module.scss';
 
 interface ServiceInfoCardProps {
-  name: string;
-  type: ServiceType;
-  state?: State;
-  icon?: ReactNode;
-  onClick?: () => void;
-  variant?: VariantProp;
+    name: string;
+    type: ServiceType;
+    state?: State;
+    icon?: ReactNode;
+    onClick?: () => void;
+    selected?: boolean;
+    tabIndex?: number;
 }
 
 export function ServiceInfoCard(props: ServiceInfoCardProps) {
-  const { name, type, state, icon, onClick, variant } = props;
+    const {name, type, state, icon, onClick, selected, tabIndex} = props;
+    const {Text} = Typography;
 
-  function handleClick() {
-    if (onClick) {
-      onClick();
-    }
-  }
-
-  function renderIcon(): ReactNode {
-    if (icon) {
-      return icon;
+    function handleClick() {
+        if (onClick) {
+            onClick();
+        }
     }
 
-    let node: ReactNode;
-    switch (type) {
-      case ServiceType.Reference:
-        node = <LuGlobe />;
-        break;
-      case ServiceType.Custom:
-      default:
-        node = <LuBoxes />;
+    function renderIcon(): ReactNode {
+        if (icon) {
+            return icon;
+        }
+
+        let node: ReactNode;
+        switch (type) {
+            case ServiceType.Reference:
+                node = <LuGlobe/>;
+                break;
+            case ServiceType.Custom:
+            default:
+                node = <LuBlocks/>;
+        }
+
+        return node;
     }
 
-    return node;
-  }
-
-  return (
-    <Card
-      variant={variant ?? 'soft'}
-      onClick={handleClick}
-      sx={{
-        padding: '.5rem',
-        '&:hover': {
-          boxShadow: 'sm',
-          borderColor: 'neutral.outlinedHoverBorder',
-        },
-      }}
-    >
-      <CardContent orientation='horizontal' className={styles['card-content']}>
-        <SvgIcon>{renderIcon()}</SvgIcon>
-        <Box>
-          <Typography>{name}</Typography>
-          {state && <StateCircle state={state} />}
-        </Box>
-      </CardContent>
-    </Card>
-  );
+    return (
+        <Card
+            onClick={handleClick}
+            className={[styles['container'], selected ? styles['selected'] : ''].join(' ')}
+            tabIndex={tabIndex}
+        >
+            <Flex align={'center'} gap={10} style={{padding: 0}}>
+                <Text>{renderIcon()}</Text>
+                <Flex justify={'center'} gap={5}>
+                    <Text>{name}</Text>
+                    {state && <StateCircle state={state}/>}
+                </Flex>
+            </Flex>
+        </Card>
+    );
 }

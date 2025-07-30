@@ -6,8 +6,7 @@ const execAsync = promisify(exec);
 
 async function generateApiClient(): Promise<void> {
   // Get API URL from environment variable set by Aspire
-  const apiUrl =
-    import.meta.env.services__webapi__http__0 || 'http://localhost:5532';
+  const apiUrl = import.meta.env.services__webapi__http__0 || 'http://localhost:5532';
 
   console.log(`Generating API client from: ${apiUrl}/openapi/v1.json`);
 
@@ -15,9 +14,7 @@ async function generateApiClient(): Promise<void> {
   await writeToFile(openApiResponse);
 
   try {
-    const { stdout, stderr } = await execAsync(
-      `orval --config src/orval.config.ts`,
-    );
+    const { stdout, stderr } = await execAsync(`orval --config src/orval.config.ts`);
 
     if (stderr) {
       console.warn('Warning:', stderr);
@@ -58,10 +55,7 @@ async function writeToFile(openApi: string): Promise<void> {
     console.log('OpenAPI spec saved to openapi.json');
   } catch (error) {
     console.error('Response is not valid JSON:');
-    console.error(
-      'First 500 characters of response:',
-      openApi.substring(0, 500),
-    );
+    console.error('First 500 characters of response:', openApi.substring(0, 500));
     throw new Error(`Invalid JSON response from OpenAPI endpoint: ${error}`);
   }
 }

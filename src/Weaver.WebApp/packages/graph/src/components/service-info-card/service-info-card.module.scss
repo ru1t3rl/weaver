@@ -1,13 +1,14 @@
-.card-content {
-    align-items: center;
+.container {
+  padding: 0;
 }
 
-.card-content:hover {
-    cursor: pointer;
-    box-shadow: (--joy-shadowRing, 0 0 #000), 0px 1px 2px 0px rgba(var(--joy-shadowChannel, 21 21 21) / var(--joy-shadowOpacity, 0.08)) !important;
+.container:hover {
+  cursor: pointer;
+  border-color: var(--ant-color-primary-hover);
+  box-shadow: 0 0 5px -2px var(--ant-color-primary-hover);
 }
 
-.card-content:focus {
-    stroke: solid;
-    background-color: #f00;
+.selected {
+  border-color: var(--ant-color-primary-hover);
+  box-shadow: 0 0 5px -2px var(--ant-color-primary-hover);
 }

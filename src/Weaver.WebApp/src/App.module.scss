@@ -1,13 +1,12 @@
 .app-container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .theme-toggle {
-    position: fixed !important;
-    bottom: 1.5rem;
-    right: 2rem;
+  position: fixed !important;
+  top: 1.5rem;
+  right: 2rem;
 }

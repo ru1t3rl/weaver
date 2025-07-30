@@ -1,25 +1,44 @@
-import { Node, NodeProps } from '@xyflow/react';
-import { ServiceListItemModel } from 'packages/shared';
+import { ServiceTemplateListItemModel } from '@weaver/shared';
+import { Node, NodeChange, NodeProps } from '@xyflow/react';
+import { useServiceGraph } from '../../../hooks/use-service-graph';
 import { ServiceInfoCard } from '../../service-info-card/service-info-card';
 
 type ServiceNodeData = {
-  serviceInfo: ServiceListItemModel;
+  serviceInfo: ServiceTemplateListItemModel;
   onClick?: () => void;
 };
 
-export type ServiceNode = Node<ServiceNodeData, 'service-node'>;
+export const nodeName = 'serviceNode';
+export type ServiceNode = Node<ServiceNodeData, 'serviceNode'>;
 
 export function ServiceNode(props: NodeProps<ServiceNode>) {
-  const { data } = props;
+  const { id, data, selected } = props;
   const serviceInfo = data.serviceInfo;
+  const { tryUpdateNodes } = useServiceGraph();
 
   function handleClick() {
+    updateSelection(!selected);
+
     if (data.onClick) {
       data.onClick();
     }
   }
 
-  return <ServiceInfoCard name={serviceInfo.name} onClick={handleClick} />;
+  function updateSelection(selected: boolean) {
+    const change: NodeChange<ServiceNode> = {
+      id: id,
+      type: 'select',
+      selected: selected,
+    };
+
+    tryUpdateNodes([change]);
+  }
+
+  return (
+    <div>
+      <ServiceInfoCard name={serviceInfo.name} onClick={handleClick} type={serviceInfo.type} selected={selected} />
+    </div>
+  );
 }
 
 export default ServiceNode;

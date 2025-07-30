@@ -5,7 +5,7 @@ using Weaver.Domain.Entities;
 
 namespace Weaver.Infrastructure.Configurations;
 
-internal class ServiceConfiguration : IEntityTypeConfiguration<Service>
+public class ServiceConfiguration : IEntityTypeConfiguration<Service>
 {
     public void Configure(EntityTypeBuilder<Service> builder)
     {
@@ -14,7 +14,10 @@ internal class ServiceConfiguration : IEntityTypeConfiguration<Service>
         builder
             .HasIndex(s => s.Uuid)
             .IsUnique();
-        
-        builder.HasIndex(s => s.Name);
+
+        builder
+            .HasOne(s => s.Template)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

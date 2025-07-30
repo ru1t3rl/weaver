@@ -1,11 +1,16 @@
-import {MiniMap} from "@xyflow/react";
-import {styled} from "@mui/joy";
+import {MiniMap, MiniMapProps} from "@xyflow/react";
+import {theme} from "antd";
+import {useMemo} from "react";
 
-export const JoyMiniMap = styled(MiniMap, {
-    name: 'JoyMiniMap',
-    slot: 'Root',
-})(({theme}) => ({
-    backgroundColor: theme.vars.palette.background.surface,
-}));
+export function StyledMiniMap(props: MiniMapProps) {
+    const {useToken} = theme;
+    const {token} = useToken();
 
-export default JoyMiniMap;
+    const style = useMemo(() => ({
+        background: token.colorBgElevated,
+    }), [token])
+    
+    return <MiniMap style={style} {...props} />
+}
+
+export default StyledMiniMap;

@@ -2,7 +2,7 @@ using Cortex.Mediator.Queries;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
-using Weaver.Domain.Entities;
+using Weaver.Domain.Common.ServiceOptions;
 using Weaver.Infrastructure;
 
 namespace Weaver.Commands.ServiceOptions;
@@ -16,12 +16,13 @@ public class GetServiceOptionByUuidHandler : IQueryHandler<GetServiceOptionByUui
         _dbContext = dbContext;
     }
 
-    public async Task<OneOf<ServiceOption, None>> Handle(GetServiceOptionByUuidQuery query, CancellationToken cancellationToken)
+    public async Task<OneOf<ServiceOption, None>> Handle(GetServiceOptionByUuidQuery query,
+        CancellationToken cancellationToken)
     {
-        ServiceOption? option = await _dbContext.ServiceOptions
+        ServiceOption? serviceOption = await _dbContext.ServiceOptions
             .AsNoTracking()
             .SingleOrDefaultAsync(s => s.Uuid == query.Uuid, cancellationToken);
-        
-        return option is not null ? option : new None();
+
+        return serviceOption is not null ? serviceOption : new None();
     }
 }

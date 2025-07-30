@@ -1,8 +1,10 @@
 using Cortex.Mediator.Queries;
 using OneOf;
 using OneOf.Types;
-using Weaver.Domain.Entities;
+using Weaver.Domain.Common.ServiceOptions;
 
 namespace Weaver.Commands.ServiceOptions;
 
-public record GetServiceOptionByUuidQuery(Guid Uuid) : IQuery<OneOf<ServiceOption, None>>;
+public record GetServiceOptionByUuidQuery(
+    Guid Uuid
+) : IQuery<OneOf<ServiceOption, None>>;

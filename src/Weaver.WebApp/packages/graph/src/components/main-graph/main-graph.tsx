@@ -1,38 +1,86 @@
-import { Background } from '@xyflow/react';
+import { Background, Node, NodeChange, ReactFlowProvider, useNodesState } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useReducer, useRef } from 'react';
+import { Flex } from 'antd';
+import { useCallback, useRef } from 'react';
 import { useNodeEventListener } from '../../events';
 import { useServiceGraph } from '../../hooks/use-service-graph';
+import { NotificationProvider } from '../../providers';
+import { ModalsProvider } from '../../providers/modals-provider';
+import { GraphContextMenu } from '../graph-context-menu/graph-context-menu';
+import { NodeInfoPanel } from '../node-info-panel/node-info-panel';
 import ServiceNode from '../nodes/service-node/service-node';
-import { ServiceModal } from '../service-search-modal/service-search-modal';
-import JoyGraph from '../styled/joy-graph';
-import JoyMiniMap from '../styled/mini-map';
-
-interface MainGraphProps {}
+import StyledGraph from '../styled/styled-graph';
+import { Toolbar } from '../toolbar/toolbar';
+import styles from './main-graph.module.scss';
 
 const nodeTypes = {
   serviceNode: ServiceNode,
 };
 
-export function MainGraph(props: MainGraphProps) {
-  const [, forceRender] = useReducer(x => !x, false);
-  const forceRenderRef = useRef(() => {
-    forceRender();
+export function MainGraph() {
+  const [nodes, _setNodes, onNodesChange] = useNodesState([] as Node[]);
+  const { tryUpdateNodes } = useServiceGraph();
+
+  const setNodes = useRef((nodes: Node[]) => {
+    _setNodes(nodes);
   });
 
-  const { nodes } = useServiceGraph();
   useNodeEventListener({
-    onAllNodeUpdates: () => forceRenderRef.current(),
+    onAllNodeUpdates: value => setNodes.current(value),
   });
+
+  const customOnNodesChange = useCallback(
+    (changes: NodeChange<Node>[]) => {
+      tryUpdateNodes(changes as NodeChange<ServiceNode>[]);
+      onNodesChange(changes);
+    },
+    [onNodesChange, tryUpdateNodes],
+  );
+
+  const customOnNodeSelectionChange = useCallback(
+    ({ nodes }: { nodes: Node[] }) => {
+      const changes: NodeChange<ServiceNode>[] = nodes.map(
+        node =>
+          ({
+            id: node.id,
+            type: 'select',
+            selected: node.selected,
+          } as NodeChange<ServiceNode>),
+      );
+
+      tryUpdateNodes(changes);
+      onNodesChange(changes);
+    },
+    [onNodesChange, tryUpdateNodes],
+  );
 
   return (
-    <>
-      <ServiceModal />
-      <JoyGraph nodes={[...nodes]} edges={[]} nodeTypes={nodeTypes}>
-        <JoyMiniMap />
-        <Background />
-      </JoyGraph>
-    </>
+    <div style={{ width: '100%', height: '100%' }} className={styles['main-graph-container']}>
+      <ReactFlowProvider>
+        <NotificationProvider>
+          <ModalsProvider>
+            <Flex vertical className={styles['overlay-ui']}>
+              <Toolbar />
+              <NodeInfoPanel />
+            </Flex>
+            <GraphContextMenu>
+              <StyledGraph
+                nodes={nodes}
+                edges={[]}
+                nodeTypes={nodeTypes}
+                snapToGrid
+                onNodesChange={customOnNodesChange}
+                onSelectionChange={customOnNodeSelectionChange}
+                multiSelectionKeyCode={'Ctrl'}
+                selectionKeyCode={'Shift'}
+              >
+                <Background />
+              </StyledGraph>
+            </GraphContextMenu>
+          </ModalsProvider>
+        </NotificationProvider>
+      </ReactFlowProvider>
+    </div>
   );
 }
 

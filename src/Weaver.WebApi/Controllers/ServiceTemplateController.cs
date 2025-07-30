@@ -1,0 +1,135 @@
+using Cortex.Mediator;
+using Cortex.Mediator.Exceptions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OneOf;
+using OneOf.Types;
+using Weaver.Commands.ServiceOptions;
+using Weaver.Commands.Services;
+using Weaver.Commands.ServicesTemplates;
+using Weaver.Commands.ServiceTemplateOptions;
+using Weaver.Domain.Entities;
+using Weaver.Infrastructure;
+using Weaver.WebApi.Models;
+
+namespace Weaver.WebApi.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class ServiceTemplateController : ControllerBase
+{
+    private readonly IMediator _mediator;
+    private readonly WeaverDbContext _dbContext;
+
+    public ServiceTemplateController(IMediator mediator, WeaverDbContext dbContext)
+    {
+        _mediator = mediator;
+        _dbContext = dbContext;
+    }
+
+    [HttpPut("with-references")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create(string name, ServiceType type, IEnumerable<Guid> options)
+    {
+        var command = new CreateServiceTemplateCommand(name, type, options);
+
+        try
+        {
+            await _mediator.SendCommandAsync<CreateServiceTemplateCommand, ServiceTemplate>(command);
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Message);
+        }
+
+        return Created();
+    }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create(string name, ServiceType type,
+        IEnumerable<ServiceTemplateOptionModel> options)
+    {
+        HashSet<ServiceTemplateOptionModel> serviceOptions = options.ToHashSet();
+        var existingServiceOptions = await _dbContext.ServiceTemplateOptions
+            .AsNoTracking()
+            .ToHashSetAsync();
+
+        ServiceTemplateOptionModel[] optionsToCreate = serviceOptions.Where(o =>
+            !existingServiceOptions.Any(s => s.Name == o.Name && s.Type == o.Type)
+        ).ToArray();
+
+        foreach (ServiceTemplateOptionModel option in optionsToCreate)
+        {
+            var optionCommand = new CreateServiceTemplateOptionCommand(option.Name, option.Type);
+            var templateOption =
+                await _mediator.SendCommandAsync<CreateServiceTemplateOptionCommand, ServiceTemplateOption>(
+                    optionCommand);
+
+            existingServiceOptions.Add(templateOption);
+        }
+
+        Guid[] optionUuids = existingServiceOptions
+            .Where(s => serviceOptions.Any(o => s.Name == o.Name && s.Type == o.Type))
+            .Select(s => s.Uuid)
+            .ToArray();
+
+        var command = new CreateServiceTemplateCommand(name, type, optionUuids);
+        try
+        {
+            await _mediator.SendCommandAsync<CreateServiceTemplateCommand, ServiceTemplate>(command);
+        }
+        catch (ValidationException e)
+        {
+            return BadRequest(e.Message);
+        }
+
+        return Created();
+    }
+
+    [HttpGet]
+    [ProducesResponseType<IEnumerable<ServiceTemplateListItemModel>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Get()
+    {
+        IEnumerable<ServiceTemplateListItemModel> services = await _dbContext.ServicesTemplates
+            .AsNoTracking()
+            .Select(s => new ServiceTemplateListItemModel
+            {
+                Id = s.Uuid,
+                Name = s.Name,
+                Type = s.Type
+            })
+            .ToListAsync();
+
+        return Ok(services);
+    }
+
+    [HttpGet("{uuid:guid}")]
+    [ProducesResponseType<ServiceTemplateDetailModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(Guid uuid, CancellationToken cancellationToken = default)
+    {
+        var query = new GetServiceTemplateByUuidQuery(uuid);
+        var result =
+            await _mediator.SendQueryAsync<GetServiceTemplateByUuidQuery, OneOf<ServiceTemplate, None>>(query,
+                cancellationToken);
+
+        return result.Match<IActionResult>(
+            service => Ok(new ServiceTemplateDetailModel
+            {
+                Id = service.Uuid,
+                Name = service.Name,
+                Type = service.Type,
+                Config = service.Config.Select(o => new ServiceTemplateOptionModel
+                {
+                    Id = o.Uuid,
+                    Name = o.Name,
+                    Type = o.Type
+                })
+            }),
+            none => NotFound()
+        );
+    }
+}

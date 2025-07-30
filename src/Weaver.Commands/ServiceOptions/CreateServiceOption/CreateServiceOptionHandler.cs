@@ -1,10 +1,16 @@
 using Cortex.Mediator.Commands;
-using Weaver.Domain.Entities;
+using Npgsql;
+using OneOf;
+using OneOf.Types;
+using Weaver.Domain.Common.ServiceOptions;
 using Weaver.Infrastructure;
 
 namespace Weaver.Commands.ServiceOptions;
 
-public class CreateServiceOptionHandler : ICommandHandler<CreateServiceOptionCommand>
+public class CreateServiceOptionHandler : ICommandHandler<
+    CreateServiceOptionCommand,
+    OneOf<ServiceOption, Error<Exception>>
+>
 {
     private readonly WeaverDbContext _dbContext;
 
@@ -13,16 +19,52 @@ public class CreateServiceOptionHandler : ICommandHandler<CreateServiceOptionCom
         _dbContext = dbContext;
     }
 
-    public async Task Handle(CreateServiceOptionCommand command, CancellationToken cancellationToken)
+    public async Task<OneOf<ServiceOption, Error<Exception>>> Handle(CreateServiceOptionCommand command,
+        CancellationToken cancellationToken)
     {
-        ServiceOption option = new ServiceOption()
+        try
         {
-            Uuid = Guid.NewGuid(),
-            Name = command.Name,
-            Type = command.Type,
-        };
+            ServiceOption serviceOption = command.Value.Match<ServiceOption>(
+                stringValue => new ServiceOption<string>
+                {
+                    Type = command.Type,
+                    Name = command.Name,
+                    Value = stringValue
+                },
+                doubleValue => new ServiceOption<double>
+                {
+                    Type = command.Type,
+                    Name = command.Name,
+                    Value = doubleValue
+                },
+                boolValue => new ServiceOption<bool>
+                {
+                    Type = command.Type,
+                    Name = command.Name,
+                    Value = boolValue
+                },
+                stringArrayValue => new ServiceOption<string[]>
+                {
+                    Type = command.Type,
+                    Name = command.Name,
+                    Value = stringArrayValue
+                },
+                doubleArrayValue => new ServiceOption<double[]>
+                {
+                    Type = command.Type,
+                    Name = command.Name,
+                    Value = doubleArrayValue
+                }
+            );
 
-        await _dbContext.ServiceOptions.AddAsync(option, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+            serviceOption = (await _dbContext.ServiceOptions.AddAsync(serviceOption, cancellationToken)).Entity;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return serviceOption;
+        }
+        catch (NpgsqlException ex)
+        {
+            return new Error<Exception>(ex);
+        }
     }
 }

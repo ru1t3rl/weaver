@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using CommunityToolkit.Aspire.Utils;
 
+namespace Weaver.AppHost;
+
 internal static class ResourceBuilderExtensions
 {
     public static IResourceBuilder<T> WithApiClientGenerator<T>(
@@ -24,14 +26,17 @@ internal static class ResourceBuilderExtensions
         builder.WithCommand(
             name: "generate-clients",
             displayName: displayName,
-            iconName: "BuildingFactory",
-            iconVariant: IconVariant.Regular,
-            executeCommand: context => OnRunGenerateClients(
+            executeCommand: _ => OnRunGenerateClients(
                 builder,
                 workingDirectory,
                 command,
                 arguments
-            )
+            ),
+            commandOptions: new CommandOptions()
+            {
+                IconName = "BuildingFactory",
+                IconVariant = IconVariant.Regular
+            }
         );
         return builder;
     }
@@ -63,7 +68,7 @@ internal static class ResourceBuilderExtensions
             };
         }
 
-        process.ErrorDataReceived += (sender, args) =>
+        process.ErrorDataReceived += (_, args) =>
         {
             Console.WriteLine(args.Data);
         };

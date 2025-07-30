@@ -1,9 +1,9 @@
-using Weaver.Domain.Common;
+using Weaver.Domain.Entities;
 
-namespace Weaver.Domain.Entities;
+namespace Weaver.Domain.Common.ServiceOptions;
 
-public class ServiceOption : EntityBase
+public abstract class ServiceOption : EntityBase
 {
-    public required string Name { get; init; }
-    public required OptionType Type { get; set; }
+    public virtual OptionType Type { get; init; } = OptionType.String;
+    public required string Name { get; set; }
 }

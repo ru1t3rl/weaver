@@ -17,12 +17,87 @@ namespace Weaver.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ServiceTemplateServiceTemplateOption", b =>
+                {
+                    b.Property<long>("ConfigId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ServiceTemplateId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ConfigId", "ServiceTemplateId");
+
+                    b.HasIndex("ServiceTemplateId");
+
+                    b.ToTable("ServiceTemplateServiceTemplateOption", (string)null);
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long?>("ServiceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("Uuid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceOptions", (string)null);
+
+                    b.HasDiscriminator<int>("Type");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("Weaver.Domain.Entities.Service", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("TemplateId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("Uuid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("Uuid")
+                        .IsUnique();
+
+                    b.ToTable("Services", (string)null);
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Entities.ServiceTemplate", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,10 +122,10 @@ namespace Weaver.Infrastructure.Migrations
                     b.HasIndex("Uuid")
                         .IsUnique();
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("ServiceTemplates", (string)null);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOption", b =>
+            modelBuilder.Entity("Weaver.Domain.Entities.ServiceTemplateOption", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,9 +137,6 @@ namespace Weaver.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("ServiceId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -73,27 +145,125 @@ namespace Weaver.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("ServiceId");
-
                     b.HasIndex("Uuid")
                         .IsUnique();
 
-                    b.ToTable("ServiceOptions", (string)null);
+                    b.HasIndex("Name", "Type")
+                        .IsUnique();
+
+                    b.ToTable("ServiceTemplateOptions", (string)null);
                 });
 
-            modelBuilder.Entity("Weaver.Domain.Entities.ServiceOption", b =>
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<bool>", b =>
+                {
+                    b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
+
+                    b.Property<bool>("Value")
+                        .HasColumnType("boolean");
+
+                    b.HasDiscriminator().HasValue(2);
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<double>", b =>
+                {
+                    b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("double precision");
+
+                    b.ToTable("ServiceOptions", t =>
+                        {
+                            t.Property("Value")
+                                .HasColumnName("ServiceOption_Value");
+                        });
+
+                    b.HasDiscriminator().HasValue(0);
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<double[]>", b =>
+                {
+                    b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
+
+                    b.PrimitiveCollection<double[]>("Value")
+                        .HasColumnType("double precision[]");
+
+                    b.ToTable("ServiceOptions", t =>
+                        {
+                            t.Property("Value")
+                                .HasColumnName("ServiceOption_Value1");
+                        });
+
+                    b.HasDiscriminator().HasValue(4);
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<string>", b =>
+                {
+                    b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.ToTable("ServiceOptions", t =>
+                        {
+                            t.Property("Value")
+                                .HasColumnName("ServiceOption_Value2");
+                        });
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption<string[]>", b =>
+                {
+                    b.HasBaseType("Weaver.Domain.Common.ServiceOptions.ServiceOption");
+
+                    b.PrimitiveCollection<string[]>("Value")
+                        .HasColumnType("text[]");
+
+                    b.ToTable("ServiceOptions", t =>
+                        {
+                            t.Property("Value")
+                                .HasColumnName("ServiceOption_Value3");
+                        });
+
+                    b.HasDiscriminator().HasValue(3);
+                });
+
+            modelBuilder.Entity("ServiceTemplateServiceTemplateOption", b =>
+                {
+                    b.HasOne("Weaver.Domain.Entities.ServiceTemplateOption", null)
+                        .WithMany()
+                        .HasForeignKey("ConfigId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Weaver.Domain.Entities.ServiceTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("ServiceTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Common.ServiceOptions.ServiceOption", b =>
                 {
                     b.HasOne("Weaver.Domain.Entities.Service", null)
-                        .WithMany("Config")
+                        .WithMany("Options")
                         .HasForeignKey("ServiceId");
                 });
 
             modelBuilder.Entity("Weaver.Domain.Entities.Service", b =>
                 {
-                    b.Navigation("Config");
+                    b.HasOne("Weaver.Domain.Entities.ServiceTemplate", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("Weaver.Domain.Entities.Service", b =>
+                {
+                    b.Navigation("Options");
                 });
 #pragma warning restore 612, 618
         }
