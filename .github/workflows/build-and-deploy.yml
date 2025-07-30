@@ -30,7 +30,7 @@ jobs:
           dotnet-version: '9.x'
 
       - name: Install Aspire CLI
-        run: dotnet tool install -g aspire.cli --prerelease
+        run: dotnet tool install -g aspire.cli --version 9.4.0
 
       - name: Setup Docker
         uses: docker/setup-docker-action@v3
