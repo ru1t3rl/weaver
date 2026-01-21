@@ -6,6 +6,7 @@ import { useNodeEventListener } from '../../events';
 import { useServiceGraph } from '../../hooks/use-service-graph';
 import { NotificationProvider } from '../../providers';
 import { ModalsProvider } from '../../providers/modals-provider';
+import { DockerTestCard } from '../docker-test-card/docker-test-card';
 import { GraphContextMenu } from '../graph-context-menu/graph-context-menu';
 import { NodeInfoPanel } from '../node-info-panel/node-info-panel';
 import ServiceNode from '../nodes/service-node/service-node';
@@ -62,6 +63,7 @@ export function MainGraph() {
             <Flex vertical className={styles['overlay-ui']}>
               <Toolbar />
               <NodeInfoPanel />
+              <DockerTestCard />
             </Flex>
             <GraphContextMenu>
               <StyledGraph
