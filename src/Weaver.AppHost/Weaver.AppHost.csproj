@@ -4,13 +4,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>0fd9fe53-8d6c-47c1-8edc-3b9d6b151273</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Weaver.Docker.WebApi\Weaver.Docker.WebApi.csproj" />
     <ProjectReference Include="..\Weaver.Migrator\Weaver.Migrator.csproj" />
     <ProjectReference Include="..\Weaver.WebApi\Weaver.WebApi.csproj" />
   </ItemGroup>
