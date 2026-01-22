@@ -1,16 +1,15 @@
-import { PropsWithChildren, useMemo } from 'react';
+import { PropsWithChildren } from 'react';
 import { DockerContext, IDockerContext } from '../contexts';
 
-import Docker, { DockerOptions } from 'dockerode';
+interface DockerProviderProps {
+  dockerApiAddress: string
+}
 
-interface DockerProviderProps {}
-
-export const DockerProvider = (options: DockerOptions, props: DockerProviderProps & PropsWithChildren) => {
-  const { children } = props;
-  const docker = useMemo(() => new Docker(options), [options]);
+export const DockerProvider = (props: DockerProviderProps & PropsWithChildren) => {
+  const { dockerApiAddress, children } = props;
 
   const value: IDockerContext = {
-    docker: docker,
+    dockerApiAddress
   };
 
   return <DockerContext.Provider value={value}>{children}</DockerContext.Provider>;

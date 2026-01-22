@@ -1,12 +1,11 @@
-import Docker from 'dockerode';
 import { createContext } from 'react';
 
 export interface IDockerContext {
-  docker: Docker | undefined;
+  dockerApiAddress: string;
 }
 
 export const DockerContext = createContext<IDockerContext>({
-  docker: undefined,
+  dockerApiAddress: 'N/A',
 });
 
 export default DockerContext;

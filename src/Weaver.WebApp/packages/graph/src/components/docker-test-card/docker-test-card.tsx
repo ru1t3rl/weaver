@@ -1,22 +1,15 @@
 import { useDocker } from '@weaver/docker';
 import { Button, Card, Divider, Flex, Spin, Tag, Typography } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LuPlus } from 'react-icons/lu';
 import styles from './docker-test-card.module.scss';
 
 export function DockerTestCard() {
   const [isLoading, setIsLoading] = useState(true);
-  const { getContainers } = useDocker();
-
-  const [containers, setContainers] = useState<string[]>([]);
-
-  useMemo(async () => {
-    const containers = await getContainers();
-    setContainers(containers.map(c => c.Names[0]));
-  }, []);
+  const { Containers: containers } = useDocker();
 
   useEffect(() => {
-    setIsLoading(containers.length > 0);
+    setIsLoading(containers.length <= 0);
   }, [containers]);
 
   return (
@@ -28,14 +21,16 @@ export function DockerTestCard() {
       )}
       {!isLoading && (
         <Flex vertical gap={10}>
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: 5 }}>
-            Inspector
+          {containers.map(c =>
+          (<><Typography.Title level={2} style={{ margin: 0, marginBottom: 5 }}>
+            {c.name}
           </Typography.Title>
-          <Flex vertical gap={5}>
-            <Typography.Text>
-              Type: <Tag color={'cyan'}>Docker</Tag>
-            </Typography.Text>
-          </Flex>
+            <Flex vertical gap={5}>
+              <Typography.Text>
+                Type: <Tag color={'cyan'}>Docker</Tag>
+              </Typography.Text>
+            </Flex></>)
+          )}
           <Divider size='small' />
           <Flex vertical></Flex>
           <Divider />

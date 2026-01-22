@@ -1,45 +1,46 @@
-import { Container } from 'dockerode';
-import { useContext, useState } from 'react';
-import { DockerContext } from '../contexts';
+import { AxiosRequestConfig } from 'axios';
+import { useDeleteContainerIdentifier, useGetContainerIdentifier, usePutContainerIdentifierStart, usePutContainerIdentifierStop } from '../api/endpoints/container';
+import { useDocker } from './use-docker';
+import { AxiosConfig } from '../utils';
 
 interface useContainer {
   start: () => Promise<void>;
   stop: () => Promise<void>;
+  down: () => Promise<void>;
   logs: () => Promise<string>;
 }
 
 export const useContainer = (containerid: string): useContainer => {
-  const { docker } = useContext(DockerContext);
-  const [container] = useState<Container | undefined>(docker?.getContainer(containerid));
+  const { dockerApiAddress } = useDocker();
+  const { data, isLoading } = useGetContainerIdentifier(containerid, AxiosConfig(dockerApiAddress, 'get'));
+  const { mutateAsync: startContainerAsync } = usePutContainerIdentifierStart(AxiosConfig(dockerApiAddress, 'put'));
+  const { mutateAsync: stopContainerAsync } = usePutContainerIdentifierStop(AxiosConfig(dockerApiAddress, 'put'));
+  const { mutateAsync: downContainerAsync } = useDeleteContainerIdentifier(AxiosConfig(dockerApiAddress, 'delete'));
 
   async function start(): Promise<void> {
-    await container?.start();
+    await startContainerAsync({ identifier: containerid });
   }
 
   async function stop(): Promise<void> {
-    await container?.stop();
+    await stopContainerAsync({ identifier: containerid });
+  }
+
+  async function down(): Promise<void> {
+    await downContainerAsync({ identifier: containerid });
   }
 
   async function logs(): Promise<string> {
-    if (!container) return '';
+    while (isLoading) {
+      await new Promise(r => { setTimeout(r, 500) });
+    }
 
-    const inspectData = await container.inspect();
-    const startTime = new Date(inspectData?.State.StartedAt || '').getTime() / 1000;
-
-    const log: Buffer = await container.logs({
-      since: startTime,
-      stdout: true,
-      stderr: true,
-      timestamps: true,
-      follow: false,
-    });
-
-    return log.toString('utf-8');
+    return data?.data.logs ?? '';
   }
 
   return {
     start,
     stop,
+    down,
     logs,
   };
 };
