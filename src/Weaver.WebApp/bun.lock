@@ -36,6 +36,16 @@
     "packages/docker": {
       "name": "@weaver/docker",
       "version": "1.0.0",
+      "dependencies": {
+        "axios": "^1.10.0",
+        "react-query": "^3.39.3",
+        "react-router": "^7.6.3",
+      },
+      "devDependencies": {
+        "ajv": "^8.17.1",
+        "orval": "^7.10.0",
+        "tsx": "^4.20.3",
+      },
     },
     "packages/graph": {
       "name": "@weaver/graph",

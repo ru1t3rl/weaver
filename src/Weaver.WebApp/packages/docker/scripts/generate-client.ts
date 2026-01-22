@@ -6,7 +6,7 @@ const execAsync = promisify(exec);
 
 async function generateApiClient(): Promise<void> {
   // Get API URL from environment variable set by Aspire
-  const apiUrl = import.meta.env.services__webapi__http__0 || 'http://localhost:5532';
+  const apiUrl = import.meta.env.services__webapi__http__0 || 'http://localhost:5297';
 
   console.log(`Generating API client from: ${apiUrl}/openapi/v1.json`);
 

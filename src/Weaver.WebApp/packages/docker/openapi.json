@@ -1,0 +1,1661 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Weaver.Docker.WebApi | v1",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5297/"
+    }
+  ],
+  "paths": {
+    "/Container": {
+      "get": {
+        "tags": [
+          "Container"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContainerListItemModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContainerListItemModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContainerListItemModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Container"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContainerParameters"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContainerParameters"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContainerParameters"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/Container/{identifier}": {
+      "get": {
+        "tags": [
+          "Container"
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainerDetailModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainerDetailModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContainerDetailModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Container"
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BindOptions": {
+        "type": "object",
+        "properties": {
+          "Propagation": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "NonRecursive": {
+            "type": "boolean"
+          },
+          "CreateMountpoint": {
+            "type": "boolean"
+          },
+          "ReadOnlyNonRecursive": {
+            "type": "boolean"
+          },
+          "ReadOnlyForceRecursive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ClusterOptions": {
+        "type": "object"
+      },
+      "ContainerDetailModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "image": {
+            "type": "string"
+          },
+          "imageId": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PortSummary"
+            }
+          },
+          "state": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "health": {
+            "$ref": "#/components/schemas/HealthSummary"
+          },
+          "networkSettingsSummary": {
+            "$ref": "#/components/schemas/NetworkSettingsSummary"
+          },
+          "mounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MountPoint"
+            }
+          },
+          "logs": {
+            "type": "string"
+          }
+        }
+      },
+      "ContainerListItemModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "health": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateContainerParameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "platform": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Hostname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Domainname": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "User": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "AttachStdin": {
+            "type": "boolean"
+          },
+          "AttachStdout": {
+            "type": "boolean"
+          },
+          "AttachStderr": {
+            "type": "boolean"
+          },
+          "ExposedPorts": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EmptyStruct"
+            }
+          },
+          "Tty": {
+            "type": "boolean"
+          },
+          "OpenStdin": {
+            "type": "boolean"
+          },
+          "StdinOnce": {
+            "type": "boolean"
+          },
+          "Env": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "Cmd": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "Healthcheck": {
+            "$ref": "#/components/schemas/HealthcheckConfig"
+          },
+          "ArgsEscaped": {
+            "type": "boolean"
+          },
+          "Image": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Volumes": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EmptyStruct"
+            }
+          },
+          "WorkingDir": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Entrypoint": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "NetworkDisabled": {
+            "type": "boolean"
+          },
+          "OnBuild": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "Labels": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "StopSignal": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "StopTimeout": {},
+          "Shell": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "HostConfig": {
+            "$ref": "#/components/schemas/HostConfig"
+          },
+          "NetworkingConfig": {
+            "$ref": "#/components/schemas/NetworkingConfig"
+          }
+        }
+      },
+      "DeviceMapping": {
+        "type": "object",
+        "properties": {
+          "PathOnHost": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "PathInContainer": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "CgroupPermissions": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "DeviceRequest": {
+        "type": "object",
+        "properties": {
+          "Driver": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "DeviceIDs": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "Capabilities": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "Options": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Driver": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Options": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "EmptyStruct": {
+        "type": "object"
+      },
+      "EndpointIPAMConfig": {
+        "type": "object",
+        "properties": {
+          "IPv4Address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "IPv6Address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "LinkLocalIPs": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "EndpointSettings": {
+        "type": "object",
+        "properties": {
+          "IPAMConfig": {
+            "$ref": "#/components/schemas/EndpointIPAMConfig"
+          },
+          "Links": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "Aliases": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "DriverOpts": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "GwPriority": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "NetworkID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "EndpointID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Gateway": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "IPAddress": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "MacAddress": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "IPPrefixLen": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "IPv6Gateway": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "GlobalIPv6Address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "GlobalIPv6PrefixLen": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "DNSNames": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "HealthcheckConfig": {
+        "type": "object",
+        "properties": {
+          "Test": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "Interval": {},
+          "Timeout": {},
+          "StartPeriod": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "StartInterval": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "Retries": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "HealthSummary": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "FailingStreak": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "HostConfig": {
+        "type": "object",
+        "properties": {
+          "Binds": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "ContainerIDFile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "LogConfig": {
+            "$ref": "#/components/schemas/LogConfig"
+          },
+          "NetworkMode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "PortBindings": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PortBinding"
+              }
+            }
+          },
+          "RestartPolicy": {
+            "$ref": "#/components/schemas/RestartPolicy"
+          },
+          "AutoRemove": {
+            "type": "boolean"
+          },
+          "VolumeDriver": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "VolumesFrom": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "ConsoleSize": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "uint64"
+            }
+          },
+          "Annotations": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "CapAdd": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "CapDrop": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "CgroupnsMode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Dns": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "DnsOptions": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "DnsSearch": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "ExtraHosts": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "GroupAdd": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "IpcMode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Cgroup": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Links": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "OomScoreAdj": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "PidMode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Privileged": {
+            "type": "boolean"
+          },
+          "PublishAllPorts": {
+            "type": "boolean"
+          },
+          "ReadonlyRootfs": {
+            "type": "boolean"
+          },
+          "SecurityOpt": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "StorageOpt": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "Tmpfs": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "UTSMode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "UsernsMode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ShmSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "Sysctls": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "Runtime": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Isolation": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "CpuShares": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "Memory": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "NanoCpus": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "CgroupParent": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "BlkioWeight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint16"
+          },
+          "BlkioWeightDevice": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WeightDevice"
+            }
+          },
+          "BlkioDeviceReadBps": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ThrottleDevice"
+            }
+          },
+          "BlkioDeviceWriteBps": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ThrottleDevice"
+            }
+          },
+          "BlkioDeviceReadIOps": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ThrottleDevice"
+            }
+          },
+          "BlkioDeviceWriteIOps": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ThrottleDevice"
+            }
+          },
+          "CpuPeriod": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "CpuQuota": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "CpuRealtimePeriod": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "CpuRealtimeRuntime": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "CpusetCpus": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "CpusetMems": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Devices": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/DeviceMapping"
+            }
+          },
+          "DeviceCgroupRules": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "DeviceRequests": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/DeviceRequest"
+            }
+          },
+          "MemoryReservation": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "MemorySwap": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "MemorySwappiness": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "OomKillDisable": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "PidsLimit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "Ulimits": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Ulimit"
+            }
+          },
+          "CpuCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "CpuPercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "IOMaximumIOps": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "IOMaximumBandwidth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          },
+          "Mounts": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Mount"
+            }
+          },
+          "MaskedPaths": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "ReadonlyPaths": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "Init": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      },
+      "ImageOptions": {
+        "type": "object",
+        "properties": {
+          "Subpath": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "LogConfig": {
+        "type": "object",
+        "properties": {
+          "Type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Config": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Mount": {
+        "type": "object",
+        "properties": {
+          "Type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Source": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Target": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ReadOnly": {
+            "type": "boolean"
+          },
+          "Consistency": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "BindOptions": {
+            "$ref": "#/components/schemas/BindOptions"
+          },
+          "VolumeOptions": {
+            "$ref": "#/components/schemas/VolumeOptions"
+          },
+          "ImageOptions": {
+            "$ref": "#/components/schemas/ImageOptions"
+          },
+          "TmpfsOptions": {
+            "$ref": "#/components/schemas/TmpfsOptions"
+          },
+          "ClusterOptions": {
+            "$ref": "#/components/schemas/ClusterOptions"
+          }
+        }
+      },
+      "MountPoint": {
+        "type": "object",
+        "properties": {
+          "Type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Source": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Destination": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Driver": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Mode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "RW": {
+            "type": "boolean"
+          },
+          "Propagation": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "NetworkingConfig": {
+        "type": "object",
+        "properties": {
+          "EndpointsConfig": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EndpointSettings"
+            }
+          }
+        }
+      },
+      "NetworkSettingsSummary": {
+        "type": "object",
+        "properties": {
+          "Networks": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EndpointSettings"
+            }
+          }
+        }
+      },
+      "PortBinding": {
+        "type": "object",
+        "properties": {
+          "HostIp": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "HostPort": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "PortSummary": {
+        "type": "object",
+        "properties": {
+          "IP": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "PrivatePort": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint16"
+          },
+          "PublicPort": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint16"
+          },
+          "Type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RestartPolicy": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "$ref": "#/components/schemas/RestartPolicyKind"
+          },
+          "MaximumRetryCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "RestartPolicyKind": {
+        "type": "integer"
+      },
+      "ThrottleDevice": {
+        "type": "object",
+        "properties": {
+          "Path": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Rate": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint64"
+          }
+        }
+      },
+      "TmpfsOptions": {
+        "type": "object",
+        "properties": {
+          "SizeBytes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "Mode": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint32"
+          },
+          "Options": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Ulimit": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Hard": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "Soft": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "VolumeOptions": {
+        "type": "object",
+        "properties": {
+          "NoCopy": {
+            "type": "boolean"
+          },
+          "Labels": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "Subpath": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "DriverConfig": {
+            "$ref": "#/components/schemas/Driver"
+          }
+        }
+      },
+      "WeightDevice": {
+        "type": "object",
+        "properties": {
+          "Path": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "Weight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint16"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Container"
+    }
+  ]
+}
