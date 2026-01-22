@@ -137,4 +137,22 @@ public class ContainerController : ControllerBase
 
         return Ok();
     }
+
+    [HttpPut("{identifier}/start")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
+    {
+        await _dockerClient.Containers.StartContainerAsync(identifier, new ContainerStartParameters(), cancellationToken);
+        return Ok();
+    }
+    
+    [HttpPut("{identifier}/stop")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
+    {
+        await _dockerClient.Containers.StopContainerAsync(identifier, new ContainerStopParameters(), cancellationToken);
+        return Ok();
+    }
 }

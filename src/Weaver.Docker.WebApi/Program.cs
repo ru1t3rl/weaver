@@ -35,6 +35,13 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference("/docs");
 }
 
+app.UseCors(options =>
+    options
+        .SetIsOriginAllowed(_ => true)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+);
+
 app.MapControllers();
 app.MapDefaultEndpoints();
 
