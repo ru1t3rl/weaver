@@ -5,7 +5,7 @@ import { Flex, MenuProps, Typography } from 'antd';
 import { useCallback, useEffect, useMemo } from 'react';
 import { NotificationProvider } from '../../providers';
 import { ModalsProvider } from '../../providers/modals-provider';
-import { NodeTypes, stackNode, containerNode, StyledGraph, GraphContextMenu, NodeInfoPanel, resolveCollisions } from '@weaver/graph';
+import { NodeTypes, stackNode, containerNode, StyledGraph, GraphContextMenu, NodeInfoPanel, resolveCollisions, resolveCollisionsVoronoi } from '@weaver/graph';
 import styles from './main-graph.module.scss';
 import { useServiceTemplateSearchModal } from '../../hooks';
 import { LuPlus } from 'react-icons/lu';
@@ -25,15 +25,16 @@ export function MainGraph() {
 
 
   const containerNodes = useMemo(() => {
-    return Containers.map((c) => ({
-      id: c.id,
-      type: containerNode,
-      position: { x: 0, y: 0 },
-      data: {
-        name: c.name,
-        state: c.status
-      }
-    }) as unknown as Node);
+    // return Containers.map((c) => ({
+    //   id: c.id,
+    //   type: containerNode,
+    //   position: { x: 0, y: 0 },
+    //   data: {
+    //     name: c.name,
+    //     state: c.state
+    //   }
+    // }) as unknown as Node);
+    return [];
   }, [Containers]);
 
   const stackNodes = useMemo(() => {
@@ -43,7 +44,9 @@ export function MainGraph() {
       position: { x: 0, y: 0 },
       data: {
         name: c.name,
-        // state: c.
+        state: c.status,
+        containerNames: c.containers?.map(c => c.name) ?? [],
+        ports: c.ports ?? []
       }
     }) as unknown as Node);
   }, [Stacks])
@@ -52,7 +55,7 @@ export function MainGraph() {
 
   useEffect(() => {
     if (nodes.length !== [...stackNodes, ...containerNodes].length) {
-      setNodes(resolveCollisions([...stackNodes, ...containerNodes], {
+      setNodes(resolveCollisionsVoronoi([...stackNodes, ...containerNodes], {
         maxIterations: Infinity,
         overlapThreshold: 0.5,
         margin: 15,
@@ -63,7 +66,7 @@ export function MainGraph() {
 
   const fixCollisions = useCallback(() => {
     setNodes((nds) =>
-      resolveCollisions(nds, {
+      resolveCollisionsVoronoi(nds, {
         maxIterations: Infinity,
         overlapThreshold: 0.5,
         margin: 15,

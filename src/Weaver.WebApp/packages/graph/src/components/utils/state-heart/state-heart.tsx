@@ -1,16 +1,16 @@
-import { Health } from '@weaver/docker';
-import styles from './state-cricle.module.scss';
+import { Status } from '@weaver/docker';
 import { Flex, theme, Typography } from "antd";
 import { useMemo } from "react";
-import { Status } from '@weaver/docker';
+import styles from './state-heart.module.scss';
+import { LuHeart } from 'react-icons/lu';
 
-interface StateCircleProps {
+interface StateHeartProps {
     state: Status;
     size?: string;
     showLabel?: boolean;
 }
 
-export function StateCircle(props: StateCircleProps) {
+export function StateHeart(props: StateHeartProps) {
     const { state, size = '10px', showLabel } = props;
 
     const { Text } = Typography;
@@ -35,11 +35,12 @@ export function StateCircle(props: StateCircleProps) {
     }, [state])
 
     return (
-        <Flex vertical={false} align='center'>
-            <div
+        <Flex vertical={false} align='center' gap={'small'}>
+            <LuHeart
                 className={styles['dot']}
-                style={{ backgroundColor: color, height: size }}
-            ></div>
+                style={{ color: color, height: size }}
+            />            
+
             {showLabel && <Text>{Status[state]}</Text>}
         </Flex>
     );

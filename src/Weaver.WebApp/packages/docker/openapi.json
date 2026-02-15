@@ -306,10 +306,22 @@
           "name": {
             "type": "string"
           },
+          "health": {
+            "$ref": "#/components/schemas/Health"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
           "containers": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ContainerListItemModel"
+            }
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PortMapping"
             }
           }
         }
@@ -377,15 +389,15 @@
           "image": {
             "type": "string"
           },
-          "status": {
-            "type": "string"
+          "state": {
+            "$ref": "#/components/schemas/Status"
           },
           "created": {
             "type": "string",
             "format": "date-time"
           },
-          "health": {
-            "type": "string"
+          "status": {
+            "$ref": "#/components/schemas/Health"
           },
           "composeName": {
             "type": [
@@ -784,6 +796,14 @@
             }
           }
         }
+      },
+      "Health": {
+        "enum": [
+          "None",
+          "Unhealthy",
+          "Starting",
+          "Healthy"
+        ]
       },
       "HealthcheckConfig": {
         "type": "object",
@@ -1551,6 +1571,27 @@
           }
         }
       },
+      "PortMapping": {
+        "type": "object",
+        "properties": {
+          "hostPort": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint16"
+          },
+          "containerPort": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "uint16"
+          }
+        }
+      },
       "PortSummary": {
         "type": "object",
         "properties": {
@@ -1640,6 +1681,17 @@
       },
       "RestartPolicyKind": {
         "type": "integer"
+      },
+      "Status": {
+        "enum": [
+          "Created",
+          "Exited",
+          "Dead",
+          "Paused",
+          "Restarting",
+          "Removing",
+          "Running"
+        ]
       },
       "ThrottleDevice": {
         "type": "object",

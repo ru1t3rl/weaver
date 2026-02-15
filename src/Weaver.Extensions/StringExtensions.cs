@@ -11,4 +11,9 @@ public static class StringExtensions
         byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(value));
         return Sha256Hash.FromBytes(bytes);
     }
+
+    public static T ToEnum<T>(this string value) where T : Enum
+    {
+        return (T)Enum.Parse(typeof(T), value, true);
+    }
 }

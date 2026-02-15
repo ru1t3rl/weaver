@@ -5,5 +5,8 @@ namespace Weaver.Docker.WebApi.Models;
 public record struct ComposeModel(
     string Id,
     string Name,
-    List<ContainerListItemModel> Containers
+    Health Health,
+    Status Status,
+    List<ContainerListItemModel> Containers,
+    List<PortMapping> Ports
 );

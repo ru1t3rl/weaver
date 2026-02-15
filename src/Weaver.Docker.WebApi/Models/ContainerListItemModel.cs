@@ -4,8 +4,8 @@ public record struct ContainerListItemModel(
     string Id,
     string Name,
     string Image,
-    string Status,
+    Status State,
     DateTime Created,
-    string Health,
+    Health Status,
     string? ComposeName
 );

@@ -2,6 +2,9 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Weaver.Docker.WebApi.Models;
+using Weaver.Extensions;
+using Health = Weaver.Docker.WebApi.Models.Health;
+using Status = Weaver.Docker.WebApi.Models.Status;
 
 namespace Weaver.Docker.WebApi.Controllers;
 
@@ -22,39 +25,47 @@ public class ContainerController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        IList<ContainerListResponse> containers = await _dockerClient.Containers.ListContainersAsync(
-            new ContainersListParameters() { All = true },
-            cancellationToken
-        ) ?? [];
+        try
+        {
+            IList<ContainerListResponse> containers = await _dockerClient.Containers.ListContainersAsync(
+                new ContainersListParameters() { All = true },
+                cancellationToken
+            ) ?? [];
 
-        IList<ContainerInspectResponse> containersDetails = await Task.WhenAll(
-            containers.Select(c => _dockerClient.Containers.InspectContainerAsync(
-                    c.ID,
-                    new ContainerInspectParameters(),
-                    cancellationToken
+            IList<ContainerInspectResponse> containersDetails = await Task.WhenAll(
+                containers.Select(c => _dockerClient.Containers.InspectContainerAsync(
+                        c.ID,
+                        new ContainerInspectParameters(),
+                        cancellationToken
+                    )
                 )
-            )
-        );
+            );
 
-        List<ContainerListItemModel> models = containers
-            .Join(
-                containersDetails,
-                c => c.ID,
-                c => c.ID,
-                (basic, inspect) => (basic, inspect)
-            )
-            .Select(c => new ContainerListItemModel(
-                    c.basic.ID,
-                    c.inspect.Name,
-                    c.inspect.Config.Image,
-                    c.basic.Status,
-                    c.basic.Created,
-                    c.basic.Health.Status,
-                    c.inspect.Path
+            List<ContainerListItemModel> models = containers
+                .Join(
+                    containersDetails,
+                    c => c.ID,
+                    c => c.ID,
+                    (basic, inspect) => (basic, inspect)
                 )
-            ).ToList();
+                .Select(c => new ContainerListItemModel(
+                        c.basic.ID,
+                        c.inspect.Name,
+                        c.inspect.Config.Image,
+                        c.basic.State.ToEnum<Status>(),
+                        c.basic.Created,
+                        c.basic.Health.Status.ToEnum<Health>(),
+                        c.inspect.Path
+                    )
+                )
+                .ToList();
 
-        return Ok(models);
+            return Ok(models);
+        }
+        catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
+        {
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "Request canceled");
+        }
     }
 
     [HttpGet("{identifier}")]

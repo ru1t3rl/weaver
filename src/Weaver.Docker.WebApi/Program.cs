@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Docker.DotNet;
 using Scalar.AspNetCore;
 using Weaver.Docker.WebApi.Options;
@@ -8,7 +9,10 @@ builder.AddServiceDefaults();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+builder
+    .Services.AddControllers()
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+
 builder.AddCommands();
 
 builder.Services.AddSingleton<IDockerClient>(_ =>

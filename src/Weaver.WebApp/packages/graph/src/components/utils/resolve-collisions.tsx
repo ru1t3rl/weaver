@@ -1,15 +1,11 @@
 import type { Node } from '@xyflow/react';
+import { CollisionAlgorithm } from './resolve-collisions-voronoi';
 
 export type CollisionAlgorithmOptions = {
   maxIterations: number;
   overlapThreshold: number;
   margin: number;
 };
-
-export type CollisionAlgorithm = (
-  nodes: Node[],
-  options: CollisionAlgorithmOptions,
-) => Node[];
 
 type Box = {
   x: number;

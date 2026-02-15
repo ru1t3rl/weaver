@@ -7,7 +7,9 @@ export const darkThemeColors: Partial<AliasToken> = {
     colorSuccess: "#84cc16",
     colorWarning: "#f59e0b",
     colorTextBase: "#f2f2f2",
-    colorBgBase: "#1a1a1a"
+    colorBgBase: "#1a1a1a",
+    colorBgContainer: "#1f1f1f",
+    colorBgElevated: "#2e2e2e"
 };
 
 export default darkThemeColors;

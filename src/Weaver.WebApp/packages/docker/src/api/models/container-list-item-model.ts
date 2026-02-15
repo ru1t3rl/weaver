@@ -4,14 +4,16 @@
  * Weaver.Docker.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { Status } from './status';
+import type { Health } from './health';
 import type { ContainerListItemModelComposeName } from './container-list-item-model-compose-name';
 
 export interface ContainerListItemModel {
   id?: string;
   name?: string;
   image?: string;
-  status?: string;
+  state?: Status;
   created?: string;
-  health?: string;
+  status?: Health;
   composeName?: ContainerListItemModelComposeName;
 }
