@@ -10,10 +10,9 @@ public static class ServiceCollectionExtensions
     public static IHostApplicationBuilder AddCommands(this IHostApplicationBuilder builder)
     {
         builder.Services.AddCortexMediator(
-            builder.Configuration,
             [typeof(Weaver.Commands.NamespaceAnchor)]
         );
-        
+
         return builder;
     }
 }
