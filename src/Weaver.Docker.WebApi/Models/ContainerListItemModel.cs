@@ -6,5 +6,6 @@ public record struct ContainerListItemModel(
     string Image,
     string Status,
     DateTime Created,
-    string Health
+    string Health,
+    string? ComposeName
 );

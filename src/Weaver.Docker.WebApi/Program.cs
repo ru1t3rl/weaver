@@ -9,6 +9,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.AddCommands();
 
 builder.Services.AddSingleton<IDockerClient>(_ =>
     {

@@ -10,6 +10,47 @@
     }
   ],
   "paths": {
+    "/Compose": {
+      "get": {
+        "tags": [
+          "Compose"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComposeModel"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComposeModel"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComposeModel"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/Container": {
       "get": {
         "tags": [
@@ -256,6 +297,23 @@
       "ClusterOptions": {
         "type": "object"
       },
+      "ComposeModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "containers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContainerListItemModel"
+            }
+          }
+        }
+      },
       "ContainerDetailModel": {
         "type": "object",
         "properties": {
@@ -328,6 +386,12 @@
           },
           "health": {
             "type": "string"
+          },
+          "composeName": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -1704,6 +1768,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Compose"
+    },
     {
       "name": "Container"
     }

@@ -27,17 +27,32 @@ public class ContainerController : ControllerBase
             cancellationToken
         ) ?? [];
 
-        List<ContainerListItemModel> models = containers
-            .Select(s => new ContainerListItemModel(
-                    s.ID,
-                    s.Names.First(),
-                    s.Image,
-                    s.Status,
-                    s.Created,
-                    s.Health.Status
+        IList<ContainerInspectResponse> containersDetails = await Task.WhenAll(
+            containers.Select(c => _dockerClient.Containers.InspectContainerAsync(
+                    c.ID,
+                    new ContainerInspectParameters(),
+                    cancellationToken
                 )
             )
-            .ToList();
+        );
+
+        List<ContainerListItemModel> models = containers
+            .Join(
+                containersDetails,
+                c => c.ID,
+                c => c.ID,
+                (basic, inspect) => (basic, inspect)
+            )
+            .Select(c => new ContainerListItemModel(
+                    c.basic.ID,
+                    c.inspect.Name,
+                    c.inspect.Config.Image,
+                    c.basic.Status,
+                    c.basic.Created,
+                    c.basic.Health.Status,
+                    c.inspect.Path
+                )
+            ).ToList();
 
         return Ok(models);
     }
@@ -143,10 +158,14 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        await _dockerClient.Containers.StartContainerAsync(identifier, new ContainerStartParameters(), cancellationToken);
+        await _dockerClient.Containers.StartContainerAsync(
+            identifier,
+            new ContainerStartParameters(),
+            cancellationToken
+        );
         return Ok();
     }
-    
+
     [HttpPut("{identifier}/stop")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
