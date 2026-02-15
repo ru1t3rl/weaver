@@ -1,0 +1,14 @@
+{
+  "name": "@weaver/app",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@weaver/graph": "workspace:*",
+    "@weaver/shared": "workspace:*",
+    "@xyflow/react": "^12.10.0"
+  },
+  "devDependencies": {
+    "sass-embedded": "^1.89.2",
+    "tsx": "^4.20.3"
+  }
+}
