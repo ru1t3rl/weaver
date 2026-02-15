@@ -5,13 +5,15 @@
   </Folder>
   <Folder Name="/Weaver.Core/">
     <Project Path="src/Weaver.WebApi/Weaver.WebApi.csproj" />
-    <Project Path="src\Weaver.Commands\Weaver.Commands.csproj" Type="C#" />
-    <Project Path="src\Weaver.Common\Weaver.Common.csproj" Type="C#" />
-    <Project Path="src\Weaver.Domain\Weaver.Domain.csproj" Type="C#" />
-    <Project Path="src\Weaver.Infrastructure\Weaver.Infrastructure.csproj" Type="C#" />
-    <Project Path="src\Weaver.Migrator\Weaver.Migrator.csproj" Type="C#" />
+    <Project Path="src\Weaver.Commands\Weaver.Commands.csproj" />
+    <Project Path="src\Weaver.Common\Weaver.Common.csproj" />
+    <Project Path="src\Weaver.Domain\Weaver.Domain.csproj" />
+    <Project Path="src\Weaver.Infrastructure\Weaver.Infrastructure.csproj" />
+    <Project Path="src\Weaver.Migrator\Weaver.Migrator.csproj" />
   </Folder>
   <Folder Name="/Weaver.Docker/">
+    <Project Path="src/Weaver.Docker.Commands/Weaver.Docker.Commands.csproj" />
     <Project Path="src/Weaver.Docker.WebApi/Weaver.Docker.WebApi.csproj" />
   </Folder>
+  <Project Path="src/Weaver.Extensions/Weaver.Extensions.csproj" />
 </Solution>
