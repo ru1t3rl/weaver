@@ -1,5 +1,6 @@
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using Weaver.Commands;
 using Weaver.Infrastructure;
@@ -18,23 +19,26 @@ builder
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
-{
-    options.AddSchemaTransformer(async (schema, context, ct) =>
     {
-        if (context.JsonPropertyInfo is not null && context.JsonPropertyInfo.PropertyType.IsEnum)
-        {
-            schema.Type = "string";
-            schema.Enum = context
-                .JsonPropertyInfo.PropertyType
-                .GetEnumNames()
-                .Select(n => new OpenApiString(n))
-                .ToList<IOpenApiAny>();
-            schema.Format = null;
-        }
-    });
-});
+        options.AddSchemaTransformer(async (schema, context, ct) =>
+            {
+                if (context.JsonPropertyInfo is not null && context.JsonPropertyInfo.PropertyType.IsEnum)
+                {
+                    schema.Type = JsonSchemaType.String;
+                    schema.Enum = context
+                        .JsonPropertyInfo.PropertyType
+                        .GetEnumNames()
+                        .Select(n => (JsonNode)JsonValue.Create(n)!)
+                        .ToList();
+                    schema.Format = null;
+                }
+            }
+        );
+    }
+);
 
-builder.Services
+builder
+    .Services
     .AddControllers()
     .AddJsonOptions(opts => { opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 

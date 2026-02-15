@@ -3,7 +3,7 @@ using Weaver.AppHost;
 var builder = DistributedApplication.CreateBuilder(args);
 var composeEnv = builder.AddDockerComposeEnvironment("compose");
 
-var cache = builder.AddRedis("cache");
+// var cache = builder.AddRedis("cache");
 
 var postgres = builder
     .AddPostgres("postgres")
@@ -34,8 +34,6 @@ builder
     .WithApiClientGenerator("../Weaver.WebApp/packages/shared/", displayName: "Generate WebApi Client")
     .WithApiClientGenerator("../Weaver.WebApp/packages/docker/", displayName: "Generate Docker Api Client")
     .WithBunPackageInstallation()
-    .WithReference(cache)
-    .WaitFor(cache)
     .WithReference(apiService)
     .WaitFor(apiService)
     .WithReference(dockerApiService)

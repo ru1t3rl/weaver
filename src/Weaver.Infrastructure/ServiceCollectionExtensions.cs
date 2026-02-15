@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     {
         // builder.AddNpgsqlDbContext<WeaverDbContext>(connectionName: "Weaver");
         builder.Services.AddDbContext<WeaverDbContext>(
-            options => { options.UseNpgsql(builder.Configuration.GetConnectionString("Weaver")); },
+            options => { options.UseNpgsql(builder.Configuration.GetConnectionString("weaver-db")); },
             ServiceLifetime.Transient
         );
         return builder;

@@ -9,6 +9,7 @@ export function StyledGraph(props: ReactFlowProps) {
   const style = useMemo(
     () => ({
       background: token.colorBgContainer,
+      borderRadius: token.borderRadius,
       reactFlow__node: {
         background: token.colorBgElevated,
       },
