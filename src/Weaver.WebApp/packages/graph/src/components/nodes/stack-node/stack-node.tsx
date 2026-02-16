@@ -1,11 +1,13 @@
 import { PortMapping, Status } from "@weaver/docker";
+import { useTheme } from "@weaver/styling";
 import { Node, NodeProps } from "@xyflow/react";
-import { Button, Card, Flex, List, Typography } from "antd";
+import { Button, Card, Flex, Typography } from "antd";
 import { memo, useState } from "react";
 import { LuBoxes, LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { useNavigate } from "react-router";
 import { StateCircle, StateHeart } from "../../utils";
 import styles from './stack-node.module.scss';
-import { useTheme } from "@weaver/styling";
+import { routes } from "@weaver/shared";
 
 type StackNodeData = {
     name: string;
@@ -24,11 +26,16 @@ export const StackNode = memo((props: NodeProps<StackNode>) => {
     const { theme } = useTheme();
     const [hover, setHover] = useState<boolean>(false);
     const [expanded, setExpanded] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     function handleClick() {
         if (onClick) {
             onClick();
         }
+    }
+
+    function handleDoubleClick() {
+        navigate(routes.stack(id))
     }
 
     function handleExpandClicked() {
@@ -46,7 +53,7 @@ export const StackNode = memo((props: NodeProps<StackNode>) => {
     return (
         <div className={styles['stack-node-outer-body']} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <Card className={styles['stack-node-detail-container']} style={{ backgroundColor: theme.token?.colorBgElevated }}>
-                <Card onClick={handleClick} className={styles['stack-node-main-container']} hoverable style={{ backgroundColor: theme.token?.colorBgElevated }}>
+                <Card onClick={handleClick} onDoubleClick={handleDoubleClick} className={styles['stack-node-main-container']} hoverable style={{ backgroundColor: theme.token?.colorBgElevated }}>
                     <Flex gap={'small'} align='center'>
                         <LuBoxes className={styles['stack-node-icon']} />
                         <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>{name}</Typography.Title>

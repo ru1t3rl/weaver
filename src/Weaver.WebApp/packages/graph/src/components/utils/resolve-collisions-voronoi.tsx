@@ -150,8 +150,8 @@ function getBoxesFromNodes(nodes: Node[], margin: number = 0): Box[] {
     boxes[i] = {
       x: node.position.x - margin,
       y: node.position.y - margin,
-      width: (node.width ?? node.measured?.width ?? 0) + margin * 2,
-      height: (node.height ?? node.measured?.height ?? 0) + margin * 2,
+      width: (node.width ?? node.measured?.width ?? 200) + margin * 2,
+      height: (node.height ?? node.measured?.height ?? 60) + margin * 2,
       vx: 0,
       vy: 0,
       node,

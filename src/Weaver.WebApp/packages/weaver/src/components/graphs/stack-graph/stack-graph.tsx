@@ -1,6 +1,6 @@
 import { useDocker } from "@weaver/docker";
 import { stackNode, useGraphRef } from "@weaver/graph";
-import { Node } from "@xyflow/react";
+import { Node, useReactFlow } from "@xyflow/react";
 import { Flex, Typography } from "antd";
 import { useEffect, useMemo } from "react";
 import styles from './stack-graph.module.scss';
@@ -8,12 +8,13 @@ import styles from './stack-graph.module.scss';
 export const StackGraph = () => {
     const { Stacks } = useDocker();
     const { nodes, addNodes, clear, resolveCollision } = useGraphRef();
+    const { fitView } = useReactFlow();
 
     const stackNodes = useMemo(() => {
-        return Stacks.map((c) => ({
+        return Stacks.map((c, index) => ({
             id: c.id,
             type: stackNode,
-            position: { x: 0, y: 0 },
+            position: { x: index * 100, y: 0 },
             data: {
                 name: c.name,
                 state: c.status,
@@ -26,8 +27,17 @@ export const StackGraph = () => {
     useEffect(() => {
         clear();
         addNodes(stackNodes, nodes.current?.length);
-        // resolveCollision();
     }, [stackNodes])
+
+    useEffect(() => {
+        async function refreshAfter(timeInMillis: number) {
+            await new Promise(resolve => setTimeout(resolve, timeInMillis))
+            resolveCollision();
+            fitView();
+        }
+
+        refreshAfter(250);
+    }, [])
 
     return (
         <Flex vertical className={styles['overlay-ui']}>
