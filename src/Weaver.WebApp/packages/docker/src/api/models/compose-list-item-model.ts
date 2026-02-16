@@ -6,14 +6,13 @@
  */
 import type { Health } from './health';
 import type { Status } from './status';
-import type { ContainerListItemModel } from './container-list-item-model';
 import type { PortMapping } from './port-mapping';
 
-export interface ComposeModel {
+export interface ComposeListItemModel {
   id?: string;
   name?: string;
   health?: Health;
   status?: Status;
-  containers?: ContainerListItemModel[];
+  containerNames?: string[];
   ports?: PortMapping[];
 }

@@ -1,38 +1,51 @@
-import { useDocker } from "@weaver/docker";
-import { containerNode, useGraph } from "@weaver/graph";
-import { Node } from '@xyflow/react'
-import { Flex, Typography } from "antd";
+import { useStack } from "@weaver/docker";
+import { containerNode, useGraphRef } from "@weaver/graph";
+import { Node, useReactFlow } from '@xyflow/react';
+import { Button, Flex, Typography } from "antd";
 import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
+import styles from './container-graph.module.scss';
+import { LuChevronLeft } from "react-icons/lu";
 
 export const ContainerGraph = () => {
-    const { Containers } = useDocker();
-    const { clear, addNodes } = useGraph();
+    const { stackId = '' } = useParams();
 
-    const { stackId: _stackId = '' } = useParams();
-    const stackId = +_stackId;
+    const { name, containers, isLoading } = useStack(stackId);
+    const { nodes, addNodes, clear, resolveCollision } = useGraphRef();
+    const { fitView } = useReactFlow();
 
     const containerNodes = useMemo(() => {
-        return Containers.map((c) => ({
+        return containers.map((c, index) => ({
             id: c.id,
             type: containerNode,
-            position: { x: 0, y: 0 },
+            position: { x: index, y: index },
             data: {
                 name: c.name,
                 state: c.state
             }
         }) as Node);
-        return [];
-    }, [Containers]);
+    }, [containers]);
 
     useEffect(() => {
         clear();
-        addNodes(containerNodes);
-    }, [containerNodes, addNodes, clear])
+        addNodes(containerNodes, nodes.current?.length);
+    }, [containerNodes])
+
+    useEffect(() => {
+        async function refreshAfter(timeInMillis: number) {
+            await new Promise(resolve => setTimeout(resolve, timeInMillis))
+            resolveCollision();
+            fitView();
+        }
+
+        refreshAfter(250);
+    }, [])
 
     return (
         <Flex vertical className={styles['overlay-ui']}>
-            <Typography.Title style={{ margin: 0 }}>Weaver</Typography.Title>
+            <Flex align="center">
+                <Typography.Title style={{ margin: 0 }}>{name}</Typography.Title>
+            </Flex>
             {/* <Toolbar /> */}
             {/* <NodeInfoPanel /> */}
         </Flex>

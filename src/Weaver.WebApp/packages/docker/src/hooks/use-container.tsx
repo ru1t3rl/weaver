@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from 'axios';
 import { useDeleteContainerIdentifier, useGetContainerIdentifier, usePutContainerIdentifierStart, usePutContainerIdentifierStop } from '../api/endpoints/container';
 import { useDocker } from './use-docker';
 import { AxiosConfig } from '../utils';

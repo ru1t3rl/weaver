@@ -23,4 +23,9 @@
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Weaver.Docker.Common\Weaver.Docker.Common.csproj" />
+      <ProjectReference Include="..\Weaver.Extensions\Weaver.Extensions.csproj" />
+    </ItemGroup>
+
 </Project>

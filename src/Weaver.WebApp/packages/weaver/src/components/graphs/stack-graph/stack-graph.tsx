@@ -18,7 +18,7 @@ export const StackGraph = () => {
             data: {
                 name: c.name,
                 state: c.status,
-                containerNames: c.containers?.map(c => c.name) ?? [],
+                containerNames: c.containerNames ?? [],
                 ports: c.ports ?? []
             }
         }) as Node);

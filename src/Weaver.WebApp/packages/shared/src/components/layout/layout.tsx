@@ -3,13 +3,14 @@ import { NavBar } from '../nav-bar/nav-bar';
 import styles from './layout.module.scss';
 import { PropsWithChildren } from "react";
 import { useTheme } from '@weaver/styling';
+import { Outlet } from 'react-router';
 
 interface LayoutProps {
-    iconPath: string;
+    iconPath?: string;
 }
 
 export const Layout = (props: LayoutProps & PropsWithChildren) => {
-    const { iconPath, children } = props;
+    const { iconPath = '/weaver_logo.svg', children } = props;
     const { theme } = useTheme();
 
     return (
@@ -18,6 +19,7 @@ export const Layout = (props: LayoutProps & PropsWithChildren) => {
         }}>
             <NavBar iconPath={iconPath} />
             <Card className={styles['layout-body']}>
+                <Outlet />
                 {children}
             </Card>
         </Flex>

@@ -8,4 +8,4 @@
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$
  */
-export type PortMappingHostPort = number | string;
+export type PortMappingHostPort = null | number | string;

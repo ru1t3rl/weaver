@@ -1,14 +1,19 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ContainerGraph, MainGraph, StackGraph } from './components/graphs';
-import { routes } from '@weaver/shared';
+import { Layout, routes } from '@weaver/shared';
 
-export const GraphRouter = createBrowserRouter([
+export const AppRouter = createBrowserRouter([
     {
         path: routes.home,
-        Component: MainGraph,
+        Component: Layout,
         children: [
-            { index: true, Component: StackGraph },
-            { path: routes.stack(':stackId'), Component: ContainerGraph }
+            {
+                Component: MainGraph,
+                children: [
+                    { index: true, Component: StackGraph },
+                    { path: routes.stack(':stackId'), Component: ContainerGraph }
+                ]
+            }
         ]
     }
 ]);

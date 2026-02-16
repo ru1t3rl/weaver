@@ -1,14 +1,14 @@
 import { useContext } from 'react';
-import { DockerContext } from '../contexts';
-import { ComposeModel, ContainerListItemModel } from '../api/models';
-import { useGetContainer } from '../api/endpoints/container';
-import { AxiosConfig } from '../utils';
 import { useGetCompose } from '../api/endpoints/compose';
+import { useGetContainer } from '../api/endpoints/container';
+import { ComposeListItemModel, ContainerListItemModel } from '../api/models';
+import { DockerContext } from '../contexts';
+import { AxiosConfig } from '../utils';
 
 export interface useDocker {
   dockerApiAddress: string;
   Containers: ContainerListItemModel[];
-  Stacks: ComposeModel[];
+  Stacks: ComposeListItemModel[];
 }
 
 export const useDocker = (): useDocker => {
@@ -22,3 +22,5 @@ export const useDocker = (): useDocker => {
     Stacks: stacks?.data ?? []
   }
 };
+
+export default useDocker;

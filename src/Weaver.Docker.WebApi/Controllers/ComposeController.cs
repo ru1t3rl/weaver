@@ -2,6 +2,7 @@ using Cortex.Mediator;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Weaver.Docker.Commands.Compose;
+using Weaver.Docker.Common;
 using Weaver.Docker.WebApi.Models;
 using Weaver.Extensions;
 using Status = Weaver.Docker.WebApi.Models.Status;
@@ -21,7 +22,7 @@ public class ComposeController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<List<ComposeModel>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<ComposeListItemModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
@@ -33,25 +34,16 @@ public class ComposeController : ControllerBase
                 cancellationToken
             );
 
-            List<ComposeModel> composeProjects = stacks
+            List<ComposeListItemModel> composeProjects = stacks
                 .Select(g => new { Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
-                .Select(g => new ComposeModel(
+                .Select(g => new ComposeListItemModel(
                         g.Key.ToSha256Hash(),
                         g.Key,
                         GetStackHealth(g.Containers),
                         GetStackStatus(g.Containers),
                         g
                             .Containers
-                            .Select(c => new ContainerListItemModel(
-                                    c.ID,
-                                    c.Names.First(),
-                                    c.Image,
-                                    c.State.ToEnum<Status>(),
-                                    c.Created,
-                                    c.Health.Status.ToEnum<Health>(),
-                                    g.Key
-                                )
-                            )
+                            .Select(c => c.Names.FirstOrDefault() ?? "")
                             .ToList(),
                         g.Containers.SelectMany(GetPorts).Distinct().ToList()
                     )
@@ -59,6 +51,51 @@ public class ComposeController : ControllerBase
                 .ToList();
 
             return Ok(composeProjects);
+        }
+        catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
+        {
+            return StatusCode(StatusCodes.Status499ClientClosedRequest, "Request canceled");
+        }
+    }
+
+    [HttpGet("{identifier}")]
+    [ProducesResponseType<ComposeDetailModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(string identifier, CancellationToken cancellationToken)
+    {
+        try
+        {
+            GetStackContainersCommand command = new(new Sha256Hash(identifier));
+            List<ContainerListResponse> containers = await _mediator.SendAsync(command, cancellationToken);
+
+            if (containers.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<ContainerListItemModel> containerModels = containers
+                .Select(c => new ContainerListItemModel(
+                        c.ID,
+                        c.Names.First(),
+                        c.Image,
+                        c.State.ToEnum<Status>(),
+                        c.Created,
+                        c.Health.Status.ToEnum<Health>(),
+                        identifier
+                    )
+                )
+                .ToList();
+
+            ComposeDetailModel detailModel = new(
+                identifier,
+                containers.First().Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL] ?? string.Empty,
+                Health.Healthy,
+                Status.Running,
+                containerModels,
+                GetPorts(containers.First())
+            );
+
+            return Ok(detailModel);
         }
         catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
         {

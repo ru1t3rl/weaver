@@ -23,7 +23,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ComposeModel"
+                    "$ref": "#/components/schemas/ComposeListItemModel"
                   }
                 }
               },
@@ -31,7 +31,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ComposeModel"
+                    "$ref": "#/components/schemas/ComposeListItemModel"
                   }
                 }
               },
@@ -39,7 +39,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ComposeModel"
+                    "$ref": "#/components/schemas/ComposeListItemModel"
                   }
                 }
               }
@@ -47,6 +47,65 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/Compose/{identifier}": {
+      "get": {
+        "tags": [
+          "Compose"
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComposeDetailModel"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComposeDetailModel"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComposeDetailModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -297,7 +356,7 @@
       "ClusterOptions": {
         "type": "object"
       },
-      "ComposeModel": {
+      "ComposeDetailModel": {
         "type": "object",
         "properties": {
           "id": {
@@ -316,6 +375,35 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ContainerListItemModel"
+            }
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PortMapping"
+            }
+          }
+        }
+      },
+      "ComposeListItemModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "health": {
+            "$ref": "#/components/schemas/Health"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "containerNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           },
           "ports": {
@@ -1577,6 +1665,7 @@
           "hostPort": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
+              "null",
               "integer",
               "string"
             ],

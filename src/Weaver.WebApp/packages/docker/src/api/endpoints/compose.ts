@@ -22,7 +22,9 @@ import type {
 } from 'react-query';
 
 import type {
-  ComposeModel
+  ComposeDetailModel,
+  ComposeListItemModel,
+  ProblemDetails
 } from '../models';
 
 
@@ -36,7 +38,7 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 
 export const getCompose = (
      options?: AxiosRequestConfig
- ): Promise<AxiosResponse<ComposeModel[]>> => {
+ ): Promise<AxiosResponse<ComposeListItemModel[]>> => {
     
     
     return axios.get(
@@ -83,6 +85,66 @@ export function useGetCompose<TData = Awaited<ReturnType<typeof getCompose>>, TE
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetComposeQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const getComposeIdentifier = (
+    identifier: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<ComposeDetailModel>> => {
+    
+    
+    return axios.get(
+      `/Compose/${identifier}`,options
+    );
+  }
+
+
+
+
+export const getGetComposeIdentifierQueryKey = (identifier?: string,) => {
+    return [
+    `/Compose/${identifier}`
+    ] as const;
+    }
+
+    
+export const getGetComposeIdentifierQueryOptions = <TData = Awaited<ReturnType<typeof getComposeIdentifier>>, TError = AxiosError<ProblemDetails>>(identifier: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComposeIdentifier>>, TError, TData>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetComposeIdentifierQueryKey(identifier);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getComposeIdentifier>>> = ({ signal }) => getComposeIdentifier(identifier, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(identifier), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getComposeIdentifier>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetComposeIdentifierQueryResult = NonNullable<Awaited<ReturnType<typeof getComposeIdentifier>>>
+export type GetComposeIdentifierQueryError = AxiosError<ProblemDetails>
+
+
+
+export function useGetComposeIdentifier<TData = Awaited<ReturnType<typeof getComposeIdentifier>>, TError = AxiosError<ProblemDetails>>(
+ identifier: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComposeIdentifier>>, TError, TData>, axios?: AxiosRequestConfig}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetComposeIdentifierQueryOptions(identifier,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

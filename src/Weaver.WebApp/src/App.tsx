@@ -1,4 +1,4 @@
-import { GraphRouter } from '@weaver/app';
+import { AppRouter } from '@weaver/app';
 import { DockerProvider } from '@weaver/docker';
 import { environment, Layout } from '@weaver/shared';
 import { ThemeProvider } from '@weaver/styling';
@@ -11,10 +11,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <DockerProvider dockerApiAddress={environment.dockerApiAddress}>
-          <Layout iconPath={'/weaver_logo.svg'}>
-            <RouterProvider router={GraphRouter} />
-          </Layout>
+        <DockerProvider dockerApiAddress={environment.dockerApiAddress}>          
+            <RouterProvider router={AppRouter} />
         </DockerProvider>
       </ThemeProvider>
     </QueryClientProvider>

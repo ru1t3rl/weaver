@@ -1,15 +1,12 @@
 using Cortex.Mediator.Commands;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Weaver.Docker.Common;
 
 namespace Weaver.Docker.Commands.Compose;
 
-public class GetAllStacksCommandHandler :
-    ICommandHandler<GetAllStacksCommand, List<IGrouping<string, ContainerListResponse>>>
+public class GetAllStacksCommandHandler : ICommandHandler<GetAllStacksCommand, List<IGrouping<string, ContainerListResponse>>>
 {
-    private const string DOCKER_COMPOSE_LABEL = "com.docker.compose";
-    private const string DOCKER_COMPOSE_PROJECT_LABEL = $"{DOCKER_COMPOSE_LABEL}.project";
-
     private readonly IDockerClient _dockerClient;
 
     public GetAllStacksCommandHandler(IDockerClient dockerClient)
@@ -28,8 +25,8 @@ public class GetAllStacksCommandHandler :
         );
 
         List<IGrouping<string, ContainerListResponse>> composeProjects = containers
-            .Where(c => c.Labels is not null && c.Labels.ContainsKey(DOCKER_COMPOSE_PROJECT_LABEL))
-            .GroupBy(c => c.Labels[DOCKER_COMPOSE_PROJECT_LABEL])
+            .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL))
+            .GroupBy(c => c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL])
             .ToList();
 
         return composeProjects;
