@@ -1,7 +1,7 @@
 import { PortMapping, Status } from "@weaver/docker";
 import { Node, NodeProps } from "@xyflow/react";
 import { Button, Card, Flex, List, Typography } from "antd";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { LuBoxes, LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { StateCircle, StateHeart } from "../../utils";
 import styles from './stack-node.module.scss';
@@ -18,7 +18,7 @@ type StackNodeData = {
 export const stackNode = 'stackNode';
 export type StackNode = Node<StackNodeData, 'stackNode'>;
 
-export const StackNode = (props: NodeProps<StackNode>) => {
+export const StackNode = memo((props: NodeProps<StackNode>) => {
     const { id, data, selected } = props;
     const { name, state, onClick, containerNames, ports } = data;
     const { theme } = useTheme();
@@ -81,10 +81,11 @@ export const StackNode = (props: NodeProps<StackNode>) => {
             </Card>
             {hover && (
                 <Button
+                    className={styles['stack-node-details-chevron']}
                     icon={expanded ? <LuChevronUp /> : <LuChevronDown />}
                     onClick={handleExpandClicked}
                 />
             )}
         </div>
     )
-}
+});

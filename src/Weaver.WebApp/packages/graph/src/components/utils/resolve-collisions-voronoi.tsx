@@ -7,6 +7,7 @@ export type VoronoiCollisionOptions = {
   noiseScale?: number;
   repulsionStrength?: number;
   damping?: number;
+  useSpatialPartitioning?: boolean;
 };
 
 export type CollisionAlgorithm = (
@@ -19,11 +20,13 @@ type Box = {
   y: number;
   width: number;
   height: number;
-  vx: number; // velocity x
-  vy: number; // velocity y
+  vx: number;
+  vy: number;
   moved: boolean;
   node: Node;
 };
+
+type SpatialGrid = Map<string, Box[]>;
 
 // Simple hash function for pseudo-random noise
 function hash(x: number, y: number): number {
@@ -32,11 +35,18 @@ function hash(x: number, y: number): number {
   return (h ^ (h >>> 16)) / 2147483648 + 0.5;
 }
 
-// Voronoi-inspired noise function
+// Cache for Voronoi noise calculations
+const noiseCache = new Map<string, { dx: number; dy: number }>();
+
+// Voronoi-inspired noise function with caching
 function voronoiNoise(x: number, y: number, scale: number): { dx: number; dy: number } {
   const cellSize = scale;
   const cellX = Math.floor(x / cellSize);
   const cellY = Math.floor(y / cellSize);
+  
+  const cacheKey = `${cellX},${cellY}`;
+  const cached = noiseCache.get(cacheKey);
+  if (cached) return cached;
   
   let minDist = Infinity;
   let closestX = 0;
@@ -66,14 +76,70 @@ function voronoiNoise(x: number, y: number, scale: number): { dx: number; dy: nu
   
   // Return normalized direction away from closest Voronoi point
   const dist = Math.sqrt(closestX * closestX + closestY * closestY);
+  let result: { dx: number; dy: number };
+  
   if (dist > 0) {
-    return {
+    result = {
       dx: closestX / dist,
       dy: closestY / dist,
     };
+  } else {
+    result = { dx: 0, dy: 0 };
   }
   
-  return { dx: 0, dy: 0 };
+  noiseCache.set(cacheKey, result);
+  return result;
+}
+
+// Spatial partitioning for broad-phase collision detection
+function createSpatialGrid(boxes: Box[], cellSize: number): SpatialGrid {
+  const grid: SpatialGrid = new Map();
+  
+  for (const box of boxes) {
+    const minX = Math.floor(box.x / cellSize);
+    const minY = Math.floor(box.y / cellSize);
+    const maxX = Math.floor((box.x + box.width) / cellSize);
+    const maxY = Math.floor((box.y + box.height) / cellSize);
+    
+    for (let x = minX; x <= maxX; x++) {
+      for (let y = minY; y <= maxY; y++) {
+        const key = `${x},${y}`;
+        const cell = grid.get(key);
+        if (cell) {
+          cell.push(box);
+        } else {
+          grid.set(key, [box]);
+        }
+      }
+    }
+  }
+  
+  return grid;
+}
+
+function getPotentialCollisions(box: Box, grid: SpatialGrid, cellSize: number): Box[] {
+  const minX = Math.floor(box.x / cellSize);
+  const minY = Math.floor(box.y / cellSize);
+  const maxX = Math.floor((box.x + box.width) / cellSize);
+  const maxY = Math.floor((box.y + box.height) / cellSize);
+  
+  const potential = new Set<Box>();
+  
+  for (let x = minX; x <= maxX; x++) {
+    for (let y = minY; y <= maxY; y++) {
+      const key = `${x},${y}`;
+      const cell = grid.get(key);
+      if (cell) {
+        for (const other of cell) {
+          if (other !== box) {
+            potential.add(other);
+          }
+        }
+      }
+    }
+  }
+  
+  return Array.from(potential);
 }
 
 function getBoxesFromNodes(nodes: Node[], margin: number = 0): Box[] {
@@ -102,21 +168,35 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
     maxIterations = 50, 
     overlapThreshold = 0.5, 
     margin = 0,
-    noiseScale = 200,
-    repulsionStrength = 1.0,
-    damping = 0.8,
+    noiseScale = 150,
+    repulsionStrength = 0.5,
+    damping = 0.85,
+    useSpatialPartitioning = true,
   },
 ) => {
   const boxes = getBoxesFromNodes(nodes, margin);
+  
+  // Clear noise cache periodically to prevent memory buildup
+  if (noiseCache.size > 1000) {
+    noiseCache.clear();
+  }
+  
+  // Calculate average box size for spatial grid
+  const avgSize = boxes.reduce((sum, box) => sum + Math.max(box.width, box.height), 0) / boxes.length;
+  const gridCellSize = avgSize * 2;
 
   for (let iter = 0; iter < maxIterations; iter++) {
     let moved = false;
+    let maxVelocity = 0;
 
-    // Reset forces
+    // Apply damping
     for (let i = 0; i < boxes.length; i++) {
       boxes[i].vx *= damping;
       boxes[i].vy *= damping;
     }
+
+    // Build spatial grid for this iteration if enabled
+    const spatialGrid = useSpatialPartitioning ? createSpatialGrid(boxes, gridCellSize) : null;
 
     // Apply collision repulsion with Voronoi noise
     for (let i = 0; i < boxes.length; i++) {
@@ -124,8 +204,14 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
       const centerAX = A.x + A.width * 0.5;
       const centerAY = A.y + A.height * 0.5;
 
-      for (let j = i + 1; j < boxes.length; j++) {
-        const B = boxes[j];
+      // Get potential collisions using spatial partitioning or brute force
+      const candidates = spatialGrid 
+        ? getPotentialCollisions(A, spatialGrid, gridCellSize)
+        : boxes.slice(i + 1);
+
+      for (const B of candidates) {
+        if (B === A) continue;
+        
         const centerBX = B.x + B.width * 0.5;
         const centerBY = B.y + B.height * 0.5;
 
@@ -142,26 +228,29 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
           moved = true;
           A.moved = B.moved = true;
 
-          // Calculate repulsion force
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const minDist = Math.max(1, distance);
+          // Calculate repulsion force (avoid sqrt when possible)
+          const distSq = dx * dx + dy * dy;
+          const dist = Math.sqrt(distSq);
+          const minDist = Math.max(1, dist);
           
           // Base repulsion
-          let forceX = (dx / minDist) * px * repulsionStrength;
-          let forceY = (dy / minDist) * py * repulsionStrength;
+          const repulsion = Math.min(px, py) * repulsionStrength;
+          let forceX = (dx / minDist) * repulsion;
+          let forceY = (dy / minDist) * repulsion;
 
-          // Add Voronoi noise influence
+          // Add subtle Voronoi noise influence
           const noiseA = voronoiNoise(centerAX, centerAY, noiseScale);
           const noiseB = voronoiNoise(centerBX, centerBY, noiseScale);
           
-          forceX += noiseA.dx * 2;
-          forceY += noiseA.dy * 2;
+          const noiseInfluence = 0.3;
+          forceX += noiseA.dx * noiseInfluence;
+          forceY += noiseA.dy * noiseInfluence;
           
           // Apply forces
           A.vx += forceX;
           A.vy += forceY;
-          B.vx -= forceX - noiseB.dx * 2;
-          B.vy -= forceY - noiseB.dy * 2;
+          B.vx -= forceX - noiseB.dx * noiseInfluence;
+          B.vy -= forceY - noiseB.dy * noiseInfluence;
         }
       }
     }
@@ -171,10 +260,16 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
       const box = boxes[i];
       box.x += box.vx;
       box.y += box.vy;
+      
+      // Track max velocity for early exit
+      const velMag = Math.abs(box.vx) + Math.abs(box.vy);
+      if (velMag > maxVelocity) {
+        maxVelocity = velMag;
+      }
     }
 
-    // Early exit if no overlaps were found
-    if (!moved) {
+    // Early exit if no overlaps were found or movement is negligible
+    if (!moved || maxVelocity < 0.01) {
       break;
     }
   }

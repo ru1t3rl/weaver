@@ -23,6 +23,12 @@
         }
     }
 
+    &-details-chevron {
+        position: absolute;
+        bottom: 0;
+        transform: translateY(100%);
+    }
+
     &-detail-list {
         gap: 1em;
         padding: 0 1em 1em 1em;

@@ -1,1 +1,1 @@
-export * from './src/components/main-graph/main-graph';
+export * from './src/graph-router';

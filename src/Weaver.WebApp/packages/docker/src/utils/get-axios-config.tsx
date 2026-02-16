@@ -4,6 +4,11 @@ export function AxiosConfig(address: string, method: string) {
         axios: {
             baseURL: address,
             method: method
+        },
+        defaultOptions: {
+            queries: {
+                refetchOnWindowFocus: false
+            }
         }
     }
 }
