@@ -29,14 +29,12 @@ public class GetStackNameCommandHandler : ICommandHandler<GetStackNameCommand, O
                 cancellationToken
             );
 
-            var temp = containers
-                .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL));
-            var templabeld = temp
-                .Where(c => c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() ==
-                            command.StackIdentifier
+            ContainerListResponse? stackContainers = containers
+                .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL))
+                .FirstOrDefault(c =>
+                    c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() == command.StackIdentifier
                 );
-
-            ContainerListResponse? stackContainers = templabeld.FirstOrDefault();
+            
             if (stackContainers is null)
             {
                 return new None();
