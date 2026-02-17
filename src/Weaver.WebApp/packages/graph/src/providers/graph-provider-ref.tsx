@@ -14,12 +14,16 @@ export const GraphProviderRef = (props: PropsWithChildren) => {
     const resolveCollision = debounce(_resolveCollision, 0, { leading: true, trailing: false });
 
     function _resolveCollision() {
-        const updateNodes: Node[] = resolveCollisionsVoronoi(nodes.current, {
-            maxIterations: 10,
-            overlapThreshold: 0.5,
-            margin: 0,
-            noiseScale: 100
-        });
+        const updateNodes: Node[] = resolveCollisionsVoronoi(
+            nodes.current,
+            edges.current,
+            {
+                maxIterations: 10,
+                overlapThreshold: 0.5,
+                margin: 0,
+                noiseScale: 100
+            }
+        );
 
         const changes: NodePositionChange[] = updateNodes.map(n => ({
             id: n.id,

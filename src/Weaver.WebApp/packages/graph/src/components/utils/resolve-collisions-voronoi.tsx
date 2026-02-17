@@ -1,4 +1,4 @@
-import type { Node } from '@xyflow/react';
+import type { Node, Edge } from '@xyflow/react';
 
 export type VoronoiCollisionOptions = {
   maxIterations: number;
@@ -8,10 +8,12 @@ export type VoronoiCollisionOptions = {
   repulsionStrength?: number;
   damping?: number;
   useSpatialPartitioning?: boolean;
+  layerSeparation?: number;
 };
 
-export type CollisionAlgorithm = (
+export type CollisionAlgorithmWithEdges = (
   nodes: Node[],
+  edges: Edge[],
   options: VoronoiCollisionOptions,
 ) => Node[];
 
@@ -24,6 +26,8 @@ type Box = {
   vy: number;
   moved: boolean;
   node: Node;
+  layer: number; // Which layer this node belongs to
+  targetY: number; // Target Y position based on layer
 };
 
 type SpatialGrid = Map<string, Box[]>;
@@ -91,6 +95,44 @@ function voronoiNoise(x: number, y: number, scale: number): { dx: number; dy: nu
   return result;
 }
 
+// Assign layers to nodes based on edges
+function assignLayers(nodes: Node[], edges: Edge[]): Map<string, number> {
+  const layers = new Map<string, number>();
+  const hasIncoming = new Set<string>();
+  const hasOutgoing = new Set<string>();
+  
+  // Track which nodes have incoming/outgoing edges
+  for (const edge of edges) {
+    hasIncoming.add(edge.target);
+    hasOutgoing.add(edge.source);
+  }
+  
+  // Assign layers:
+  // Layer 0: Only sources (no incoming edges)
+  // Layer 1: Middle nodes (both incoming and outgoing)
+  // Layer 2: Only targets (no outgoing edges)
+  for (const node of nodes) {
+    const incoming = hasIncoming.has(node.id);
+    const outgoing = hasOutgoing.has(node.id);
+    
+    if (!incoming && !outgoing) {
+      // Isolated node - put in middle
+      layers.set(node.id, 1);
+    } else if (!incoming && outgoing) {
+      // Source only - top layer
+      layers.set(node.id, 0);
+    } else if (incoming && !outgoing) {
+      // Target only - bottom layer
+      layers.set(node.id, 2);
+    } else {
+      // Both - middle layer
+      layers.set(node.id, 1);
+    }
+  }
+  
+  return layers;
+}
+
 // Spatial partitioning for broad-phase collision detection
 function createSpatialGrid(boxes: Box[], cellSize: number): SpatialGrid {
   const grid: SpatialGrid = new Map();
@@ -142,28 +184,64 @@ function getPotentialCollisions(box: Box, grid: SpatialGrid, cellSize: number): 
   return Array.from(potential);
 }
 
-function getBoxesFromNodes(nodes: Node[], margin: number = 0): Box[] {
+function getBoxesFromNodes(nodes: Node[], edges: Edge[], margin: number, layerSeparation: number): Box[] {
+  if (nodes.length === 0) {
+    return [];
+  }
+  
   const boxes: Box[] = new Array(nodes.length);
+  const layers = assignLayers(nodes, edges);
+  
+  // Calculate bounding box to determine layer positions
+  let minY = Infinity;
+  let maxY = -Infinity;
+  
+  for (const node of nodes) {
+    const y = node.position?.y ?? 0;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  
+  // Handle edge cases
+  if (!isFinite(minY)) minY = 0;
+  if (!isFinite(maxY)) maxY = 0;
+  
+  const totalHeight = maxY - minY;
+  const layerHeight = totalHeight > 0 ? totalHeight / 3 : layerSeparation;
 
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
+    const layer = layers.get(node.id) ?? 1;
+    
+    // Calculate target Y based on layer
+    const targetY = minY + layer * (layerHeight + layerSeparation);
+    
+    // Ensure valid positions
+    const nodeX = node.position?.x ?? 0;
+    const nodeY = node.position?.y ?? 0;
+    const nodeWidth = node.width ?? node.measured?.width ?? 100;
+    const nodeHeight = node.height ?? node.measured?.height ?? 100;
+    
     boxes[i] = {
-      x: node.position.x - margin,
-      y: node.position.y - margin,
-      width: (node.width ?? node.measured?.width ?? 200) + margin * 2,
-      height: (node.height ?? node.measured?.height ?? 60) + margin * 2,
+      x: nodeX - margin,
+      y: nodeY - margin,
+      width: nodeWidth + margin * 2,
+      height: nodeHeight + margin * 2,
       vx: 0,
       vy: 0,
       node,
       moved: false,
+      layer,
+      targetY: isFinite(targetY) ? targetY : nodeY,
     };
   }
 
   return boxes;
 }
 
-export const resolveCollisionsVoronoi: CollisionAlgorithm = (
+export const resolveCollisionsVoronoi: CollisionAlgorithmWithEdges = (
   nodes,
+  edges,
   { 
     maxIterations = 50, 
     overlapThreshold = 0.5, 
@@ -172,9 +250,23 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
     repulsionStrength = 0.5,
     damping = 0.85,
     useSpatialPartitioning = true,
+    layerSeparation = 200,
   },
 ) => {
-  const boxes = getBoxesFromNodes(nodes, margin);
+  // Validate inputs
+  if (!nodes || nodes.length === 0) {
+    return [];
+  }
+  
+  if (!edges) {
+    edges = [];
+  }
+  
+  const boxes = getBoxesFromNodes(nodes, edges, margin, layerSeparation);
+  
+  if (boxes.length === 0) {
+    return nodes;
+  }
   
   // Clear noise cache periodically to prevent memory buildup
   if (noiseCache.size > 1000) {
@@ -204,6 +296,15 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
       const centerAX = A.x + A.width * 0.5;
       const centerAY = A.y + A.height * 0.5;
 
+      // Apply gentle force toward target Y layer
+      const layerForce = (A.targetY - centerAY) * 0.05;
+      A.vy += layerForce;
+      
+      // Add Voronoi noise for organic horizontal distribution
+      const noise = voronoiNoise(centerAX, centerAY, noiseScale);
+      A.vx += noise.dx * 0.2; // Horizontal variation
+      // Don't add vertical noise to maintain layers
+
       // Get potential collisions using spatial partitioning or brute force
       const candidates = spatialGrid 
         ? getPotentialCollisions(A, spatialGrid, gridCellSize)
@@ -228,7 +329,7 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
           moved = true;
           A.moved = B.moved = true;
 
-          // Calculate repulsion force (avoid sqrt when possible)
+          // Calculate repulsion force
           const distSq = dx * dx + dy * dy;
           const dist = Math.sqrt(distSq);
           const minDist = Math.max(1, dist);
@@ -238,19 +339,27 @@ export const resolveCollisionsVoronoi: CollisionAlgorithm = (
           let forceX = (dx / minDist) * repulsion;
           let forceY = (dy / minDist) * repulsion;
 
-          // Add subtle Voronoi noise influence
+          // If nodes are in different layers, prefer horizontal separation
+          if (A.layer !== B.layer) {
+            forceX *= 1.5; // Strengthen horizontal repulsion
+            forceY *= 0.5; // Weaken vertical repulsion to maintain layers
+          }
+
+          // Add Voronoi noise influence for organic spacing
           const noiseA = voronoiNoise(centerAX, centerAY, noiseScale);
           const noiseB = voronoiNoise(centerBX, centerBY, noiseScale);
           
-          const noiseInfluence = 0.3;
-          forceX += noiseA.dx * noiseInfluence;
-          forceY += noiseA.dy * noiseInfluence;
+          // Apply noise primarily in horizontal direction to maintain layers
+          const noiseInfluenceX = 0.4;
+          const noiseInfluenceY = 0.1; // Much smaller vertical influence
+          forceX += noiseA.dx * noiseInfluenceX;
+          forceY += noiseA.dy * noiseInfluenceY;
           
           // Apply forces
           A.vx += forceX;
           A.vy += forceY;
-          B.vx -= forceX - noiseB.dx * noiseInfluence;
-          B.vy -= forceY - noiseB.dy * noiseInfluence;
+          B.vx -= forceX - noiseB.dx * noiseInfluenceX;
+          B.vy -= forceY - noiseB.dy * noiseInfluenceY;
         }
       }
     }
