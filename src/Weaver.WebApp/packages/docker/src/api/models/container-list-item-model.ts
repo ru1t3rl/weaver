@@ -15,5 +15,6 @@ export interface ContainerListItemModel {
   status: Status;
   created: string;
   health: Health;
-  composeName: ContainerListItemModelComposeName;
+  dependsOn: string[];
+  composeName?: ContainerListItemModelComposeName;
 }

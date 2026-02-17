@@ -56,6 +56,7 @@ public class ContainerController : ControllerBase
                         Status = c.basic.State.ToEnum<Status>(),
                         Created = c.basic.Created,
                         Health = c.basic.Health.Status.ToEnum<Health>(),
+                        DependsOn = c.basic.GetDependsOn(containersDetails.ToList()),
                         ComposeName = c.inspect.Path
                     }
                 )

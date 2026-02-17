@@ -8,5 +8,6 @@ public record struct ContainerListItemModel
     public required Status Status { get; init; }
     public required DateTime Created { get; init; }
     public required Health Health { get; init; }
-    public required string? ComposeName { get; init; }
+    public required string[] DependsOn { get; init; }
+    public string? ComposeName { get; init; }
 }

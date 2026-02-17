@@ -40,13 +40,13 @@ public class ComposeController : ControllerBase
                 {
                     Id = g.Id,
                     Name = g.Key,
-                    Health = GetStackHealth(g.Containers),
-                    Status = GetStackStatus(g.Containers),
+                    Health = g.Containers.GetStackHealth(),
+                    Status = g.Containers.GetStackStatus(),
                     ContainerNames = g
                         .Containers
                         .Select(c => c.Names.FirstOrDefault() ?? "")
                         .ToList(),
-                    Ports = g.Containers.SelectMany(GetPorts).Distinct().ToList()
+                    Ports = g.Containers.SelectMany(c => c.GetPorts()).Distinct().ToList()
                 }
             )
             .ToList();
@@ -80,7 +80,8 @@ public class ComposeController : ControllerBase
                     Status = c.State.ToEnum<Status>(),
                     Created = c.Created,
                     Health = c.Health.Status.ToEnum<Health>(),
-                    ComposeName = stackName
+                    ComposeName = stackName,
+                    DependsOn = c.GetDependsOn(containers)
                 }
             )
             .ToList();
@@ -89,55 +90,14 @@ public class ComposeController : ControllerBase
         {
             Id = identifier,
             Name = containers.First().Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL] ?? string.Empty,
-            Health = GetStackHealth(containers),
-            Status = GetStackStatus(containers),
+            Health = containers.GetStackHealth(),
+            Status = containers.GetStackStatus(),
             Containers = containerModels,
-            Ports = containers.SelectMany(GetPorts).Distinct().ToList()
+            Ports = containers.SelectMany(c => c.GetPorts()).Distinct().ToList()
         };
 
         return Ok(detailModel);
     }
 
-    private List<PortMapping> GetPorts(ContainerListResponse container)
-    {
-        return container
-            .Ports
-            .Select(p => new PortMapping(
-                    p.PublicPort == 0 ? null : p.PublicPort,
-                    p.PrivatePort
-                )
-            )
-            .ToList();
-    }
-
-    private Health GetStackHealth(List<ContainerListResponse> containers)
-    {
-        return containers
-            .Select(c => c.Health.Status.ToEnum<Health>())
-            .GroupBy(c => c)
-            .Select(healthGroup => new
-                {
-                    count = healthGroup.Count(),
-                    status = healthGroup.Key
-                }
-            )
-            .Where(c => c.status != Health.None)
-            .MaxBy(c => c.count)
-            ?.status ?? Health.None;
-    }
-
-    private Status GetStackStatus(List<ContainerListResponse> containers)
-    {
-        return containers
-            .Select(c => c.State.ToEnum<Status>())
-            .GroupBy(c => c)
-            .Select(statusGroup => new
-                {
-                    count = statusGroup.Count(),
-                    status = statusGroup.Key
-                }
-            )
-            .MaxBy(c => c.count)
-            ?.status ?? Status.Dead;
-    }
+    
 }

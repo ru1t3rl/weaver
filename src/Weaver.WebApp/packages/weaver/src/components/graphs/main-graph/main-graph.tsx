@@ -21,17 +21,6 @@ export function InternalMainGraph() {
     },
   ];
 
-  // useEffect(() => {
-  //   if (nodes.length !== [...stackNodes, ...containerNodes].length) {
-  //     setNodes(resolveCollisionsVoronoi([...stackNodes, ...containerNodes], {
-  //       maxIterations: Infinity,
-  //       overlapThreshold: 0.5,
-  //       margin: 15,
-  //     })
-  //     )
-  //   }
-  // }, [containerNodes, stackNodes])
-
   return (
     <NotificationProvider>
       {/* <ModalsProvider> */}

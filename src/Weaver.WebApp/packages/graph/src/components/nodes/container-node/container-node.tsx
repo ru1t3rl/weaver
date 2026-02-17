@@ -1,5 +1,5 @@
 import { ContainerListItemModel } from "@weaver/docker/src/api/models";
-import { Node, NodeProps } from "@xyflow/react";
+import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { Button, Card, Typography } from "antd";
 import { useState } from "react";
 import { LuChevronDown, LuChevronUp, LuContainer } from "react-icons/lu";
@@ -50,6 +50,8 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
                 {expanded && (
                     <ContainerDetails containerId={model.id} />
                 )}
+                <Handle type="target" position={Position.Top} />
+                <Handle type="source" position={Position.Top} />
             </Card>
             {hover && (
                 <Button

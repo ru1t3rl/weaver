@@ -503,7 +503,7 @@
           "status",
           "created",
           "health",
-          "composeName"
+          "dependsOn"
         ],
         "type": "object",
         "properties": {
@@ -525,6 +525,12 @@
           },
           "health": {
             "$ref": "#/components/schemas/Health"
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "composeName": {
             "type": [
