@@ -1,6 +1,7 @@
 using Cortex.Mediator.Commands;
-using Cortex.Mediator.Queries;
 using Docker.DotNet.Models;
+using OneOf;
+using OneOf.Types;
 using Weaver.Extensions;
 
 namespace Weaver.Docker.Commands.Compose;
@@ -8,4 +9,4 @@ namespace Weaver.Docker.Commands.Compose;
 /// <param name="StackIdentifier">The sha256 hash of the stack name.</param>
 public record GetStackContainersCommand(
     Sha256Hash StackIdentifier
-) : ICommand<List<ContainerListResponse>>;
+) : ICommand<OneOf<List<ContainerListResponse>, None>>;

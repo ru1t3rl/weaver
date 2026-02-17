@@ -7,22 +7,20 @@ using Weaver.Extensions;
 
 namespace Weaver.Docker.Commands.Compose;
 
-public class
-    GetStackContainersCommandHandler : ICommandHandler<GetStackContainersCommand,
-    OneOf<List<ContainerListResponse>, None>>
+public class GetStackNameCommandHandler : ICommandHandler<GetStackNameCommand, OneOf<string, None>>
 {
     private const string DOCKER_COMPOSE_LABEL = "com.docker.compose";
     private const string DOCKER_COMPOSE_PROJECT_LABEL = $"{DOCKER_COMPOSE_LABEL}.project";
 
     private readonly IDockerClient _dockerClient;
 
-    public GetStackContainersCommandHandler(IDockerClient dockerClient)
+    public GetStackNameCommandHandler(IDockerClient dockerClient)
     {
         _dockerClient = dockerClient;
     }
 
-    public async Task<OneOf<List<ContainerListResponse>, None>> Handle(
-        GetStackContainersCommand command,
+    public async Task<OneOf<string, None>> Handle(
+        GetStackNameCommand command,
         CancellationToken cancellationToken
     )
     {
@@ -33,17 +31,16 @@ public class
                 cancellationToken
             );
 
-            List<ContainerListResponse> stackContainers = containers
+            ContainerListResponse? stackContainers = containers
                 .Where(c => c.Labels is not null && c.Labels.ContainsKey(DOCKER_COMPOSE_PROJECT_LABEL))
-                .Where(c => c.Labels[DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() == command.StackIdentifier)
-                .ToList();
+                .FirstOrDefault(c => c.Labels[DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() == command.StackIdentifier);
 
-            if (stackContainers.Count == 0)
+            if (stackContainers is null)
             {
                 return new None();
             }
 
-            return stackContainers;
+            return stackContainers.Labels[DOCKER_COMPOSE_PROJECT_LABEL];
         }
         catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
         {

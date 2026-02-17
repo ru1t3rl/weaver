@@ -1,6 +1,8 @@
 using Cortex.Mediator;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
+using OneOf;
+using OneOf.Types;
 using Weaver.Docker.Commands.Compose;
 using Weaver.Docker.Common;
 using Weaver.Docker.WebApi.Models;
@@ -36,17 +38,18 @@ public class ComposeController : ControllerBase
 
             List<ComposeListItemModel> composeProjects = stacks
                 .Select(g => new { Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
-                .Select(g => new ComposeListItemModel(
-                        g.Key.ToSha256Hash(),
-                        g.Key,
-                        GetStackHealth(g.Containers),
-                        GetStackStatus(g.Containers),
-                        g
+                .Select(g => new ComposeListItemModel()
+                    {
+                        Id = g.Key.ToSha256Hash(),
+                        Name = g.Key,
+                        Health = GetStackHealth(g.Containers),
+                        Status = GetStackStatus(g.Containers),
+                        ContainerNames = g
                             .Containers
                             .Select(c => c.Names.FirstOrDefault() ?? "")
                             .ToList(),
-                        g.Containers.SelectMany(GetPorts).Distinct().ToList()
-                    )
+                        Ports = g.Containers.SelectMany(GetPorts).Distinct().ToList()
+                    }
                 )
                 .ToList();
 
@@ -63,44 +66,43 @@ public class ComposeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string identifier, CancellationToken cancellationToken)
     {
-        try
+        GetStackContainersCommand command = new(new Sha256Hash(identifier));
+        OneOf<List<ContainerListResponse>, None> result = await _mediator.SendAsync(command, cancellationToken);
+
+        GetStackNameCommand nameCommand = new(new Sha256Hash(identifier));
+        OneOf<string, None> nameResult = await _mediator.SendAsync(nameCommand, cancellationToken);
+
+        if (!result.TryPickT0(out List<ContainerListResponse> containers, out _) ||
+            !nameResult.TryPickT0(out string stackName, out _))
         {
-            GetStackContainersCommand command = new(new Sha256Hash(identifier));
-            List<ContainerListResponse> containers = await _mediator.SendAsync(command, cancellationToken);
-
-            if (containers.Count == 0)
-            {
-                return NotFound();
-            }
-
-            List<ContainerListItemModel> containerModels = containers
-                .Select(c => new ContainerListItemModel(
-                        c.ID,
-                        c.Names.First(),
-                        c.Image,
-                        c.State.ToEnum<Status>(),
-                        c.Created,
-                        c.Health.Status.ToEnum<Health>(),
-                        identifier
-                    )
-                )
-                .ToList();
-
-            ComposeDetailModel detailModel = new(
-                identifier,
-                containers.First().Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL] ?? string.Empty,
-                Health.Healthy,
-                Status.Running,
-                containerModels,
-                GetPorts(containers.First())
-            );
-
-            return Ok(detailModel);
+            return NotFound();
         }
-        catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
+
+        List<ContainerListItemModel> containerModels = containers
+            .Select(c => new ContainerListItemModel()
+                {
+                    Id = c.ID,
+                    Name = c.Names.First(),
+                    Image = c.Image,
+                    Status = c.State.ToEnum<Status>(),
+                    Created = c.Created,
+                    Health = c.Health.Status.ToEnum<Health>(),
+                    ComposeName = stackName
+                }
+            )
+            .ToList();
+
+        ComposeDetailModel detailModel = new()
         {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "Request canceled");
-        }
+            Id = identifier,
+            Name = containers.First().Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL] ?? string.Empty,
+            Health = Health.Healthy,
+            Status = Status.Running,
+            Containers = containerModels,
+            Ports = containers.SelectMany(GetPorts).Distinct().ToList()
+        };
+
+        return Ok(detailModel);
     }
 
     private List<PortMapping> GetPorts(ContainerListResponse container)

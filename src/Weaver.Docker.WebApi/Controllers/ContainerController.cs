@@ -48,15 +48,16 @@ public class ContainerController : ControllerBase
                     c => c.ID,
                     (basic, inspect) => (basic, inspect)
                 )
-                .Select(c => new ContainerListItemModel(
-                        c.basic.ID,
-                        c.inspect.Name,
-                        c.inspect.Config.Image,
-                        c.basic.State.ToEnum<Status>(),
-                        c.basic.Created,
-                        c.basic.Health.Status.ToEnum<Health>(),
-                        c.inspect.Path
-                    )
+                .Select(c => new ContainerListItemModel()
+                    {
+                        Id = c.basic.ID,
+                        Name = c.inspect.Name,
+                        Image = c.inspect.Config.Image,
+                        Status = c.basic.State.ToEnum<Status>(),
+                        Created = c.basic.Created,
+                        Health = c.basic.Health.Status.ToEnum<Health>(),
+                        ComposeName = c.inspect.Path
+                    }
                 )
                 .ToList();
 
@@ -99,20 +100,21 @@ public class ContainerController : ControllerBase
 
         (string stdout, string stderr) = await (await logsTask).ReadOutputToEndAsync(cancellationToken);
 
-        ContainerDetailModel model = new(
-            response.ID,
-            response.Names.ToList(),
-            response.Image,
-            response.ImageID,
-            response.Created,
-            response.Ports.ToList(),
-            response.State,
-            response.Status,
-            response.Health,
-            response.NetworkSettings,
-            response.Mounts.ToList(),
-            stdout
-        );
+        ContainerDetailModel model = new()
+        {
+            Id = response.ID,
+            Names = response.Names.ToList(),
+            Image = response.Image,
+            ImageId = response.ImageID,
+            Created = response.Created,
+            Ports = response.Ports.ToList(),
+            Status = response.State.ToEnum<Status>(),
+            Health = response.Status.ToEnum<Health>(),
+            HealthSummary = response.Health,
+            NetworkSettingsSummary = response.NetworkSettings,
+            Mounts = response.Mounts.ToList(),
+            Log = stdout
+        };
 
         return Ok(model);
     }

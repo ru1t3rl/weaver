@@ -15,6 +15,7 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
       <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.2" />
       <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.2" />
+      <PackageReference Include="OneOf" Version="3.0.271" />
     </ItemGroup>
 
     <ItemGroup>
