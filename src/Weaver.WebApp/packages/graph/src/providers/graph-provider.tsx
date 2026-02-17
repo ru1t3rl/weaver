@@ -7,8 +7,6 @@ export const GraphProvider = (props: PropsWithChildren) => {
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
 
-    // console.log('rerender provider')
-
     const addNodes = useCallback(<TNodeType extends Node>(newNodes: TNodeType[], totalNodesCount?: number) => {
         const changes = newNodes.map((node, index) => ({
             item: node,
@@ -56,7 +54,6 @@ export const GraphProvider = (props: PropsWithChildren) => {
 
     const onNodesChange = useCallback((changes: NodeChange[]) => {
         const filtered = changes.filter(c => c.type !== 'add' && c.type !== 'remove');
-        console.log('nodes changed | filtered: ' + filtered.length);
         if (filtered.length > 0)
             setNodes(snapshot => applyNodeChanges(filtered, snapshot));
     }, []);

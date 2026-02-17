@@ -27,10 +27,7 @@ export const ContainerGraph = () => {
     }, [containers]);
 
     const containerEdges = useMemo(() => {
-        const i = 0;
         return containers.flatMap((c) => c.dependsOn.map(dependencyId => {
-            console.log("i:" + c.id);
-            console.log("d:" + dependencyId);
             const edge: Edge = {
                 id: c.id + dependencyId,
                 type: 'smoothstep',
@@ -44,15 +41,7 @@ export const ContainerGraph = () => {
     useEffect(() => {
         clear();
         addNodes(containerNodes, nodes.current?.length);
-
-        async function addEdgesDelayed() {
-            await new Promise(r => setTimeout(r, 500));
-            addEdges(containerEdges);
-            await new Promise(r => setTimeout(r, 500));
-            console.log(getEdges());
-            render();
-        }
-        addEdgesDelayed();
+        addEdges(containerEdges);
     }, [containerNodes, containerEdges])
 
     useEffect(() => {
