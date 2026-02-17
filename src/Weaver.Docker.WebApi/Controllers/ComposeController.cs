@@ -28,37 +28,30 @@ public class ComposeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
-        try
-        {
-            GetAllStacksCommand command = new();
-            List<IGrouping<string, ContainerListResponse>> stacks = await _mediator.SendAsync(
-                command,
-                cancellationToken
-            );
+        GetAllStacksCommand command = new();
+        List<IGrouping<string, ContainerListResponse>> stacks = await _mediator.SendAsync(
+            command,
+            cancellationToken
+        );
 
-            List<ComposeListItemModel> composeProjects = stacks
-                .Select(g => new { Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
-                .Select(g => new ComposeListItemModel()
-                    {
-                        Id = g.Key.ToSha256Hash(),
-                        Name = g.Key,
-                        Health = GetStackHealth(g.Containers),
-                        Status = GetStackStatus(g.Containers),
-                        ContainerNames = g
-                            .Containers
-                            .Select(c => c.Names.FirstOrDefault() ?? "")
-                            .ToList(),
-                        Ports = g.Containers.SelectMany(GetPorts).Distinct().ToList()
-                    }
-                )
-                .ToList();
+        List<ComposeListItemModel> composeProjects = stacks
+            .Select(g => new { Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
+            .Select(g => new ComposeListItemModel()
+                {
+                    Id = g.Key.ToSha256Hash(),
+                    Name = g.Key,
+                    Health = GetStackHealth(g.Containers),
+                    Status = GetStackStatus(g.Containers),
+                    ContainerNames = g
+                        .Containers
+                        .Select(c => c.Names.FirstOrDefault() ?? "")
+                        .ToList(),
+                    Ports = g.Containers.SelectMany(GetPorts).Distinct().ToList()
+                }
+            )
+            .ToList();
 
-            return Ok(composeProjects);
-        }
-        catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
-        {
-            return StatusCode(StatusCodes.Status499ClientClosedRequest, "Request canceled");
-        }
+        return Ok(composeProjects);
     }
 
     [HttpGet("{identifier}")]

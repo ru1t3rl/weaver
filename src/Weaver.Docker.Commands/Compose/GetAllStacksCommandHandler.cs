@@ -5,7 +5,8 @@ using Weaver.Docker.Common;
 
 namespace Weaver.Docker.Commands.Compose;
 
-public class GetAllStacksCommandHandler : ICommandHandler<GetAllStacksCommand, List<IGrouping<string, ContainerListResponse>>>
+public class
+    GetAllStacksCommandHandler : ICommandHandler<GetAllStacksCommand, List<IGrouping<string, ContainerListResponse>>>
 {
     private readonly IDockerClient _dockerClient;
 
@@ -19,16 +20,24 @@ public class GetAllStacksCommandHandler : ICommandHandler<GetAllStacksCommand, L
         CancellationToken cancellationToken
     )
     {
-        IList<ContainerListResponse> containers = await _dockerClient.Containers.ListContainersAsync(
-            new ContainersListParameters { All = false },
-            cancellationToken
-        );
+        try
+        {
+            IList<ContainerListResponse> containers = await _dockerClient.Containers.ListContainersAsync(
+                new ContainersListParameters { All = false },
+                cancellationToken
+            );
 
-        List<IGrouping<string, ContainerListResponse>> composeProjects = containers
-            .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL))
-            .GroupBy(c => c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL])
-            .ToList();
+            List<IGrouping<string, ContainerListResponse>> composeProjects = containers
+                .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL))
+                .GroupBy(c => c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL])
+                .ToList();
 
-        return composeProjects;
+            return composeProjects;
+        }
+        catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
+        {
+        }
+
+        return [];
     }
 }
