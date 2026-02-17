@@ -11,7 +11,7 @@ export type VoronoiCollisionOptions = {
   layerSeparation?: number;
 };
 
-export type CollisionAlgorithmWithEdges = (
+export type CollisionAlgorithm = (
   nodes: Node[],
   edges: Edge[],
   options: VoronoiCollisionOptions,
@@ -239,7 +239,7 @@ function getBoxesFromNodes(nodes: Node[], edges: Edge[], margin: number, layerSe
   return boxes;
 }
 
-export const resolveCollisionsVoronoi: CollisionAlgorithmWithEdges = (
+export const resolveCollisionsVoronoi: CollisionAlgorithm = (
   nodes,
   edges,
   { 
