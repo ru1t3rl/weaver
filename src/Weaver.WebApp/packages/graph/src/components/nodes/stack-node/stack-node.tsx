@@ -21,7 +21,7 @@ export const stackNode = 'stackNode';
 export type StackNode = Node<StackNodeData, 'stackNode'>;
 
 export const StackNode = memo((props: NodeProps<StackNode>) => {
-    const { id, data, selected } = props;
+    const { id, data } = props;
     const { name, state, onClick, containerNames, ports } = data;
     const { theme } = useTheme();
     const [hover, setHover] = useState<boolean>(false);

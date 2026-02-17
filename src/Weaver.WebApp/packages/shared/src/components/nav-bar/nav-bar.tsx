@@ -6,11 +6,7 @@ import WeaverLogo from "../../weaver-logo";
 import { useNavigate } from "react-router";
 import { routes } from "../../routes";
 
-interface NavBarProps {
-    iconPath: string;
-}
-
-export const NavBar = (props: NavBarProps) => {
+export const NavBar = () => {
     const theme = useTheme();
     const navigate = useNavigate();
 

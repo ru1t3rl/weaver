@@ -1,22 +1,21 @@
+import { ClickAwayListener } from '@weaver/graph';
 import { axiosGetRequestConfig, ServiceTemplateListItemModel, useGetServiceTemplate } from '@weaver/shared';
-import { useReactFlow, useStoreApi } from '@xyflow/react';
 import { Card, Flex, Input, Skeleton } from 'antd';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import styles from './service-search-modal.module.scss';
 import { useServiceTemplateSearchModal } from '../../../hooks';
-import { ClickAwayListener } from '@weaver/graph';
+import styles from './service-search-modal.module.scss';
 
 
-type position = {
-  x: number;
-  y: number;
-};
+// type position = {
+//   x: number;
+//   y: number;
+// };
 
 export function ServiceSearchModal() {
   const { hide } = useServiceTemplateSearchModal();
 
-  const store = useStoreApi();
-  const { screenToFlowPosition } = useReactFlow();
+  // const store = useStoreApi();
+  // const { screenToFlowPosition } = useReactFlow();
 
   const { data: response, isLoading } = useGetServiceTemplate({
     axios: axiosGetRequestConfig,
@@ -60,7 +59,7 @@ export function ServiceSearchModal() {
         }
         case 'Enter':
           if (focusedIndex >= 0 && focusedIndex < dataFiltered.length) {
-            handleAddService(dataFiltered[focusedIndex]);
+            // handleAddService(dataFiltered[focusedIndex]);
           }
           break;
         case 'Escape':
@@ -94,51 +93,51 @@ export function ServiceSearchModal() {
     return nodes;
   }
 
-  function getViewportCenter(): position {
-    const { domNode } = store.getState();
-    const boundingRect = domNode?.getBoundingClientRect();
+  // function getViewportCenter(): position {
+  //   const { domNode } = store.getState();
+  //   const boundingRect = domNode?.getBoundingClientRect();
 
-    let position: position = { x: 0, y: 0 };
+  //   let position: position = { x: 0, y: 0 };
 
-    if (boundingRect) {
-      const cneter = screenToFlowPosition({
-        x: boundingRect.x + boundingRect.width / 2,
-        y: boundingRect.y + boundingRect.height / 2,
-      });
+  //   if (boundingRect) {
+  //     const cneter = screenToFlowPosition({
+  //       x: boundingRect.x + boundingRect.width / 2,
+  //       y: boundingRect.y + boundingRect.height / 2,
+  //     });
 
-      position = {
-        x: cneter.x,
-        y: cneter.y,
-      };
-    }
+  //     position = {
+  //       x: cneter.x,
+  //       y: cneter.y,
+  //     };
+  //   }
 
-    return position;
-  }
+  //   return position;
+  // }
 
-  function handleAddService(service: ServiceTemplateListItemModel) {
-    const { x: viewportX, y: viewportY } = getViewportCenter();
+  // function handleAddService(service: ServiceTemplateListItemModel) {
+  //   const { x: viewportX, y: viewportY } = getViewportCenter();
 
-    if (
-      // TODO: Replace with add now from react flow
-      // tryAddServiceNode({
-      //   type: 'serviceNode',
-      //   data: {
-      //     serviceInfo: {
-      //       id: service.id,
-      //       name: service.name,
-      //       type: service.type,
-      //     },
-      //   },
-      //   position: {
-      //     x: viewportX,
-      //     y: viewportY,
-      //   },
-      // })
-      true
-    ) {
-      hide();
-    }
-  }
+  //   if (
+  //     // TODO: Replace with add now from react flow
+  //     // tryAddServiceNode({
+  //     //   type: 'serviceNode',
+  //     //   data: {
+  //     //     serviceInfo: {
+  //     //       id: service.id,
+  //     //       name: service.name,
+  //     //       type: service.type,
+  //     //     },
+  //     //   },
+  //     //   position: {
+  //     //     x: viewportX,
+  //     //     y: viewportY,
+  //     //   },
+  //     // })
+  //     true
+  //   ) {
+  //     hide();
+  //   }
+  // }
 
   return (
     <ClickAwayListener onClickAway={() => hide()}>

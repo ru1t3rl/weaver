@@ -1,8 +1,7 @@
-import { Health } from '@weaver/docker';
-import styles from './state-cricle.module.scss';
+import { Status } from '@weaver/docker';
 import { Flex, theme, Typography } from "antd";
 import { useMemo } from "react";
-import { Status } from '@weaver/docker';
+import styles from './state-cricle.module.scss';
 
 interface StateCircleProps {
     state: Status;

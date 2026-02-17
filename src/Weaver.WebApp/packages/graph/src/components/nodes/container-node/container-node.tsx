@@ -16,7 +16,7 @@ export const containerNode = 'containerNode';
 export type ContainerNode = Node<ContainerNodeData, 'containerNode'>;
 
 export const ContainerNode = (props: NodeProps<ContainerNode>) => {
-    const { id, data, selected } = props;
+    const { data } = props;
     const { model, onClick } = data;
     const [hover, setHover] = useState<boolean>(false);
     const [expanded, setExpanded] = useState<boolean>(false);

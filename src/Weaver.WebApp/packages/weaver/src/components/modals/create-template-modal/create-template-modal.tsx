@@ -3,10 +3,9 @@ import {
   axiosPostRequestConfig,
   OptionType,
   ServiceTemplateDetailModel,
-  ServiceTemplateOptionModel,
   ServiceType2 as ServiceType,
   useGetServiceTemplateUuid,
-  usePutServiceTemplate,
+  usePutServiceTemplate
 } from '@weaver/shared';
 import { AutoComplete, Button, Col, Divider, Flex, Input, Modal, Row, Spin, Typography } from 'antd';
 import { useState } from 'react';
@@ -62,15 +61,15 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
     setTempType(value);
   }
 
-  function handleConfigInputChange(value: ServiceTemplateOptionModel, index: number) {
-    const updatedArray = template.config ? [...template.config] : [];
-    updatedArray[index] = value;
+  // function handleConfigInputChange(value: ServiceTemplateOptionModel, index: number) {
+  //   const updatedArray = template.config ? [...template.config] : [];
+  //   updatedArray[index] = value;
 
-    setTemplate(prev => ({
-      ...prev,
-      config: updatedArray,
-    }));
-  }
+  //   setTemplate(prev => ({
+  //     ...prev,
+  //     config: updatedArray,
+  //   }));
+  // }
 
   function handleAddOptionClicked() {
     setTemplate(prev => ({
@@ -158,7 +157,7 @@ export function CreateTemplateModal(props: CreateTemplateModalProps) {
             </Col>
           </Row>
           <Typography.Title level={4}>Config</Typography.Title>
-          {template.config?.map((value, index) => (
+          {template.config?.map((_, index) => (
             <Flex vertical key={index}>
               <Flex align='center' gap={10}>
                 <Button

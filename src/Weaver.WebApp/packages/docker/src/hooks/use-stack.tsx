@@ -12,7 +12,7 @@ interface useStack {
 
 export const useStack = (stackId: string): useStack => {
     const { dockerApiAddress } = useDocker();
-    const { data: containersResponse, isLoading, isError, error } = useGetComposeIdentifier(stackId, AxiosConfig(dockerApiAddress, 'get'));
+    const { data: containersResponse, isLoading } = useGetComposeIdentifier(stackId, AxiosConfig(dockerApiAddress, 'get'));
 
     const response: ComposeDetailModel | undefined = containersResponse?.data;
 

@@ -4,7 +4,7 @@ import { LuPlus } from 'react-icons/lu';
 import styles from './node-info-panel.module.scss';
 
 export function NodeInfoPanel() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading] = useState<boolean>(true);
 
   return (
     <Card className={styles['container']}>

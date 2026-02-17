@@ -2,18 +2,16 @@ import { useStack } from "@weaver/docker";
 import { containerNode, useGraphRef } from "@weaver/graph";
 import { Edge, Node, useReactFlow } from '@xyflow/react';
 import { Flex, Typography } from "antd";
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams } from "react-router";
 import styles from './container-graph.module.scss';
 
 export const ContainerGraph = () => {
     const { stackId = '' } = useParams();
 
-    const { name, containers, isLoading } = useStack(stackId);
+    const { name, containers } = useStack(stackId);
     const { nodes, addNodes, addEdges, clear, resolveCollision } = useGraphRef();
-    const { fitView, getEdges } = useReactFlow();
-
-    const [, render] = useReducer(x => !x, false);
+    const { fitView } = useReactFlow();
 
     const containerNodes = useMemo(() => {
         return containers.map((c, index) => ({

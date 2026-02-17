@@ -25,7 +25,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
 
     return (
         <ThemeContext.Provider value={value}>
-            <ConfigProvider theme={{ ...themeConfig, cssVar: true }}>
+            <ConfigProvider theme={{ ...themeConfig }}>
                 {children}
             </ConfigProvider>
         </ThemeContext.Provider>

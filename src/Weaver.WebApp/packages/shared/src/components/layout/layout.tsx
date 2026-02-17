@@ -10,14 +10,14 @@ interface LayoutProps {
 }
 
 export const Layout = (props: LayoutProps & PropsWithChildren) => {
-    const { iconPath = '/weaver_logo.svg', children } = props;
+    const { children } = props;
     const { theme } = useTheme();
 
     return (
         <Flex className={styles['layout-container']} style={{
             backgroundColor: theme.token?.colorBgBase
         }}>
-            <NavBar iconPath={iconPath} />
+            <NavBar />
             <Card className={styles['layout-body']}>
                 <Outlet />
                 {children}
