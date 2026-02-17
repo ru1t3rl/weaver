@@ -9,11 +9,11 @@ import type { Health } from './health';
 import type { ContainerListItemModelComposeName } from './container-list-item-model-compose-name';
 
 export interface ContainerListItemModel {
-  id?: string;
-  name?: string;
-  image?: string;
-  state?: Status;
-  created?: string;
-  status?: Health;
-  composeName?: ContainerListItemModelComposeName;
+  id: string;
+  name: string;
+  image: string;
+  status: Status;
+  created: string;
+  health: Health;
+  composeName: ContainerListItemModelComposeName;
 }

@@ -109,7 +109,7 @@ public class ContainerController : ControllerBase
             Created = response.Created,
             Ports = response.Ports.ToList(),
             Status = response.State.ToEnum<Status>(),
-            Health = response.Status.ToEnum<Health>(),
+            Health = response.Health.Status.ToEnum<Health>(),
             HealthSummary = response.Health,
             NetworkSettingsSummary = response.NetworkSettings,
             Mounts = response.Mounts.ToList(),

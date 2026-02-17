@@ -35,10 +35,10 @@ public class ComposeController : ControllerBase
         );
 
         List<ComposeListItemModel> composeProjects = stacks
-            .Select(g => new { Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
+            .Select(g => new { Id = g.Key.ToSha256Hash(), Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
             .Select(g => new ComposeListItemModel()
                 {
-                    Id = g.Key.ToSha256Hash(),
+                    Id = g.Id,
                     Name = g.Key,
                     Health = GetStackHealth(g.Containers),
                     Status = GetStackStatus(g.Containers),
@@ -89,8 +89,8 @@ public class ComposeController : ControllerBase
         {
             Id = identifier,
             Name = containers.First().Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL] ?? string.Empty,
-            Health = Health.Healthy,
-            Status = Status.Running,
+            Health = GetStackHealth(containers),
+            Status = GetStackStatus(containers),
             Containers = containerModels,
             Ports = containers.SelectMany(GetPorts).Distinct().ToList()
         };

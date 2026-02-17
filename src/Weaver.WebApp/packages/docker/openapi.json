@@ -357,6 +357,14 @@
         "type": "object"
       },
       "ComposeDetailModel": {
+        "required": [
+          "id",
+          "name",
+          "health",
+          "status",
+          "containers",
+          "ports"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -386,6 +394,14 @@
         }
       },
       "ComposeListItemModel": {
+        "required": [
+          "id",
+          "name",
+          "health",
+          "status",
+          "containerNames",
+          "ports"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -415,6 +431,20 @@
         }
       },
       "ContainerDetailModel": {
+        "required": [
+          "id",
+          "names",
+          "image",
+          "imageId",
+          "created",
+          "ports",
+          "status",
+          "health",
+          "healthSummary",
+          "networkSettingsSummary",
+          "mounts",
+          "log"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -442,13 +472,13 @@
               "$ref": "#/components/schemas/PortSummary"
             }
           },
-          "state": {
-            "type": "string"
-          },
           "status": {
-            "type": "string"
+            "$ref": "#/components/schemas/Status"
           },
           "health": {
+            "$ref": "#/components/schemas/Health"
+          },
+          "healthSummary": {
             "$ref": "#/components/schemas/HealthSummary"
           },
           "networkSettingsSummary": {
@@ -460,12 +490,21 @@
               "$ref": "#/components/schemas/MountPoint"
             }
           },
-          "logs": {
+          "log": {
             "type": "string"
           }
         }
       },
       "ContainerListItemModel": {
+        "required": [
+          "id",
+          "name",
+          "image",
+          "status",
+          "created",
+          "health",
+          "composeName"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -477,14 +516,14 @@
           "image": {
             "type": "string"
           },
-          "state": {
+          "status": {
             "$ref": "#/components/schemas/Status"
           },
           "created": {
             "type": "string",
             "format": "date-time"
           },
-          "status": {
+          "health": {
             "$ref": "#/components/schemas/Health"
           },
           "composeName": {

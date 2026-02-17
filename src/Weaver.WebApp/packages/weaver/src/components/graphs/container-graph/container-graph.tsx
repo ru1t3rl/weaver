@@ -20,8 +20,7 @@ export const ContainerGraph = () => {
             type: containerNode,
             position: { x: index, y: index },
             data: {
-                name: c.name,
-                state: c.state
+                model: c
             }
         }) as Node);
     }, [containers]);

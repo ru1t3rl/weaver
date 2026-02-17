@@ -3,6 +3,7 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using OneOf;
 using OneOf.Types;
+using Weaver.Docker.Common;
 using Weaver.Extensions;
 
 namespace Weaver.Docker.Commands.Compose;
@@ -11,9 +12,6 @@ public class
     GetStackContainersCommandHandler : ICommandHandler<GetStackContainersCommand,
     OneOf<List<ContainerListResponse>, None>>
 {
-    private const string DOCKER_COMPOSE_LABEL = "com.docker.compose";
-    private const string DOCKER_COMPOSE_PROJECT_LABEL = $"{DOCKER_COMPOSE_LABEL}.project";
-
     private readonly IDockerClient _dockerClient;
 
     public GetStackContainersCommandHandler(IDockerClient dockerClient)
@@ -34,8 +32,8 @@ public class
             );
 
             List<ContainerListResponse> stackContainers = containers
-                .Where(c => c.Labels is not null && c.Labels.ContainsKey(DOCKER_COMPOSE_PROJECT_LABEL))
-                .Where(c => c.Labels[DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() == command.StackIdentifier)
+                .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL))
+                .Where(c => c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() == command.StackIdentifier)
                 .ToList();
 
             if (stackContainers.Count == 0)

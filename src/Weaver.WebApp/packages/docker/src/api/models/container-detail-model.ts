@@ -5,21 +5,23 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { PortSummary } from './port-summary';
+import type { Status } from './status';
+import type { Health } from './health';
 import type { HealthSummary } from './health-summary';
 import type { NetworkSettingsSummary } from './network-settings-summary';
 import type { MountPoint } from './mount-point';
 
 export interface ContainerDetailModel {
-  id?: string;
-  names?: string[];
-  image?: string;
-  imageId?: string;
-  created?: string;
-  ports?: PortSummary[];
-  state?: string;
-  status?: string;
-  health?: HealthSummary;
-  networkSettingsSummary?: NetworkSettingsSummary;
-  mounts?: MountPoint[];
-  logs?: string;
+  id: string;
+  names: string[];
+  image: string;
+  imageId: string;
+  created: string;
+  ports: PortSummary[];
+  status: Status;
+  health: Health;
+  healthSummary: HealthSummary;
+  networkSettingsSummary: NetworkSettingsSummary;
+  mounts: MountPoint[];
+  log: string;
 }

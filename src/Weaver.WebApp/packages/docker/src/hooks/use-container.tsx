@@ -1,12 +1,15 @@
 import { useDeleteContainerIdentifier, useGetContainerIdentifier, usePutContainerIdentifierStart, usePutContainerIdentifierStop } from '../api/endpoints/container';
 import { useDocker } from './use-docker';
 import { AxiosConfig } from '../utils';
+import { ContainerDetailModel } from '../api/models';
 
 interface useContainer {
   start: () => Promise<void>;
   stop: () => Promise<void>;
   down: () => Promise<void>;
   logs: () => Promise<string>;
+  dataIsLoading: boolean;
+  data: ContainerDetailModel | null;
 }
 
 export const useContainer = (containerid: string): useContainer => {
@@ -33,7 +36,7 @@ export const useContainer = (containerid: string): useContainer => {
       await new Promise(r => { setTimeout(r, 500) });
     }
 
-    return data?.data.logs ?? '';
+    return data?.data.log ?? '';
   }
 
   return {
@@ -41,5 +44,7 @@ export const useContainer = (containerid: string): useContainer => {
     stop,
     down,
     logs,
+    dataIsLoading: isLoading,
+    data: data?.data ?? null
   };
 };

@@ -10,10 +10,10 @@ import type { ContainerListItemModel } from './container-list-item-model';
 import type { PortMapping } from './port-mapping';
 
 export interface ComposeDetailModel {
-  id?: string;
-  name?: string;
-  health?: Health;
-  status?: Status;
-  containers?: ContainerListItemModel[];
-  ports?: PortMapping[];
+  id: string;
+  name: string;
+  health: Health;
+  status: Status;
+  containers: ContainerListItemModel[];
+  ports: PortMapping[];
 }

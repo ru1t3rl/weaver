@@ -9,10 +9,10 @@ import type { Status } from './status';
 import type { PortMapping } from './port-mapping';
 
 export interface ComposeListItemModel {
-  id?: string;
-  name?: string;
-  health?: Health;
-  status?: Status;
-  containerNames?: string[];
-  ports?: PortMapping[];
+  id: string;
+  name: string;
+  health: Health;
+  status: Status;
+  containerNames: string[];
+  ports: PortMapping[];
 }
