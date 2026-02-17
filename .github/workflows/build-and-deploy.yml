@@ -57,14 +57,15 @@ jobs:
         working-directory: src/Weaver.AppHost
         run: |
           # Package should already be installed based on the csproj
-          dotnet add package Aspire.Hosting.Docker --version 13.1.0-preview.1.25616.3 || true
+          # dotnet add package Aspire.Hosting.Docker --version 13.1.0-preview.1.25616.3 || true
+          curl -sSL https://aspire.dev/install.sh | bash
 
       - name: Restore dependencies
         run: dotnet restore
 
       - name: Publish Aspire application
         working-directory: src/Weaver.AppHost
-        run: dotnet run --project Weaver.AppHost.csproj --publisher docker -- --output-path ../../aspire-output
+        run: aspire publish --output-path ../../aspire-output
 
       - name: Build and tag Docker images
         run: |
