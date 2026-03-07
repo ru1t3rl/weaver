@@ -11,7 +11,6 @@ branches:
   main:
     regex: "^main$"
     increment: Minor
-    prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     is-release-branch: true
     pre-release-tag: ""
@@ -19,7 +18,6 @@ branches:
   develop:
     regex: "^develop$"
     increment: Patch
-    prevent-increment-of-merged-branch-version: false
     track-merge-target: true
     is-release-branch: false
     pre-release-tag: ""
