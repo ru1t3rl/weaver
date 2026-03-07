@@ -32,7 +32,6 @@ branches:
     source-branches:
       - develop
     is-release-branch: false
-    tag-number-pattern: "[0-9]+"
     label: "{BranchName}"
 
 ignore:
