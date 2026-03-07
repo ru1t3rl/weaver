@@ -1,7 +1,7 @@
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeAddChange, EdgeChange, EdgeRemoveChange, EdgeReplaceChange, Node, NodeAddChange, NodeChange, NodePositionChange, NodeRemoveChange, NodeReplaceChange } from "@xyflow/react";
 import { debounce } from 'lodash';
 import { PropsWithChildren, useCallback, useReducer, useRef } from "react";
-import { dockerNetworkNode, resolveCollisionsVoronoi } from "../components";
+import { resolveCollisionsVoronoi } from "../components";
 import { GraphContextRef, IGraphContextRef } from "../contexts/graph-context-ref";
 
 export type ChangeType = 'add' | 'remove' | 'replace' | 'select' | 'position' | 'dimensions' | 'any';
@@ -121,7 +121,6 @@ export const GraphProviderRef = (props: PropsWithChildren) => {
 
         if (changes.length === 0) return;
 
-        console.log(changes);
         nodes.current = applyNodeChanges(changes, nodes.current);
         render();
     }

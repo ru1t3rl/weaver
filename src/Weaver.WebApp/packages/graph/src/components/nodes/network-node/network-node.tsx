@@ -65,7 +65,6 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
     updateNode(id, { width: targetW, height: targetH });
 
     async function delayed() {
-      // 2. Shift every child so it sits PADDING away from every edge.
       await new Promise(r => setTimeout(r, 750));
       children.forEach((child) => {
         updateNode(child.id, (node) => ({

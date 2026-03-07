@@ -17,7 +17,7 @@ export const ContainerGraph = () => {
 
     const networkNodes = useMemo(() => {
         // TODO: Handle multiple networks for a single container
-        const allNetworks = containers.flatMap(c => c.networks.at(0)).filter(n => n != undefined);
+        const allNetworks = containers.flatMap(c => c.networks[0] ?? undefined).filter(n => n != undefined);
         const uniqueNetworkIds = [...new Set(allNetworks.map(c => c.id))];
         const uniqueNetworks = uniqueNetworkIds.map(id => allNetworks.find(n => n.id === id)).filter(n => n != undefined);
 
@@ -44,7 +44,7 @@ export const ContainerGraph = () => {
             id: c.id,
             type: containerNode,
             position: { x: index, y: index },
-            parentId: c.networks.at(0)?.id,
+            parentId: c.networks[0]?.id,
             expandParent: true,
             data: {
                 model: c
