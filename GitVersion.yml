@@ -11,16 +11,20 @@ branches:
   main:
     regex: "^main$"
     increment: Minor
+    prevent-increment:
+      of-merged-branch: true
     track-merge-target: false
     is-release-branch: true
-    pre-release-tag: ""
+    label: ""
 
   develop:
     regex: "^develop$"
     increment: Patch
+    prevent-increment:
+      of-merged-branch: false
     track-merge-target: true
     is-release-branch: false
-    pre-release-tag: ""
+    label: ""
 
   feature:
     regex: "^feature[s]?[/-].+"
@@ -28,8 +32,8 @@ branches:
     source-branches:
       - develop
     is-release-branch: false
-    pre-release-tag: develop
     tag-number-pattern: "[0-9]+"
+    label: "{BranchName}"
 
 ignore:
   sha: []
