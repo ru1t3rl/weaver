@@ -1,14 +1,17 @@
-import {createContext} from "react";
-import {ThemeMode} from "./theme";
+import { createContext } from "react";
+import { ThemeMode } from "./theme";
+import { ThemeConfig } from "antd";
 
-export interface IThemeContext{
+export interface IThemeContext {
     mode: ThemeMode;
+    theme: ThemeConfig;
     toggleTheme: () => void;
     setMode: (mode: ThemeMode) => void;
 }
 
 export const ThemeContext = createContext<IThemeContext>({
-    mode: 'dark', 
+    mode: 'dark',
+    theme: {} as ThemeConfig,
     toggleTheme: (): void => undefined,
     setMode: (): void => undefined,
 });

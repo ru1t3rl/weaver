@@ -1,0 +1,46 @@
+$navbar-width: 75px;
+$gap: 16px;
+
+.nav-bar {
+    &-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+
+        width: $navbar-width;
+
+        :global(.ant-card-body) {
+            flex-grow: 1;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    &-top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $gap;
+    }
+
+    &-bottom {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        gap: $gap;
+    }
+}
+
+.icon-button {
+    aspect-ratio: 1/1;
+}
+
+.logo {
+    width: 150%;
+    aspect-ratio: 1/1;
+}

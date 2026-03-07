@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Cortex.Mediator" Version="3.1.1" />
+      <PackageReference Include="Docker.DotNet.Enhanced" Version="3.131.1" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.2" />
+      <PackageReference Include="OneOf" Version="3.0.271" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Weaver.Docker.Common\Weaver.Docker.Common.csproj" />
+      <ProjectReference Include="..\Weaver.Extensions\Weaver.Extensions.csproj" />
+    </ItemGroup>
+
+</Project>

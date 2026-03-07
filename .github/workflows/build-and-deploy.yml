@@ -1,3 +1,4 @@
+
 name: Build and Deploy Aspire App
 
 on:
@@ -9,6 +10,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME_API: ${{ github.repository }}/webapi
+  IMAGE_NAME_DOCKER_API: ${{ github.repository }}/docker-webapi
   IMAGE_NAME_WEBAPP: ${{ github.repository }}/webapp
 
 jobs:
@@ -27,25 +29,18 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.x'
+          dotnet-version: '10.x'
 
-      - name: Install Aspire CLI
-        run: dotnet tool install -g aspire.cli --prerelease
-
-      - name: Setup Docker
-        uses: docker/setup-docker-action@v3
-
-      - name: Build Aspire application
-        run: |
-          dotnet restore
-          aspire publish -o aspire-output
+      - name: Install Aspire workload
+        run: dotnet workload install aspire
 
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v4.0.1
         with:
           versionSpec: '6.3.x'
+
       - name: Determine Version
-        id: version_step 
+        id: version_step
         uses: gittools/actions/gitversion/execute@v4.0.1
 
       - name: Log in to GitHub Container Registry
@@ -55,11 +50,46 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install Aspire.Hosting.Docker package
+        working-directory: src/Weaver.AppHost
+        run: |
+          # Package should already be installed based on the csproj
+          # dotnet add package Aspire.Hosting.Docker --version 13.1.0-preview.1.25616.3 || true
+          curl -sSL https://aspire.dev/install.sh | bash
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish Aspire application
+        working-directory: src/Weaver.AppHost
+        run: aspire publish --output-path ../../aspire-output
+
+      - name: Build and tag Docker images
+        run: |
+          # Build webapi image
+          docker build -f src/Weaver.Docker.WebApi/Dockerfile -t webapi:latest .
+          
+          # Build webapp image  
+          docker build -f src/Weaver.WebApp/Dockerfile -t webapp:latest src/Weaver.WebApp
+
       - name: Extract metadata for API image
         id: meta-api
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=next
+            type=raw,value=${{ steps.version_step.outputs.semVer }}
+
+      - name: Extract metadata for Docker API image
+        id: meta-docker-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=next
@@ -75,13 +105,21 @@ jobs:
             type=raw,value=next
             type=raw,value=${{ steps.version_step.outputs.semVer }}
 
-      - name: Retag images for GitHub Registry
-        run: |          
+      - name: Tag and push images
+        run: |
+          # Retag and push webapi images
           for tag in $(echo '${{ steps.meta-api.outputs.tags }}' | tr '\n' ' '); do
             docker tag webapi:latest $tag
             docker push $tag
           done
           
+          # Retag and push docker-webapi images (uses same base image)
+          for tag in $(echo '${{ steps.meta-docker-api.outputs.tags }}' | tr '\n' ' '); do
+            docker tag webapi:latest $tag
+            docker push $tag
+          done
+          
+          # Retag and push webapp images
           for tag in $(echo '${{ steps.meta-webapp.outputs.tags }}' | tr '\n' ' '); do
             docker tag webapp:latest $tag
             docker push $tag
@@ -91,8 +129,49 @@ jobs:
         run: |
           mkdir -p release-artifacts
           
-          cp aspire-output/docker-compose.yaml release-artifacts/ || echo "docker-compose.yaml not found"
-          cp aspire-output/.env release-artifacts/ || echo ".env not found"
+          # Copy docker-compose and env files if they exist
+          if [ -f aspire-output/docker-compose.yaml ]; then
+            cp aspire-output/docker-compose.yaml release-artifacts/
+          elif [ -f aspire-output/compose.yaml ]; then
+            cp aspire-output/compose.yaml release-artifacts/docker-compose.yaml
+          fi
+          
+          if [ -f aspire-output/.env ]; then
+            cp aspire-output/.env release-artifacts/
+          fi
+          
+          # Create a deployment guide
+          cat > release-artifacts/DEPLOY.md << 'EOF'
+          # Deployment Guide
+
+          ## Prerequisites
+          - Docker and Docker Compose installed
+          - Access to GitHub Container Registry
+
+          ## Deployment Steps
+
+          1. Log in to GitHub Container Registry:
+             ```bash
+             echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+             ```
+
+          2. Pull the images:
+             ```bash
+             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${{ steps.version_step.outputs.semVer }}
+             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${{ steps.version_step.outputs.semVer }}
+             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${{ steps.version_step.outputs.semVer }}
+             ```
+
+          3. Update the docker-compose.yaml with the correct image tags
+
+          4. Run the application:
+             ```bash
+             docker-compose up -d
+             ```
+
+          ## Version
+          ${{ steps.version_step.outputs.semVer }}
+          EOF
           
           echo "=== Release artifacts prepared ==="
           ls -la release-artifacts/
@@ -109,7 +188,7 @@ jobs:
             echo "No previous tags found, generating changelog from all commits"
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
           fi
-                    
+          
           # Set output for use in release
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
@@ -121,30 +200,47 @@ jobs:
           tag_name: ${{ steps.version_step.outputs.semVer }}
           name: Release ${{ steps.version_step.outputs.semVer }}
           body: |
-            
             ## Changes
             ${{ steps.changelog.outputs.changelog }}
             
             ## Docker Images
             
-            ### API Image Tags
-            ${{ steps.meta-api.outputs.tags }}
+            ### WebAPI Image
+            ```
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${{ steps.version_step.outputs.semVer }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:latest
+            ```
             
-            ### WebApp Image Tags
-            ${{ steps.meta-webapp.outputs.tags }}
+            ### Docker WebAPI Image
+            ```
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${{ steps.version_step.outputs.semVer }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:latest
+            ```
             
+            ### WebApp Image
+            ```
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${{ steps.version_step.outputs.semVer }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:latest
+            ```
+            
+            ## Deployment
+            See the `DEPLOY.md` file in the release artifacts for deployment instructions.
           files: |
-            release-artifacts/.env
             release-artifacts/*
           draft: false
           prerelease: ${{ github.ref_name != 'main' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
-          
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Output image information
         run: |
-          echo "API Image Tags:"
+          echo "=== Docker Images Published ==="
+          echo ""
+          echo "WebAPI Image Tags:"
           echo '${{ steps.meta-api.outputs.tags }}'
+          echo ""
+          echo "Docker WebAPI Image Tags:"
+          echo '${{ steps.meta-docker-api.outputs.tags }}'
           echo ""
           echo "WebApp Image Tags:"
           echo '${{ steps.meta-webapp.outputs.tags }}'

@@ -1,7 +1,9 @@
-import { MainGraph, ServiceGraphProvider } from '@weaver/graph';
-import { ThemeProvider, ThemeToggle } from '@weaver/styling';
+import { AppRouter } from '@weaver/app';
+import { DockerProvider } from '@weaver/docker';
+import { environment } from '@weaver/shared';
+import { ThemeProvider } from '@weaver/styling';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import styles from './App.module.scss';
+import { RouterProvider } from 'react-router-dom';
 
 function App() {
   const queryClient = new QueryClient();
@@ -9,12 +11,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className={styles['app-container']}>
-          <ServiceGraphProvider>
-            <MainGraph />
-          </ServiceGraphProvider>
-        </div>
-        <ThemeToggle className={styles['theme-toggle']} />
+        <DockerProvider dockerApiAddress={environment.dockerApiAddress}>          
+            <RouterProvider router={AppRouter} />
+        </DockerProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

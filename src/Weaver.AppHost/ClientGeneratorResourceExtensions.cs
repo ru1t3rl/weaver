@@ -24,7 +24,7 @@ internal static class ResourceBuilderExtensions
         }
 
         builder.WithCommand(
-            name: "generate-clients",
+            name: $"generate-clients-{displayName}",
             displayName: displayName,
             executeCommand: _ => OnRunGenerateClients(
                 builder,

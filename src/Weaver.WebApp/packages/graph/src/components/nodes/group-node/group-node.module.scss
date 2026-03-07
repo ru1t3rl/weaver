@@ -1,0 +1,16 @@
+.group {
+    &-container {
+        width: 100%;
+        height: 100%;
+        border: 2px solid;
+        border-radius: 8;
+        background-color: #ffffff02;
+        position: relative;
+    }
+
+    &-title {
+        position: absolute;
+        top: -28;
+        left: 0;
+    }
+}

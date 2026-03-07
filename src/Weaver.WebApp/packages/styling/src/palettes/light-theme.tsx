@@ -6,6 +6,8 @@ export const lightThemeColors: Partial<AliasToken> = {
     colorSuccess: "#84cc16",
     colorWarning: "#f59e0b",
     colorTextBase: "#1a1a1a",
-    colorBgBase: "#ffffff"
+    colorBgBase: "#eaeaea",
+    colorBgContainer: "#fafafa",
+    colorBgElevated: "#ffffff"
 }
 export default lightThemeColors;

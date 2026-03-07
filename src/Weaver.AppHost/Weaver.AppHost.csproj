@@ -4,23 +4,24 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>0fd9fe53-8d6c-47c1-8edc-3b9d6b151273</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Weaver.Docker.WebApi\Weaver.Docker.WebApi.csproj" />
     <ProjectReference Include="..\Weaver.Migrator\Weaver.Migrator.csproj" />
     <ProjectReference Include="..\Weaver.WebApi\Weaver.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
-    <PackageReference Include="Aspire.Hosting.Docker" Version="9.3.1-preview.1.25305.6" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="9.3.1" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Bun" Version="9.6.0" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.PostgreSQL.Extensions" Version="9.6.0" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.0" />
+    <PackageReference Include="Aspire.Hosting.Docker" Version="13.1.0-preview.1.25616.3" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="13.1.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Bun" Version="13.1.2-beta.515" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.PostgreSQL.Extensions" Version="13.1.2-beta.515" />
   </ItemGroup>
 
 </Project>

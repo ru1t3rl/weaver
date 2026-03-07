@@ -17,5 +17,8 @@ export default defineConfig(({ mode }) => {
       host: 'localhost',
     },
     plugins: [react()],
+    ssr: {
+      external: ['dockerode']
+    }
   };
 });

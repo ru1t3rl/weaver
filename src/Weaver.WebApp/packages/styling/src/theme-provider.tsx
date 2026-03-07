@@ -1,10 +1,10 @@
-import {PropsWithChildren, useState} from "react";
-import {createTheme, ThemeMode} from "./theme";
-import {ConfigProvider} from "antd";
-import {IThemeContext, ThemeContext} from "./theme-context";
+import { PropsWithChildren, useState } from "react";
+import { createTheme, ThemeMode } from "./theme";
+import { ConfigProvider } from "antd";
+import { IThemeContext, ThemeContext } from "./theme-context";
 
 
-export function ThemeProvider({children}: PropsWithChildren) {
+export function ThemeProvider({ children }: PropsWithChildren) {
     const [mode, setMode] = useState<ThemeMode>('dark');
     const themeConfig = createTheme(mode);
 
@@ -18,13 +18,14 @@ export function ThemeProvider({children}: PropsWithChildren) {
 
     const value: IThemeContext = {
         mode,
+        theme: themeConfig,
         toggleTheme,
-        setMode
+        setMode,
     }
 
     return (
         <ThemeContext.Provider value={value}>
-            <ConfigProvider theme={{...themeConfig, cssVar: true}}>
+            <ConfigProvider theme={{ ...themeConfig }}>
                 {children}
             </ConfigProvider>
         </ThemeContext.Provider>
