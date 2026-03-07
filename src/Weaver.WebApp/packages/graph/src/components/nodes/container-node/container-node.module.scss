@@ -11,6 +11,7 @@
 
     &-detail-container {
         border: none;
+        box-shadow: 0 0 5px 1px #00000010;
 
         :global(.ant-card-body) {
             display: flex;

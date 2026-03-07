@@ -9,5 +9,6 @@ public record struct ContainerListItemModel
     public required DateTime Created { get; init; }
     public required Health Health { get; init; }
     public required string[] DependsOn { get; init; }
+    public required NetworkModel[] Networks { get; init; }
     public string? ComposeName { get; init; }
 }

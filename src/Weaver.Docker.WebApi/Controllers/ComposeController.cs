@@ -81,7 +81,8 @@ public class ComposeController : ControllerBase
                     Created = c.Created,
                     Health = c.Health.Status.ToEnum<Health>(),
                     ComposeName = stackName,
-                    DependsOn = c.GetDependsOn(containers)
+                    DependsOn = c.GetDependsOn(containers),
+                    Networks = c.GetNetworks()
                 }
             )
             .ToList();
@@ -98,6 +99,4 @@ public class ComposeController : ControllerBase
 
         return Ok(detailModel);
     }
-
-    
 }

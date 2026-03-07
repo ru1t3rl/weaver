@@ -24,10 +24,10 @@ var apiService = builder
 var dockerApiService = builder
     .AddProject<Projects.Weaver_Docker_WebApi>("docker-webapi")
     .WithHttpHealthCheck("/health")
-    .WithUrlForEndpoint("http", url =>
-    {
-        url.Url = "/docs";
-    });
+    .WithUrlForEndpoint(
+        "http",
+        url => { url.Url = "/docs"; }
+    );
 
 builder
     .AddBunApp("webapp", "../Weaver.WebApp", "dev", true)

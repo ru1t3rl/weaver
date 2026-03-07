@@ -4,14 +4,14 @@
   "private": true,
   "dependencies": {
     "@weaver/shared": "workspace:*",
-    "@xyflow/react": "^12.8.2",
+    "@xyflow/react": "^12.10.1",
     "react-icons": "^5.5.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "ajv": "^8.17.1",
-    "orval": "^7.10.0",
-    "sass-embedded": "^1.89.2",
-    "tsx": "^4.20.3"
+    "ajv": "^8.18.0",
+    "orval": "^7.21.0",
+    "sass-embedded": "^1.97.3",
+    "tsx": "^4.21.0"
   }
 }

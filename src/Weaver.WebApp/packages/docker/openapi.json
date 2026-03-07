@@ -503,7 +503,8 @@
           "status",
           "created",
           "health",
-          "dependsOn"
+          "dependsOn",
+          "networks"
         ],
         "type": "object",
         "properties": {
@@ -530,6 +531,12 @@
             "type": "array",
             "items": {
               "type": "string"
+            }
+          },
+          "networks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NetworkModel"
             }
           },
           "composeName": {
@@ -1670,6 +1677,33 @@
             "additionalProperties": {
               "$ref": "#/components/schemas/EndpointSettings"
             }
+          }
+        }
+      },
+      "NetworkModel": {
+        "required": [
+          "id",
+          "name",
+          "ip",
+          "gateway",
+          "macAddress"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "gateway": {
+            "type": "string"
+          },
+          "macAddress": {
+            "type": "string"
           }
         }
       },

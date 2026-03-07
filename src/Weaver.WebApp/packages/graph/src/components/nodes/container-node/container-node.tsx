@@ -4,8 +4,9 @@ import { Button, Card, Typography } from "antd";
 import { useState } from "react";
 import { LuChevronDown, LuChevronUp, LuContainer } from "react-icons/lu";
 import { StateCircle } from "../../utils";
-import styles from './container-node.module.scss';
 import { ContainerDetails } from "./container-detail";
+import styles from './container-node.module.scss';
+import { useTheme } from "@weaver/styling";
 
 type ContainerNodeData = {
     model: ContainerListItemModel;
@@ -16,8 +17,9 @@ export const containerNode = 'containerNode';
 export type ContainerNode = Node<ContainerNodeData, 'containerNode'>;
 
 export const ContainerNode = (props: NodeProps<ContainerNode>) => {
-    const { data } = props;
+    const { data, selected } = props;
     const { model, onClick } = data;
+    const { theme } = useTheme();
     const [hover, setHover] = useState<boolean>(false);
     const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -41,8 +43,16 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
 
     return (
         <div className={styles['container-node-outer-body']} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <Card className={styles['container-node-detail-container']}>
-                <Card onClick={handleClick} className={styles['container-node-main-container']} hoverable>
+            <Card className={styles['container-node-detail-container']} style={{ backgroundColor: theme.token?.colorBgElevated }}>
+                <Card
+                    hoverable
+                    onClick={handleClick}
+                    className={styles['container-node-main-container']}
+                    style={{
+                        backgroundColor: theme.token?.colorBgElevated,
+                        borderColor: selected ? theme.token?.colorPrimary : theme.token?.colorBorder,
+                        boxShadow: selected ? `0 0 5px 2px ${theme.token?.colorPrimary}20` : 'initial'
+                    }}>
                     <LuContainer className={styles['container-node-icon']} />
                     <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>{model?.name.replace(`/`, '') ?? 'N/A'}</Typography.Title>
                     <StateCircle state={model?.status} />

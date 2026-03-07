@@ -1,4 +1,4 @@
-import { GraphContextMenu, GraphProviderRef, NodeTypes, StyledGraph, useGraphRef } from '@weaver/graph';
+import { GraphContextMenu, GraphProviderRef, NodeTypes, EdgeTypes, StyledGraph, useGraphRef } from '@weaver/graph';
 import { Background, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { MenuProps } from 'antd';
@@ -7,10 +7,23 @@ import { Outlet } from 'react-router';
 import { useServiceTemplateSearchModal } from '../../../hooks';
 import { NotificationProvider } from '../../../providers';
 import styles from './main-graph.module.scss';
+import { useReducer, useRef } from 'react';
 
 export function InternalMainGraph() {
   const { show: showServiceModal } = useServiceTemplateSearchModal();
-  const { nodes, edges, resolveCollision, onNodesChange, onEdgesChange } = useGraphRef();
+  const [, render] = useReducer(x => !x, false);
+  const _render = useRef(render);
+
+  const { nodes, edges, resolveCollision, onNodesChange, onEdgesChange } = useGraphRef([
+    {
+      key: { type: 'edge', change: 'any' },
+      callback: () => _render.current()
+    },
+    {
+      key: { type: 'node', change: 'any' },
+      callback: () => _render.current()
+    }
+  ]);
 
   const items: MenuProps['items'] = [
     {
@@ -30,6 +43,7 @@ export function InternalMainGraph() {
           nodes={nodes.current}
           edges={edges.current}
           nodeTypes={NodeTypes}
+          edgeTypes={EdgeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onNodeDragStop={resolveCollision}

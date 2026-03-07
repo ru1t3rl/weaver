@@ -100,4 +100,19 @@ public static class ContainerExtensions
 
         return dependencyIds;
     }
+
+    public static NetworkModel[] GetNetworks(this ContainerListResponse container)
+    {
+        return container
+            .NetworkSettings.Networks.Select(n => new NetworkModel
+                {
+                    Id = n.Value.NetworkID,
+                    Name = n.Key,
+                    Ip = n.Value.IPAddress,
+                    Gateway = n.Value.Gateway,
+                    MacAddress = n.Value.MacAddress
+                }
+            )
+            .ToArray();
+    }
 }
