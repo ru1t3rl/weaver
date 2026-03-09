@@ -32,7 +32,7 @@ branches:
     tracks-release-branches: false
     is-release-branch: false
     is-main-branch: true
-    pre-release-weight: 55000
+    pre-release-weight: 0
   develop:
     label: ''
     increment: Patch
@@ -46,7 +46,7 @@ branches:
     tracks-release-branches: false
     is-release-branch: false
     is-main-branch: true
-    pre-release-weight: 55000
+    pre-release-weight: 0
   release:
     mode: ManualDeployment
     label: beta
