@@ -11,6 +11,24 @@ commit-date-format: yyyy-MM-dd
 merge-message-formats: {}
 update-build-number: true
 semantic-version-format: Strict
+
+# Global mode — ManualDeployment is the safest default
+mode: ManualDeployment
+label: '{BranchName}'
+increment: Inherit
+prevent-increment:
+  of-merged-branch: false
+  when-branch-merged: false
+  when-current-commit-tagged: true
+track-merge-target: false
+track-merge-message: true
+# IMPORTANT: Enable so +semver: commit messages work
+commit-message-incrementing: Enabled
+regex: ''
+source-branches: []
+is-source-branch-for: []
+tracks-release-branches: false
+
 strategies:
   - Fallback
   - ConfiguredNextVersion
@@ -18,35 +36,46 @@ strategies:
   - TaggedCommit
   - TrackReleaseBranches
   - VersionInBranchName
+
 branches:
   main:
+    # ContinuousDeployment = no pre-release suffix, every commit IS the version
+    mode: ContinuousDeployment
     label: ''
     increment: Minor
     prevent-increment:
       of-merged-branch: false
+      when-current-commit-tagged: true
     track-merge-target: false
     track-merge-message: true
-    regex: ^master$|^main$
+    commit-message-incrementing: Enabled
+    # Simplified regex — avoid alternation issues
+    regex: ^main$
     source-branches: []
     is-source-branch-for: []
     tracks-release-branches: false
     is-release-branch: false
     is-main-branch: true
     pre-release-weight: 55000
+
   develop:
+    mode: ContinuousDeployment
     label: ''
     increment: Patch
     prevent-increment:
       of-merged-branch: false
+      when-current-commit-tagged: true
     track-merge-target: false
     track-merge-message: true
+    commit-message-incrementing: Enabled
     regex: ^develop(ment)?$
-    source-branches: [ ]
-    is-source-branch-for: [ ]
+    source-branches: []
+    is-source-branch-for: []
     tracks-release-branches: false
     is-release-branch: false
     is-main-branch: false
     pre-release-weight: 55000
+
   release:
     mode: ManualDeployment
     label: beta
@@ -65,6 +94,7 @@ branches:
     is-release-branch: true
     is-main-branch: false
     pre-release-weight: 30000
+
   feature:
     mode: ManualDeployment
     label: '{BranchName}'
@@ -79,6 +109,7 @@ branches:
     is-source-branch-for: []
     is-main-branch: false
     pre-release-weight: 30000
+
   pull-request:
     mode: ContinuousDelivery
     label: PullRequest{Number}
@@ -94,6 +125,7 @@ branches:
       - feature
     is-source-branch-for: []
     pre-release-weight: 30000
+
   unknown:
     mode: ManualDeployment
     label: '{BranchName}'
@@ -109,17 +141,3 @@ branches:
       - pull-request
     is-source-branch-for: []
     is-main-branch: false
-mode: ContinuousDelivery
-label: '{BranchName}'
-increment: Inherit
-prevent-increment:
-  of-merged-branch: false
-  when-branch-merged: false
-  when-current-commit-tagged: true
-track-merge-target: false
-track-merge-message: true
-commit-message-incrementing: Disabled
-regex: ''
-source-branches: []
-is-source-branch-for: []
-tracks-release-branches: false
