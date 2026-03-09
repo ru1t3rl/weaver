@@ -23,7 +23,7 @@ branches:
     label: ''
     increment: Minor
     prevent-increment:
-      of-merged-branch: true
+      of-merged-branch: false
     track-merge-target: false
     track-merge-message: true
     regex: ^master$|^main$
@@ -32,12 +32,12 @@ branches:
     tracks-release-branches: false
     is-release-branch: false
     is-main-branch: true
-    pre-release-weight: 0
+    pre-release-weight: 55000
   develop:
     label: ''
     increment: Patch
     prevent-increment:
-      of-merged-branch: true
+      of-merged-branch: false
     track-merge-target: false
     track-merge-message: true
     regex: ^develop(ment)?$
@@ -45,8 +45,8 @@ branches:
     is-source-branch-for: [ ]
     tracks-release-branches: false
     is-release-branch: false
-    is-main-branch: true
-    pre-release-weight: 0
+    is-main-branch: false
+    pre-release-weight: 55000
   release:
     mode: ManualDeployment
     label: beta
@@ -118,10 +118,8 @@ prevent-increment:
   when-current-commit-tagged: true
 track-merge-target: false
 track-merge-message: true
-commit-message-incrementing: Enabled
+commit-message-incrementing: Disabled
 regex: ''
 source-branches: []
 is-source-branch-for: []
 tracks-release-branches: false
-is-release-branch: false
-is-main-branch: false
