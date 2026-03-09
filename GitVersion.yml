@@ -109,9 +109,6 @@ branches:
       - pull-request
     is-source-branch-for: []
     is-main-branch: false
-ignore:
-  sha: []
-  paths: []
 mode: ContinuousDelivery
 label: '{BranchName}'
 increment: Inherit
