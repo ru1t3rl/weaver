@@ -17,25 +17,26 @@ export function ContextMenu({ state, onClose }: ContextMenuProps) {
         // const y = position.y + menuH > window.innerHeight ? position.y - menuH : position.y;
         return { top: position.y, left: position.x };
     }, [position]);
-    
+
     useEffect(() => {
         const handleClick = () => onClose();
         const handleKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-        
-            window.addEventListener('mousedown', handleClick);
-            window.addEventListener('keydown', handleKey);
-        
+
+        window.addEventListener('mousedown', handleClick);
+        window.addEventListener('keydown', handleKey);
+
         return () => {
             window.removeEventListener('mousedown', handleClick);
             window.removeEventListener('keydown', handleKey);
         };
     }, [onClose]);
-    
+
     if (!position) return null;
 
     return (
         <div
             ref={menuRef}
+            onMouseDown={(e) => e.stopPropagation()}
             style={{
                 position: 'fixed',
                 ...menuStyle,
@@ -53,7 +54,7 @@ export function ContextMenu({ state, onClose }: ContextMenuProps) {
                 <button
                     key={item.label ?? idx}
                     disabled={item.disabled}
-                    onClick={() => { item.onClick?.(); onClose(); }}
+                    onClick={() => { item.onClick(); onClose(); }}
                     style={{
                         display: 'flex', alignItems: 'center', gap: 8,
                         width: '100%', padding: '7px 14px',
