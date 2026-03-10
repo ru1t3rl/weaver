@@ -30,11 +30,11 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
         {
             label: model.status == 'Running' ? 'Stop' : 'Play',
             icon: model.status === 'Running' ? <LuCircleStop /> : <LuPlay />,
-            onClick: () => {
+            onClick: async () => {
                 if (model.status === 'Running') {
-                    stop();
+                    await stop();
                 } else if (model.status === 'Exited' || model.status === 'Paused') {
-                    start();
+                    await start();
                 }
             }
         }
