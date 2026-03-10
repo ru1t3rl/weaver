@@ -25,7 +25,7 @@ public class GetStackNameCommandHandler : ICommandHandler<GetStackNameCommand, O
         try
         {
             IList<ContainerListResponse> containers = await _dockerClient.Containers.ListContainersAsync(
-                new ContainersListParameters { All = false },
+                new ContainersListParameters { All = true },
                 cancellationToken
             );
 
