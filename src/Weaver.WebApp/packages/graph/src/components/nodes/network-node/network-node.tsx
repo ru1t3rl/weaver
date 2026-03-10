@@ -54,8 +54,8 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
     // expressed in the parent's local coordinate space.
     const bounds = getNodesBounds(children);
 
-    const shiftX = PADDING / 2 - bounds.x;
-    const shiftY = PADDING / 2  + HEADER_HEIGHT - bounds.y;
+    const shiftX = PADDING - bounds.x;
+    const shiftY = PADDING + HEADER_HEIGHT - bounds.y;
 
     const targetW = bounds.width  + PADDING * 2;
     const targetH = bounds.height + PADDING * 2 + HEADER_HEIGHT;
@@ -65,17 +65,16 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
     updateNode(id, { width: targetW, height: targetH });
 
     async function delayed() {
-      await new Promise(r => setTimeout(r, 750));
       children.forEach((child) => {
         updateNode(child.id, (node) => ({
           position: {
-            x: node.position.x + shiftX,
-            y: node.position.y + shiftY,
+            x: node.position.x + shiftX/2,
+            y: node.position.y + shiftY/2 + HEADER_HEIGHT,
           },
         }));
       });
 
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 1000));
       children.forEach((child) => {
         updateNode(child.id, { extent: 'parent' });
       });
