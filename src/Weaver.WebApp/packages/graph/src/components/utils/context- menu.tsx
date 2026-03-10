@@ -12,10 +12,16 @@ export function ContextMenu({ state, onClose }: ContextMenuProps) {
 
     const menuStyle = useMemo(() => {
         if (!position) return {};
-        // const menuW = 200, menuH = 300;
-        // const x = position.x + menuW > window.innerWidth ? position.x - menuW : position.x;
-        // const y = position.y + menuH > window.innerHeight ? position.y - menuH : position.y;
-        return { top: position.y, left: position.x };
+
+        if (!menuRef.current) {
+            return { top: position.y, left: position.x };
+        }
+
+        const menuW = menuRef.current?.clientWidth ?? 200, menuH = menuRef.current?.clientHeight ?? 200;
+        const x = position.x + menuW > window.innerWidth ? position.x - menuW : position.x;
+        const y = position.y + menuH > window.innerHeight ? position.y - menuH : position.y;
+
+        return { top: x, left: y }
     }, [position]);
 
     useEffect(() => {
@@ -35,7 +41,7 @@ export function ContextMenu({ state, onClose }: ContextMenuProps) {
 
     return (
         <div
-            ref={menuRef}
+            ref={div => { menuRef.current = div }}
             onMouseDown={(e) => e.stopPropagation()}
             style={{
                 position: 'fixed',
