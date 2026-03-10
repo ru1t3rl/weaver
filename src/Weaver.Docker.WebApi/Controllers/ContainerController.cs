@@ -173,11 +173,19 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        await _dockerClient.Containers.StartContainerAsync(
-            identifier,
-            new ContainerStartParameters(),
-            cancellationToken
-        );
+        try
+        {
+            await _dockerClient.Containers.StartContainerAsync(
+                identifier,
+                new ContainerStartParameters(),
+                cancellationToken
+            );
+        }
+        catch (DockerApiException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
         return Ok();
     }
 
