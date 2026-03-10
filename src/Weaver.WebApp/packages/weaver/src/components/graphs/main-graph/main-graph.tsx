@@ -1,18 +1,19 @@
-import { GraphContextMenu, GraphProviderRef, NodeTypes, EdgeTypes, StyledGraph, useGraphRef } from '@weaver/graph';
+import { GraphProviderRef, NodeTypes, EdgeTypes, StyledGraph, useGraphRef, ContextMenuProvider, useContextMenu, ContextMenuItem } from '@weaver/graph';
 import { Background, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { MenuProps } from 'antd';
 import { LuPlus } from 'react-icons/lu';
 import { Outlet } from 'react-router';
 import { useServiceTemplateSearchModal } from '../../../hooks';
 import { NotificationProvider } from '../../../providers';
 import styles from './main-graph.module.scss';
-import { useReducer, useRef } from 'react';
+import { useMemo, useReducer, useRef } from 'react';
 
 export function InternalMainGraph() {
   const { show: showServiceModal } = useServiceTemplateSearchModal();
   const [, render] = useReducer(x => !x, false);
   const _render = useRef(render);
+
+  const { close, show } = useContextMenu();
 
   const { nodes, edges, resolveCollision, onNodesChange, onEdgesChange } = useGraphRef([
     {
@@ -25,35 +26,45 @@ export function InternalMainGraph() {
     }
   ]);
 
-  const items: MenuProps['items'] = [
+  const items = useMemo<ContextMenuItem[]>(() => [
     {
       label: 'Add service',
+      onClick: () => showServiceModal,
       icon: <LuPlus />,
-      key: 'add-service',
-      onClick: showServiceModal,
     },
-  ];
+  ], []);
+
+  const { registerPersistent } = useContextMenu();
+  useMemo(() => {
+    registerPersistent(items);
+  }, [items])
+
+  function showContext(e: React.MouseEvent) {
+    e.preventDefault();
+    show(e.clientX, e.clientY);
+  }
 
   return (
     <NotificationProvider>
       {/* <ModalsProvider> */}
       <Outlet />
-      <GraphContextMenu items={items}>
-        <StyledGraph
-          nodes={nodes.current}
-          edges={edges.current}
-          nodeTypes={NodeTypes}
-          edgeTypes={EdgeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onNodeDragStop={resolveCollision}
-          snapToGrid
-          multiSelectionKeyCode={'Ctrl'}
-          selectionKeyCode={'Shift'}
-        >
-          <Background />
-        </StyledGraph>
-      </GraphContextMenu>
+      <StyledGraph
+        nodes={nodes.current}
+        edges={edges.current}
+        nodeTypes={NodeTypes}
+        edgeTypes={EdgeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onNodeDragStop={resolveCollision}
+        onPaneClick={close}
+        onNodeClick={close}
+        onContextMenu={showContext}
+        snapToGrid
+        multiSelectionKeyCode={'Ctrl'}
+        selectionKeyCode={'Shift'}
+      >
+        <Background />
+      </StyledGraph>
       {/* </ModalsProvider> */}
     </NotificationProvider>
   )
@@ -63,9 +74,11 @@ export const MainGraph = () => {
   return (
     <div style={{ width: '100%', height: '100%' }} className={styles['main-graph-container']}>
       <GraphProviderRef>
-        <ReactFlowProvider>
-          <InternalMainGraph />
-        </ReactFlowProvider>
+        <ContextMenuProvider>
+          <ReactFlowProvider>
+            <InternalMainGraph />
+          </ReactFlowProvider>
+        </ContextMenuProvider>
       </GraphProviderRef>
     </div>
   )

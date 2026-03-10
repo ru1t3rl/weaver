@@ -170,23 +170,45 @@ public class ContainerController : ControllerBase
 
     [HttpPut("{identifier}/start")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        await _dockerClient.Containers.StartContainerAsync(
-            identifier,
-            new ContainerStartParameters(),
-            cancellationToken
-        );
+        try
+        {
+            await _dockerClient.Containers.StartContainerAsync(
+                identifier,
+                new ContainerStartParameters(),
+                cancellationToken
+            );
+        }
+        catch (DockerApiException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
         return Ok();
     }
 
     [HttpPut("{identifier}/stop")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
     {
-        await _dockerClient.Containers.StopContainerAsync(identifier, new ContainerStopParameters(), cancellationToken);
+        try
+        {
+            await _dockerClient.Containers.StopContainerAsync(
+                identifier,
+                new ContainerStopParameters(),
+                cancellationToken
+            );
+        }
+        catch (DockerApiException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
         return Ok();
     }
 }
