@@ -2,11 +2,13 @@ import { ContainerListItemModel } from "@weaver/docker/src/api/models";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { Button, Card, Typography } from "antd";
 import { useState } from "react";
-import { LuChevronDown, LuChevronUp, LuContainer } from "react-icons/lu";
+import { LuChevronDown, LuChevronUp, LuCircleStop, LuContainer, LuPlay } from "react-icons/lu";
 import { StateCircle } from "../../utils";
 import { ContainerDetails } from "./container-detail";
 import styles from './container-node.module.scss';
 import { useTheme } from "@weaver/styling";
+import { useContextMenu } from "../../../hooks/use-context-menu";
+import { useContainer } from "@weaver/docker";
 
 type ContainerNodeData = {
     model: ContainerListItemModel;
@@ -22,10 +24,33 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
     const { theme } = useTheme();
     const [hover, setHover] = useState<boolean>(false);
     const [expanded, setExpanded] = useState<boolean>(false);
+    const { start, stop } = useContainer(model.id);
+
+    const { show } = useContextMenu([
+        {
+            label: model.status == 'Running' ? 'Stop' : 'Play',
+            icon: model.status === 'Running' ? <LuCircleStop /> : <LuPlay />,
+            onClick: () => {
+                if (model.status === 'Running') {
+                    stop();
+                } else if (model.status === 'Exited' || model.status === 'Paused') {
+                    start();
+                }
+            }
+        }
+    ]);
 
     function handleClick() {
         if (onClick) {
             onClick();
+        }
+    }
+
+    function handleRightClick(e: React.MouseEvent) {
+        e.preventDefault();
+        console.log(e.button);
+        if (e.button === 2) {
+            show(e.screenX, e.screenY);
         }
     }
 
@@ -47,6 +72,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
                 <Card
                     hoverable
                     onClick={handleClick}
+                    onMouseUp={handleRightClick}
                     className={styles['container-node-main-container']}
                     style={{
                         backgroundColor: theme.token?.colorBgElevated,
