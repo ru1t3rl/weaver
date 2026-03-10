@@ -228,7 +228,7 @@ jobs:
           files: |
             release-artifacts/*
           draft: false
-          prerelease: ${{ github.ref_name != 'main' }}
+          prerelease: ${{ github.ref_name != 'main' && github.ref_name != 'develop' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
