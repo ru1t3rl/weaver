@@ -8,13 +8,14 @@ interface useContainer {
   stop: () => Promise<void>;
   down: () => Promise<void>;
   logs: () => Promise<string>;
+  refetch: () => Promise<void>;
   dataIsLoading: boolean;
   data: ContainerDetailModel | null;
 }
 
 export const useContainer = (containerid: string): useContainer => {
   const { dockerApiAddress } = useDocker();
-  const { data, isLoading } = useGetContainerIdentifier(containerid, AxiosConfig(dockerApiAddress, 'get'));
+  const { data, isLoading, refetch: internalRefetch } = useGetContainerIdentifier(containerid, AxiosConfig(dockerApiAddress, 'get'));
   const { mutateAsync: startContainerAsync } = usePutContainerIdentifierStart(AxiosConfig(dockerApiAddress, 'put'));
   const { mutateAsync: stopContainerAsync } = usePutContainerIdentifierStop(AxiosConfig(dockerApiAddress, 'put'));
   const { mutateAsync: downContainerAsync } = useDeleteContainerIdentifier(AxiosConfig(dockerApiAddress, 'delete'));
@@ -39,11 +40,16 @@ export const useContainer = (containerid: string): useContainer => {
     return data?.data.log ?? '';
   }
 
+  async function refetch() {
+    internalRefetch();
+  }
+
   return {
     start,
     stop,
     down,
     logs,
+    refetch,
     dataIsLoading: isLoading,
     data: data?.data ?? null
   };

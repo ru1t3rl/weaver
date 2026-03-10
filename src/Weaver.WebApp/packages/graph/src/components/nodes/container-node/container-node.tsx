@@ -24,21 +24,35 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
     const { theme } = useTheme();
     const [hover, setHover] = useState<boolean>(false);
     const [expanded, setExpanded] = useState<boolean>(false);
-    const { start, stop } = useContainer(model.id);
+    const { data: containerData, start, stop, refetch } = useContainer(model.id);
 
     const { show } = useContextMenu([
         {
-            label: model.status == 'Running' ? 'Stop' : 'Play',
-            icon: model.status === 'Running' ? <LuCircleStop /> : <LuPlay />,
+            label: containerData?.status == 'Running' ? 'Stop' : 'Play',
+            icon: containerData?.status === 'Running' ? <LuCircleStop /> : <LuPlay />,
             onClick: async () => {
-                if (model.status === 'Running') {
+                if (containerData?.status === 'Running') {
                     await stop();
-                } else if (model.status === 'Exited' || model.status === 'Paused') {
+                } else if (containerData?.status === 'Exited' || model.status === 'Paused') {
                     await start();
                 }
+
+                PollStatus();
             }
         }
     ]);
+
+    async function PollStatus() {
+        const POLL_LIMIT = 3;
+        const POLL_TIMEOUT_IN_MS = 1500;
+
+        let tries = 0;
+        while (tries < POLL_LIMIT) {
+            await refetch();
+            tries++;
+            await new Promise(r => setTimeout(r, POLL_TIMEOUT_IN_MS));
+        }
+    }
 
     function handleClick() {
         if (onClick) {
@@ -49,7 +63,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
     function handleOpenContextMenu(e: React.MouseEvent) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         show(e.clientX, e.clientY)
     }
 
@@ -80,7 +94,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
                     }}>
                     <LuContainer className={styles['container-node-icon']} />
                     <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>{model?.name.replace(`/`, '') ?? 'N/A'}</Typography.Title>
-                    <StateCircle state={model?.status} />
+                    <StateCircle state={containerData?.status ?? 'Restarting'} />
                 </Card>
                 {expanded && (
                     <ContainerDetails containerId={model.id} />
