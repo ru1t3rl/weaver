@@ -54,11 +54,11 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
     // expressed in the parent's local coordinate space.
     const bounds = getNodesBounds(children);
 
-    const shiftX = PADDING / 2 - bounds.x;
-    const shiftY = PADDING / 2  + HEADER_HEIGHT - bounds.y;
+    const shiftX = PADDING - bounds.x;
+    const shiftY = PADDING + HEADER_HEIGHT - bounds.y;
 
     const targetW = bounds.width  + PADDING * 2;
-    const targetH = bounds.height + PADDING * 2 + HEADER_HEIGHT * 2;
+    const targetH = bounds.height + PADDING * 2 + HEADER_HEIGHT;
 
     if (shiftX === 0 && shiftY === 0 && targetW === props.width && targetH === props.height) return;
 

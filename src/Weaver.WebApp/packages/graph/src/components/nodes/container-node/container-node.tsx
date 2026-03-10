@@ -46,12 +46,11 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
         }
     }
 
-    function handleRightClick(e: React.MouseEvent) {
+    function handleOpenContextMenu(e: React.MouseEvent) {
         e.preventDefault();
-        console.log(e.button);
-        if (e.button === 2) {
-            show(e.screenX, e.screenY);
-        }
+        e.stopPropagation();
+        
+        show(e.clientX, e.clientY)
     }
 
     function handleExpandClicked() {
@@ -72,7 +71,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
                 <Card
                     hoverable
                     onClick={handleClick}
-                    onMouseUp={handleRightClick}
+                    onContextMenuCapture={handleOpenContextMenu}
                     className={styles['container-node-main-container']}
                     style={{
                         backgroundColor: theme.token?.colorBgElevated,

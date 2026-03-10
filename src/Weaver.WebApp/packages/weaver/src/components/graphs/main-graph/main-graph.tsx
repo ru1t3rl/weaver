@@ -13,6 +13,8 @@ export function InternalMainGraph() {
   const [, render] = useReducer(x => !x, false);
   const _render = useRef(render);
 
+  const { close, show } = useContextMenu();
+
   const { nodes, edges, resolveCollision, onNodesChange, onEdgesChange } = useGraphRef([
     {
       key: { type: 'edge', change: 'any' },
@@ -37,6 +39,10 @@ export function InternalMainGraph() {
     registerPersistent(items);
   }, [items])
 
+  function showContext(e: React.MouseEvent) {
+    e.preventDefault();
+    show(e.clientX, e.clientY);
+  }
 
   return (
     <NotificationProvider>
@@ -50,6 +56,9 @@ export function InternalMainGraph() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStop={resolveCollision}
+        onPaneClick={close}
+        onNodeClick={close}
+        onContextMenu={showContext}
         snapToGrid
         multiSelectionKeyCode={'Ctrl'}
         selectionKeyCode={'Shift'}

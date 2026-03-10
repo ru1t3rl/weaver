@@ -10,32 +10,32 @@ export function ContextMenu({ state, onClose }: ContextMenuProps) {
     const { position, items } = state;
     const menuRef = useRef<HTMLDivElement>(null);
 
+    const menuStyle = useMemo(() => {
+        if (!position) return {};
+        // const menuW = 200, menuH = 300;
+        // const x = position.x + menuW > window.innerWidth ? position.x - menuW : position.x;
+        // const y = position.y + menuH > window.innerHeight ? position.y - menuH : position.y;
+        return { top: position.y, left: position.x };
+    }, [position]);
+    
     useEffect(() => {
-        if (!position) return;
         const handleClick = () => onClose();
         const handleKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-        window.addEventListener('mousedown', handleClick);
-        window.addEventListener('keydown', handleKey);
+        
+            window.addEventListener('mousedown', handleClick);
+            window.addEventListener('keydown', handleKey);
+        
         return () => {
             window.removeEventListener('mousedown', handleClick);
             window.removeEventListener('keydown', handleKey);
         };
-    }, [position, onClose]);
-
-    const menuStyle = useMemo(() => {
-        if (!position) return {};
-        const menuW = 200, menuH = 300;
-        const x = position.x + menuW > window.innerWidth ? position.x - menuW : position.x;
-        const y = position.y + menuH > window.innerHeight ? position.y - menuH : position.y;
-        return { top: y, left: x };
-    }, [position]);
-
+    }, [onClose]);
+    
     if (!position) return null;
 
     return (
         <div
             ref={menuRef}
-            onMouseDown={e => e.stopPropagation()}
             style={{
                 position: 'fixed',
                 ...menuStyle,

@@ -21,14 +21,19 @@ export function ContextMenuProvider({ children }: PropsWithChildren) {
   }, []);
 
   const register = useCallback((items: ContextMenuItem[]) => {
-    registeredItems.current = [...registeredItems.current, ...items];
+    const x = [...new Set(items.map(i => i.label).concat(registeredItems.current.map(i => i.label)))];
+    const uniqueListener = x.map(x =>
+      registeredItems.current.find(r => r.label === x) ?? items.find(i => i.label === x)
+    ).filter(i => i !== undefined);
+
+    registeredItems.current = uniqueListener;
     return () => registeredItems.current = registeredItems.current.filter(i => !items.includes(i));
   }, []);
 
   return (
     <ContextMenuContext.Provider value={{ show, close, register }}>
-      {children}
-      <ContextMenu state={state} onClose={close} />
+        {children}
+        <ContextMenu state={state} onClose={close} />
     </ContextMenuContext.Provider>
   );
 }
