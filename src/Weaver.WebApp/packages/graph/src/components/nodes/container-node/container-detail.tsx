@@ -2,6 +2,7 @@ import { useContainer } from "@weaver/docker";
 import { Flex, Spin, Typography } from "antd";
 import { StateHeart } from "../../utils";
 import styles from './container-detail.module.scss';
+import { Link } from "react-router";
 
 interface ContainerDetailsProps {
     containerId: string;
@@ -29,7 +30,9 @@ export const ContainerDetails = (props: ContainerDetailsProps) => {
                         <Typography.Text strong>Ports:</Typography.Text>
                         {
                             data.ports.filter(p => p.PublicPort).map((mapping, index) => (
-                                <Typography.Text key={`${mapping.PublicPort}${index}`}>{mapping.PublicPort} : {mapping.PrivatePort}</Typography.Text>
+                                <Link to={`${window.location.protocol}//${window.location.host.split(':')[0]}:${mapping.PublicPort}`}>
+                                    <Typography.Text key={`${mapping.PublicPort}${index}`} underline>{mapping.PublicPort} : {mapping.PrivatePort}</Typography.Text>
+                                </Link>
                             ))
                         }
                         {

@@ -4,7 +4,7 @@ import { Node, NodeProps } from "@xyflow/react";
 import { Button, Card, Flex, Typography } from "antd";
 import { memo, useState } from "react";
 import { LuBoxes, LuChevronDown, LuChevronUp } from "react-icons/lu";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { StateCircle, StateHeart } from "../../utils";
 import styles from './stack-node.module.scss';
 import { routes } from "@weaver/shared";
@@ -74,7 +74,9 @@ export const StackNode = memo((props: NodeProps<StackNode>) => {
                             <Typography.Text strong>Ports:</Typography.Text>
                             {
                                 ports.filter(p => p.hostPort).map((mapping, index) => (
-                                    <Typography.Text key={`${mapping.hostPort}${index}`}>{mapping.hostPort} : {mapping.containerPort}</Typography.Text>
+                                    <Link to={`${window.location.protocol}//${window.location.host.split(':')[0]}:${mapping.hostPort}`}>
+                                        <Typography.Text key={`${mapping.hostPort}${index}`} underline>{mapping.hostPort} : {mapping.containerPort}</Typography.Text>
+                                    </Link>
                                 ))
                             }
                             {

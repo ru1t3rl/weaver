@@ -109,7 +109,7 @@ public class ContainerController : ControllerBase
             Image = response.Image,
             ImageId = response.ImageID,
             Created = response.Created,
-            Ports = response.Ports.ToList(),
+            Ports = response.Ports.DistinctBy(p => p.PublicPort).ToList(),
             Status = response.State.ToEnum<Status>(),
             Health = response.Health.Status.ToEnum<Health>(),
             HealthSummary = response.Health,
