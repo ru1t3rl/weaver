@@ -1,13 +1,14 @@
-import { PortMapping, Status } from "@weaver/docker";
+import { PortMapping, Status, useStack } from "@weaver/docker";
+import { routes } from "@weaver/shared";
 import { useTheme } from "@weaver/styling";
 import { Node, NodeProps } from "@xyflow/react";
 import { Button, Card, Flex, Typography } from "antd";
 import { memo, useState } from "react";
-import { LuBoxes, LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { LuBox, LuBoxes, LuChevronDown, LuChevronUp, LuPlay } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
+import { useContextMenu } from "../../../hooks/use-context-menu";
 import { StateCircle, StateHeart } from "../../utils";
 import styles from './stack-node.module.scss';
-import { routes } from "@weaver/shared";
 
 type StackNodeData = {
     name: string;
@@ -27,11 +28,33 @@ export const StackNode = memo((props: NodeProps<StackNode>) => {
     const [hover, setHover] = useState<boolean>(false);
     const [expanded, setExpanded] = useState<boolean>(false);
     const navigate = useNavigate();
+    const { data: stackData, start, stop } = useStack(id);
+
+    const { show } = useContextMenu([
+        {
+            label: stackData?.status == 'Running' ? 'Stop' : 'Play',
+            icon: stackData?.status === 'Running' ? <LuBox /> : <LuPlay />,
+            onClick: async () => {
+                if (stackData?.status === 'Running') {
+                    await stop();
+                } else if (stackData?.status === 'Exited' || stackData?.status === 'Paused') {
+                    await start();
+                }
+            }
+        }
+    ]);
 
     function handleClick() {
         if (onClick) {
             onClick();
         }
+    }
+
+    function handleOpenContextMenu(e: React.MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        show(e.clientX, e.clientY)
     }
 
     function handleDoubleClick() {
@@ -53,7 +76,13 @@ export const StackNode = memo((props: NodeProps<StackNode>) => {
     return (
         <div className={styles['stack-node-outer-body']} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <Card className={styles['stack-node-detail-container']} style={{ backgroundColor: theme.token?.colorBgElevated }}>
-                <Card onClick={handleClick} onDoubleClick={handleDoubleClick} className={styles['stack-node-main-container']} hoverable style={{ backgroundColor: theme.token?.colorBgElevated }}>
+                <Card
+                    hoverable
+                    onClick={handleClick}
+                    onDoubleClick={handleDoubleClick}
+                    onContextMenuCapture={handleOpenContextMenu}
+                    className={styles['stack-node-main-container']}
+                    style={{ backgroundColor: theme.token?.colorBgElevated }}>
                     <Flex gap={'small'} align='center'>
                         <LuBoxes className={styles['stack-node-icon']} />
                         <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>{name}</Typography.Title>
