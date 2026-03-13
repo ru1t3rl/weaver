@@ -12,11 +12,15 @@ import type {
 } from 'axios';
 
 import {
+  useMutation,
   useQuery
 } from 'react-query';
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from 'react-query';
@@ -156,3 +160,112 @@ export function useGetComposeIdentifier<TData = Awaited<ReturnType<typeof getCom
 
 
 
+export const putComposeIdentifierStart = (
+    identifier: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.put(
+      `/Compose/${identifier}/start`,undefined,options
+    );
+  }
+
+
+
+export const getPutComposeIdentifierStartMutationOptions = <TError = AxiosError<ProblemDetails | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putComposeIdentifierStart>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putComposeIdentifierStart>>, TError,{identifier: string}, TContext> => {
+
+const mutationKey = ['putComposeIdentifierStart'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putComposeIdentifierStart>>, {identifier: string}> = (props) => {
+          const {identifier} = props ?? {};
+
+          return  putComposeIdentifierStart(identifier,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutComposeIdentifierStartMutationResult = NonNullable<Awaited<ReturnType<typeof putComposeIdentifierStart>>>
+    
+    export type PutComposeIdentifierStartMutationError = AxiosError<ProblemDetails | void>
+
+    export const usePutComposeIdentifierStart = <TError = AxiosError<ProblemDetails | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putComposeIdentifierStart>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof putComposeIdentifierStart>>,
+        TError,
+        {identifier: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPutComposeIdentifierStartMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    export const putComposeIdentifierStop = (
+    identifier: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<boolean>> => {
+    
+    
+    return axios.put(
+      `/Compose/${identifier}/stop`,undefined,options
+    );
+  }
+
+
+
+export const getPutComposeIdentifierStopMutationOptions = <TError = AxiosError<ProblemDetails | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putComposeIdentifierStop>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putComposeIdentifierStop>>, TError,{identifier: string}, TContext> => {
+
+const mutationKey = ['putComposeIdentifierStop'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putComposeIdentifierStop>>, {identifier: string}> = (props) => {
+          const {identifier} = props ?? {};
+
+          return  putComposeIdentifierStop(identifier,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutComposeIdentifierStopMutationResult = NonNullable<Awaited<ReturnType<typeof putComposeIdentifierStop>>>
+    
+    export type PutComposeIdentifierStopMutationError = AxiosError<ProblemDetails | void>
+
+    export const usePutComposeIdentifierStop = <TError = AxiosError<ProblemDetails | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putComposeIdentifierStop>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof putComposeIdentifierStop>>,
+        TError,
+        {identifier: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPutComposeIdentifierStopMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    

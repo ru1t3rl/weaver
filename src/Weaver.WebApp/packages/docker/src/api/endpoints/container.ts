@@ -284,7 +284,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getPutContainerIdentifierStartMutationOptions = <TError = AxiosError<void>,
+export const getPutContainerIdentifierStartMutationOptions = <TError = AxiosError<string | void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putContainerIdentifierStart>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof putContainerIdentifierStart>>, TError,{identifier: string}, TContext> => {
 
@@ -311,9 +311,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PutContainerIdentifierStartMutationResult = NonNullable<Awaited<ReturnType<typeof putContainerIdentifierStart>>>
     
-    export type PutContainerIdentifierStartMutationError = AxiosError<void>
+    export type PutContainerIdentifierStartMutationError = AxiosError<string | void>
 
-    export const usePutContainerIdentifierStart = <TError = AxiosError<void>,
+    export const usePutContainerIdentifierStart = <TError = AxiosError<string | void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putContainerIdentifierStart>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
  ): UseMutationResult<
         Awaited<ReturnType<typeof putContainerIdentifierStart>>,
@@ -338,7 +338,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
 
 
-export const getPutContainerIdentifierStopMutationOptions = <TError = AxiosError<void>,
+export const getPutContainerIdentifierStopMutationOptions = <TError = AxiosError<string | void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putContainerIdentifierStop>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
 ): UseMutationOptions<Awaited<ReturnType<typeof putContainerIdentifierStop>>, TError,{identifier: string}, TContext> => {
 
@@ -365,9 +365,9 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PutContainerIdentifierStopMutationResult = NonNullable<Awaited<ReturnType<typeof putContainerIdentifierStop>>>
     
-    export type PutContainerIdentifierStopMutationError = AxiosError<void>
+    export type PutContainerIdentifierStopMutationError = AxiosError<string | void>
 
-    export const usePutContainerIdentifierStop = <TError = AxiosError<void>,
+    export const usePutContainerIdentifierStop = <TError = AxiosError<string | void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putContainerIdentifierStop>>, TError,{identifier: string}, TContext>, axios?: AxiosRequestConfig}
  ): UseMutationResult<
         Awaited<ReturnType<typeof putContainerIdentifierStop>>,
