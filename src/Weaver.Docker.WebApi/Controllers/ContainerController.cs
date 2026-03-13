@@ -1,8 +1,13 @@
+using Cortex.Mediator;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Mvc;
+using OneOf;
+using OneOf.Types;
+using Weaver.Docker.Commands.Containers;
 using Weaver.Docker.WebApi.Models;
 using Weaver.Extensions;
+using Error = Weaver.Docker.Common.Error;
 using Health = Weaver.Docker.WebApi.Models.Health;
 using Status = Weaver.Docker.WebApi.Models.Status;
 
@@ -13,10 +18,12 @@ namespace Weaver.Docker.WebApi.Controllers;
 public class ContainerController : ControllerBase
 {
     private readonly IDockerClient _dockerClient;
+    private readonly IMediator _mediator;
 
-    public ContainerController(IDockerClient dockerClient)
+    public ContainerController(IDockerClient dockerClient, IMediator mediator)
     {
         _dockerClient = dockerClient;
+        _mediator = mediator;
     }
 
     [HttpGet]
@@ -174,20 +181,13 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _dockerClient.Containers.StartContainerAsync(
-                identifier,
-                new ContainerStartParameters(),
-                cancellationToken
-            );
-        }
-        catch (DockerApiException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        StartContainerCommand command = new(identifier.ToSha256Hash());
+        OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
-        return Ok();
+        return result.Match<IActionResult>(
+            _ => Ok(),
+            error => BadRequest(error.Messages)
+        );
     }
 
     [HttpPut("{identifier}/stop")]
@@ -196,19 +196,12 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _dockerClient.Containers.StopContainerAsync(
-                identifier,
-                new ContainerStopParameters(),
-                cancellationToken
-            );
-        }
-        catch (DockerApiException ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        StopContainerCommand command = new(identifier.ToSha256Hash());
+        OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
-        return Ok();
+        return result.Match<IActionResult>(
+            _ => Ok(),
+            error => BadRequest(error.Messages)
+        );
     }
 }
