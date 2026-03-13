@@ -115,4 +115,19 @@ public class ComposeController : ControllerBase
             error => BadRequest(error.Messages)
         );
     }
+
+    [HttpPost("{identifier}/stop")]
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
+    {
+        StopStackCommand command = new(identifier.ToSha256Hash());
+        OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
+
+        return result.Match<IActionResult>(
+            _ => Ok(),
+            error => BadRequest(error.Messages)
+        );
+    }
 }
