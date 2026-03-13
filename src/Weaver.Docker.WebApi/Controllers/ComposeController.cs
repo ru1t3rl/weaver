@@ -101,7 +101,7 @@ public class ComposeController : ControllerBase
         return Ok(detailModel);
     }
 
-    [HttpPost("{identifier}/start")]
+    [HttpPut("{identifier}/start")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -116,7 +116,7 @@ public class ComposeController : ControllerBase
         );
     }
 
-    [HttpPost("{identifier}/stop")]
+    [HttpPut("{identifier}/stop")]
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
