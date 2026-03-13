@@ -1,9 +1,8 @@
 using Cortex.Mediator;
 using Cortex.Mediator.Commands;
-using Docker.DotNet;
 using Docker.DotNet.Models;
-using OneOf.Types;
 using OneOf;
+using OneOf.Types;
 using Weaver.Docker.Commands.Containers;
 using Weaver.Docker.Common;
 using Weaver.Extensions;
@@ -13,12 +12,10 @@ namespace Weaver.Docker.Commands.Compose;
 
 public class StartStackCommandHandler : ICommandHandler<StartStackCommand, OneOf<Success, Error>>
 {
-    private readonly IDockerClient _dockerClient;
     private readonly IMediator _mediator;
 
-    public StartStackCommandHandler(IDockerClient dockerClient, IMediator mediator)
+    public StartStackCommandHandler(IMediator mediator)
     {
-        _dockerClient = dockerClient;
         _mediator = mediator;
     }
 
