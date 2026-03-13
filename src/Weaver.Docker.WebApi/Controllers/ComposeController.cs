@@ -7,6 +7,7 @@ using Weaver.Docker.Commands.Compose;
 using Weaver.Docker.Common;
 using Weaver.Docker.WebApi.Models;
 using Weaver.Extensions;
+using Error = Weaver.Docker.Common.Error;
 using Status = Weaver.Docker.WebApi.Models.Status;
 using Health = Weaver.Docker.WebApi.Models.Health;
 
@@ -98,5 +99,20 @@ public class ComposeController : ControllerBase
         };
 
         return Ok(detailModel);
+    }
+
+    [HttpPost("{identifier}/start")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
+    {
+        StartStackCommand command = new(identifier.ToSha256Hash());
+        OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
+
+        return result.Match<IActionResult>(
+            _ => Ok(),
+            error => BadRequest(error.Messages)
+        );
     }
 }
