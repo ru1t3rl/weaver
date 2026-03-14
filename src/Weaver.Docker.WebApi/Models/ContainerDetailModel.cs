@@ -15,5 +15,6 @@ public record struct ContainerDetailModel
     public required HealthSummary HealthSummary { get; init; }
     public required NetworkSettingsSummary NetworkSettingsSummary { get; init; }
     public required List<MountPoint> Mounts { get; init; }
+    public required List<EnvironmentVariable> EnvironmentVariables { get; init; }
     public required string Log { get; init; }
 }
