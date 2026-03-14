@@ -37,7 +37,7 @@ public class StopStackCommandHandler : ICommandHandler<StopStackCommand, OneOf<S
             Task<OneOf<Success, Error>>[] tasks = new Task<OneOf<Success, Error>>[containers.Count];
             for (int i = 0; i < tasks.Length; i++)
             {
-                StopContainerCommand stopCommand = new(containers[i].ID.ToSha256Hash());
+                StopContainerCommand stopCommand = new(new Sha256Hash(containers[i].ID));
                 tasks[i] = _mediator.SendAsync(stopCommand, cancellationToken);
             }
 

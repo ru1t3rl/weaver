@@ -37,7 +37,7 @@ public class StartStackCommandHandler : ICommandHandler<StartStackCommand, OneOf
             Task<OneOf<Success, Error>>[] tasks = new Task<OneOf<Success, Error>>[containers.Count];
             for (int i = 0; i < tasks.Length; i++)
             {
-                StartContainerCommand startCommand = new(containers[i].ID.ToSha256Hash());
+                StartContainerCommand startCommand = new(new Sha256Hash(containers[i].ID));
                 tasks[i] = _mediator.SendAsync(startCommand, cancellationToken);
             }
 
