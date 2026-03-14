@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.1",
   "info": {
     "title": "Weaver.WebApi | v1",
     "version": "1.0.0"
@@ -530,7 +530,7 @@
             "name": "type",
             "in": "query",
             "schema": {
-              "type": "integer"
+              "$ref": "#/components/schemas/OptionType"
             }
           }
         ],
@@ -674,25 +674,37 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "title": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           },
           "detail": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "instance": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -745,9 +757,11 @@
           },
           "value": {},
           "id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           }
         }
       },
@@ -766,7 +780,7 @@
             "type": "string"
           },
           "type": {
-            "$ref": "#/components/schemas/ServiceType2"
+            "$ref": "#/components/schemas/ServiceType"
           },
           "config": {
             "type": "array",
@@ -791,7 +805,7 @@
             "type": "string"
           },
           "type": {
-            "$ref": "#/components/schemas/ServiceType2"
+            "$ref": "#/components/schemas/ServiceType"
           }
         }
       },
@@ -804,9 +818,11 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           },
           "name": {
             "type": "string"
@@ -818,13 +834,6 @@
       },
       "ServiceType": {
         "type": "integer"
-      },
-      "ServiceType2": {
-        "enum": [
-          "Reference",
-          "Custom"
-        ],
-        "type": "string"
       }
     }
   },
