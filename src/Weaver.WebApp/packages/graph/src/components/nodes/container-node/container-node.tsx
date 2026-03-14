@@ -1,7 +1,7 @@
 import { ContainerListItemModel } from "@weaver/docker/src/api/models";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { Button, Card, Typography } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LuChevronDown, LuChevronUp, LuCircleStop, LuContainer, LuPlay } from "react-icons/lu";
 import { StateCircle } from "../../utils";
 import { ContainerDetails } from "./container-detail";
@@ -9,6 +9,7 @@ import styles from './container-node.module.scss';
 import { useTheme } from "@weaver/styling";
 import { useContextMenu } from "../../../hooks/use-context-menu";
 import { useContainer } from "@weaver/docker";
+import { useInspector } from "../../../hooks/use-inspector";
 
 type ContainerNodeData = {
     model: ContainerListItemModel;
@@ -26,7 +27,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
     const [expanded, setExpanded] = useState<boolean>(false);
     const { data: containerData, start, stop, refetch } = useContainer(model.id);
 
-    const { show } = useContextMenu([
+    const { show: showContext } = useContextMenu([
         {
             label: containerData?.status == 'Running' ? 'Stop' : 'Play',
             icon: containerData?.status === 'Running' ? <LuCircleStop /> : <LuPlay />,
@@ -41,6 +42,16 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
             }
         }
     ]);
+
+    const { show: showInspector, hide: hideInspector, activeId } = useInspector();
+
+    useEffect(() => {
+        if (selected) {
+            showInspector(containerNode, data.model.id);
+        } else if (!activeId) {
+            hideInspector();
+        }
+    }, [selected])
 
     async function PollStatus() {
         const POLL_LIMIT = 3;
@@ -64,7 +75,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
         e.preventDefault();
         e.stopPropagation();
 
-        show(e.clientX, e.clientY)
+        showContext(e.clientX, e.clientY)
     }
 
     function handleExpandClicked() {
