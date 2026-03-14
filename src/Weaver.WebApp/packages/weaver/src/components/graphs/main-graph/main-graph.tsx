@@ -1,4 +1,4 @@
-import { GraphProviderRef, NodeTypes, EdgeTypes, StyledGraph, useGraphRef, ContextMenuProvider, useContextMenu, ContextMenuItem } from '@weaver/graph';
+import { GraphProviderRef, NodeTypes, EdgeTypes, StyledGraph, useGraphRef, ContextMenuProvider, useContextMenu, ContextMenuItem, useInspector, containerNode } from '@weaver/graph';
 import { Background, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { LuPlus } from 'react-icons/lu';
@@ -7,14 +7,15 @@ import { useServiceTemplateSearchModal } from '../../../hooks';
 import { NotificationProvider } from '../../../providers';
 import styles from './main-graph.module.scss';
 import { useMemo, useReducer, useRef } from 'react';
+import { ContainerInspector } from '../../inspectors/container-inspector/container-inspector';
 
 export function InternalMainGraph() {
   const { show: showServiceModal } = useServiceTemplateSearchModal();
   const [, render] = useReducer(x => !x, false);
   const _render = useRef(render);
 
-  const { close, show } = useContextMenu();
 
+  const { close, show } = useContextMenu();
   const { nodes, edges, resolveCollision, onNodesChange, onEdgesChange } = useGraphRef([
     {
       key: { type: 'edge', change: 'any' },
@@ -35,8 +36,10 @@ export function InternalMainGraph() {
   ], []);
 
   const { registerPersistent } = useContextMenu();
+  const { tryRegister: tryRegisterInspector } = useInspector();
   useMemo(() => {
     registerPersistent(items);
+    tryRegisterInspector(containerNode, <ContainerInspector />);    
   }, [items])
 
   function showContext(e: React.MouseEvent) {
