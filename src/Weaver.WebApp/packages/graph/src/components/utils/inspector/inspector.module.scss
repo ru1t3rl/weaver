@@ -1,7 +1,14 @@
 .inspector {
     &-container {
         position: absolute;
-        height: 80%;
-        width: 25vw;
+        top: 0;
+        right: 0;
+
+        height: 100%;
+        width: 20vw;
+        min-width: 300px;
+        max-width: 500px;
+
+        z-index: 1;
     }
 }
