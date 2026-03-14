@@ -49,9 +49,11 @@ export const InspectorProvider = (props: PropsWithChildren) => {
 
     return (
         <InspectorContext.Provider value={value}>
-            <Inspector>
-                {activeComponent && activeComponent}
-            </Inspector>
+            {activeComponent && (
+                <Inspector>
+                    {activeComponent}
+                </Inspector>
+            )}
             {children}
         </InspectorContext.Provider>
     );
