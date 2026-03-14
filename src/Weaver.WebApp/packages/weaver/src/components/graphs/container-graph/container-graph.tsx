@@ -11,11 +11,15 @@ import styles from './container-graph.module.scss';
 export const ContainerGraph = () => {
     const { stackId = '' } = useParams();
 
-    const { name, containers } = useStack(stackId);
+    const { data: stackData } = useStack(stackId);
+    const { name, containers } = stackData ?? {};
+
     const theme = useTheme();
     const { fitView } = useReactFlow();
 
     const networkNodes = useMemo(() => {
+        if (!containers) return [];
+
         // TODO: Handle multiple networks for a single container
         const allNetworks = containers.flatMap(c => c.networks[0] ?? undefined).filter(n => n != undefined);
         const uniqueNetworkIds = [...new Set(allNetworks.map(c => c.id))];
@@ -24,7 +28,7 @@ export const ContainerGraph = () => {
         return uniqueNetworks.map((network, index): DockerNetworkNode => ({
             id: network.id,
             type: dockerNetworkNode,
-            position: { x: index, y: index },            
+            position: { x: index, y: index },
             data: {
                 model: {
                     networkId: network.id,
@@ -40,6 +44,8 @@ export const ContainerGraph = () => {
     }, [containers]);
 
     const containerNodes = useMemo(() => {
+        if (!containers) return [];
+
         return containers.map((c, index): ContainerNode => ({
             id: c.id,
             type: containerNode,
@@ -53,6 +59,8 @@ export const ContainerGraph = () => {
     }, [containers]);
 
     const containerDependencyEdges = useMemo(() => {
+        if (!containers) return [];
+
         return containers.flatMap((container) => container.dependsOn.map((dependencyId): DashedEdge => ({
             id: container.id + dependencyId,
             source: container.id,
