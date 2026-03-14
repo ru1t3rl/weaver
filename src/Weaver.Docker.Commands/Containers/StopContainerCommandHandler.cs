@@ -1,6 +1,7 @@
 using Cortex.Mediator.Commands;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
 using Weaver.Docker.Common;
@@ -8,16 +9,18 @@ using Error = Weaver.Docker.Common.Error;
 
 namespace Weaver.Docker.Commands.Containers;
 
-public class StopContainerCommandHandler : ICommandHandler<StartContainerCommand, OneOf<Success, Error>>
+public class StopContainerCommandHandler : ICommandHandler<StopContainerCommand, OneOf<Success, Error>>
 {
     private readonly IDockerClient _dockerClient;
+    private readonly ILogger<StopContainerCommandHandler> _logger;
 
-    public StopContainerCommandHandler(IDockerClient dockerClient)
+    public StopContainerCommandHandler(IDockerClient dockerClient, ILogger<StopContainerCommandHandler> logger)
     {
         _dockerClient = dockerClient;
+        _logger = logger;
     }
 
-    public async Task<OneOf<Success, Error>> Handle(StartContainerCommand command, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, Error>> Handle(StopContainerCommand command, CancellationToken cancellationToken)
     {
         try
         {
@@ -29,10 +32,12 @@ public class StopContainerCommandHandler : ICommandHandler<StartContainerCommand
         }
         catch (DockerApiException ex)
         {
+            _logger.LogError("{message}:\r{trace}", ex.Message, ex.StackTrace);
             return new Error(ErrorType.DockerApi, [ex.Message, ex.StackTrace ?? String.Empty]);
         }
         catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
         {
+            _logger.LogError("{message}:\r{trace}", ex.Message, ex.StackTrace);
             return new Error(ErrorType.Canceled, [ex.Message, ex.StackTrace ?? String.Empty]);
         }
 

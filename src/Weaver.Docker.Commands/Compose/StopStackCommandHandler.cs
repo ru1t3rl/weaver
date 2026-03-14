@@ -1,6 +1,7 @@
 using Cortex.Mediator;
 using Cortex.Mediator.Commands;
 using Docker.DotNet.Models;
+using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
 using Weaver.Docker.Commands.Containers;
@@ -12,11 +13,13 @@ namespace Weaver.Docker.Commands.Compose;
 
 public class StopStackCommandHandler : ICommandHandler<StopStackCommand, OneOf<Success, Error>>
 {
+    private readonly ILogger<StopStackCommandHandler> _logger;
     private readonly IMediator _mediator;
 
-    public StopStackCommandHandler(IMediator mediator)
+    public StopStackCommandHandler(IMediator mediator, ILogger<StopStackCommandHandler> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     public async Task<OneOf<Success, Error>> Handle(StopStackCommand command, CancellationToken cancellationToken)
@@ -53,6 +56,7 @@ public class StopStackCommandHandler : ICommandHandler<StopStackCommand, OneOf<S
         }
         catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
         {
+            _logger.LogError("{message}:\r{trace}", ex.Message, ex.StackTrace);
             return new Error(ErrorType.Canceled, [ex.Message, ex.StackTrace ?? String.Empty]);
         }
 
