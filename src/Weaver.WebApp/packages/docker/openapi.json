@@ -590,6 +590,7 @@
           "healthSummary",
           "networkSettingsSummary",
           "mounts",
+          "environmentVariables",
           "log"
         ],
         "type": "object",
@@ -635,6 +636,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MountPoint"
+            }
+          },
+          "environmentVariables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnvironmentVariable"
             }
           },
           "log": {
@@ -1081,6 +1088,17 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "EnvironmentVariable": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
           }
         }
       },

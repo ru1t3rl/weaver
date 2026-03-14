@@ -73,15 +73,13 @@ export const ContainerInspector = () => {
                 <Typography.Title level={3}>Environment Variables</Typography.Title>
                 <table className={styles['environment-table']}>
                     <tr>
-                        <th><Typography.Text>IPv4</Typography.Text></th>
-                        <th><Typography.Text>Gateway</Typography.Text></th>
-                        <th><Typography.Text>Subnet</Typography.Text></th>
+                        <th><Typography.Text>Variable</Typography.Text></th>
+                        <th><Typography.Text>Value</Typography.Text></th>
                     </tr>
-                    {networks && Object.keys(networks).map(network => (
+                    {data.environmentVariables && data.environmentVariables.map(variable => (
                         <tr>
-                            <td><Typography.Text>{networks[network].IPAddress}</Typography.Text></td>
-                            <td><Typography.Text>{networks[network].Gateway}</Typography.Text></td>
-                            <td><Typography.Text>{prefixLenToSubnetMask(Number(networks[network].IPPrefixLen))}</Typography.Text></td>
+                            <td><Typography.Text>{variable.name}</Typography.Text></td>
+                            <td><Typography.Text>{variable.value}</Typography.Text></td>
                         </tr>
                     ))}
                 </table>
