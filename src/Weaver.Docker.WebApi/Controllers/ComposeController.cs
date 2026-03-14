@@ -107,7 +107,7 @@ public class ComposeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        StartStackCommand command = new(identifier.ToSha256Hash());
+        StartStackCommand command = new(new Sha256Hash(identifier));
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(
@@ -122,7 +122,7 @@ public class ComposeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
     {
-        StopStackCommand command = new(identifier.ToSha256Hash());
+        StopStackCommand command = new(new Sha256Hash(identifier));
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(
