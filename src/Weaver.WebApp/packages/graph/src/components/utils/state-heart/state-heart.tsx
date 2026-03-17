@@ -35,11 +35,11 @@ export function StateHeart(props: StateHeartProps) {
     }, [state])
 
     return (
-        <Flex vertical={false} align='center' gap={'small'}>
+        <Flex vertical={false} align='center' gap={'small'} style={{ display: 'inline' }}>
             <LuHeart
                 className={styles['dot']}
                 style={{ color: color, height: size }}
-            />            
+            />
 
             {showLabel && <Text>{Status[state]}</Text>}
         </Flex>

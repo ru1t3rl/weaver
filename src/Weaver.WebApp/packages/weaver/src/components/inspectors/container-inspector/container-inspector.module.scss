@@ -48,9 +48,24 @@
 }
 
 .table-environment {
-    & td, th {
+
+    & td,
+    th {
         text-align: start;
         padding-left: 8px;
         padding-right: 8px;
+    }
+}
+
+.mount {
+    &-card {
+        aspect-ratio: 1/1;
+        width: 48%;
+        text-align: center;
+        text-overflow: ellipsis;
+    }
+
+    &-tooltip> * {
+        margin-bottom: 0 !important;
     }
 }
