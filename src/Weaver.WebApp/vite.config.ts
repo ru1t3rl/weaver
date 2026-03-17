@@ -1,6 +1,4 @@
-import babelPlugin from '@rolldown/plugin-babel';
-import react, { reactCompilerPreset } from '@vitejs/plugin-react';
-import BabelPluginReactCompiler from 'babel-plugin-react-compiler';
+import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
@@ -19,12 +17,7 @@ export default defineConfig(({ mode }) => {
       host: 'localhost',
     },
     plugins: [
-      react(),
-      BabelPluginReactCompiler(
-        reactCompilerPreset({
-
-        })
-      )
+      react()
     ]
   };
 });
