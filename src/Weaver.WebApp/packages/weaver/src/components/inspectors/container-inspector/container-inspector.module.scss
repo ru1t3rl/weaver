@@ -21,7 +21,7 @@
     margin: 0 !important;
 }
 
-.network-table {
+.table {
     border-collapse: collapse;
     border-color: var(--ant-color-text) !important;
 
@@ -34,7 +34,7 @@
         padding: 8px;
         margin-left: 0;
     }
-    
+
     & td {
         padding-top: 8px;
         padding-bottom: 8px;
@@ -44,5 +44,13 @@
 
     & tr:nth-child(even) {
         background-color: #111111a1;
+    }
+}
+
+.table-environment {
+    & td, th {
+        text-align: start;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 }

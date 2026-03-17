@@ -1,14 +1,14 @@
 import { useContainer } from '@weaver/docker';
 import { StateCircle, useInspector } from '@weaver/graph';
-import { Button, Flex, Space, Spin, Table, Typography } from 'antd';
+import { Button, Flex, Space, Spin, Typography } from 'antd';
+import { useMemo } from 'react';
 import { LuLogs, LuPlay, LuSquare } from 'react-icons/lu';
 import styles from './container-inspector.module.scss';
-import { useMemo } from 'react';
 
 export const ContainerInspector = () => {
     const { activeId } = useInspector();
     const { dataIsLoading, data } = useContainer(activeId ?? '');
-    const networks = useMemo(() => data!.networkSettingsSummary.Networks, [data])
+    const networks = useMemo(() => data?.networkSettingsSummary.Networks, [data])
 
     if (dataIsLoading || !data) {
         return (
@@ -54,7 +54,7 @@ export const ContainerInspector = () => {
             </div>
             <Flex vertical>
                 <Typography.Title level={3}>Networks</Typography.Title>
-                <table className={styles['network-table']}>
+                <table className={styles['table']}>
                     <tr>
                         <th><Typography.Text>IPv4</Typography.Text></th>
                         <th><Typography.Text>Gateway</Typography.Text></th>
@@ -71,7 +71,7 @@ export const ContainerInspector = () => {
             </Flex>
             <Flex vertical>
                 <Typography.Title level={3}>Environment Variables</Typography.Title>
-                <table className={styles['environment-table']}>
+                <table className={[styles['table'], styles['table-environment']].join(' ')}>
                     <tr>
                         <th><Typography.Text>Variable</Typography.Text></th>
                         <th><Typography.Text>Value</Typography.Text></th>
