@@ -84,7 +84,7 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string identifier, CancellationToken cancellationToken)
     {
-        GetContainerDetailsCommand command = new(identifier.ToSha256Hash());
+        GetContainerDetailsCommand command = new(identifier.AsSha256());
         OneOf<ContainerDetail, Error> response = await _mediator.SendAsync(command, cancellationToken);
 
         if (response.IsT1 && response.AsT1 is var error)
@@ -178,7 +178,7 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        StartContainerCommand command = new(identifier.ToSha256Hash());
+        StartContainerCommand command = new(identifier.ComputeSha256());
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(
@@ -193,7 +193,7 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
     {
-        StopContainerCommand command = new(identifier.ToSha256Hash());
+        StopContainerCommand command = new(identifier.ComputeSha256());
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(

@@ -36,7 +36,7 @@ public class ComposeController : ControllerBase
         );
 
         List<ComposeListItemModel> composeProjects = stacks
-            .Select(g => new { Id = g.Key.ToSha256Hash(), Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
+            .Select(g => new { Id = g.Key.ComputeSha256(), Key = g.Key.Replace("docker", ""), Containers = g.ToList() })
             .Select(g => new ComposeListItemModel()
                 {
                     Id = g.Id,
@@ -60,10 +60,10 @@ public class ComposeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string identifier, CancellationToken cancellationToken)
     {
-        GetStackContainersCommand command = new(new Sha256Hash(identifier));
+        GetStackContainersCommand command = new(identifier.AsSha256());
         OneOf<List<ContainerListResponse>, None> result = await _mediator.SendAsync(command, cancellationToken);
 
-        GetStackNameCommand nameCommand = new(new Sha256Hash(identifier));
+        GetStackNameCommand nameCommand = new(identifier.AsSha256());
         OneOf<string, None> nameResult = await _mediator.SendAsync(nameCommand, cancellationToken);
 
         if (!result.TryPickT0(out List<ContainerListResponse> containers, out _) ||
@@ -107,7 +107,7 @@ public class ComposeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        StartStackCommand command = new(new Sha256Hash(identifier));
+        StartStackCommand command = new(identifier.AsSha256());
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(
@@ -122,7 +122,7 @@ public class ComposeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
     {
-        StopStackCommand command = new(new Sha256Hash(identifier));
+        StopStackCommand command = new(identifier.AsSha256());
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(
