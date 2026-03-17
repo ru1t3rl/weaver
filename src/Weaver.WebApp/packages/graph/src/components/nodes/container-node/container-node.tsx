@@ -1,15 +1,15 @@
+import { useContainer } from "@weaver/docker";
 import { ContainerListItemModel } from "@weaver/docker/src/api/models";
+import { useTheme } from "@weaver/styling";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { Button, Card, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { LuChevronDown, LuChevronUp, LuCircleStop, LuContainer, LuPlay } from "react-icons/lu";
-import { StateCircle } from "../../utils";
-import { ContainerDetails } from "./container-detail";
-import styles from './container-node.module.scss';
-import { useTheme } from "@weaver/styling";
 import { useContextMenu } from "../../../hooks/use-context-menu";
-import { useContainer } from "@weaver/docker";
 import { useInspector } from "../../../hooks/use-inspector";
+import { StateCircle } from "../../utils";
+import { ContainerDetails } from './container-detail';
+import styles from './container-node.module.scss';
 
 type ContainerNodeData = {
     model: ContainerListItemModel;
