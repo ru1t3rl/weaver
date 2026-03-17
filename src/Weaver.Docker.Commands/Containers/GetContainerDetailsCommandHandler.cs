@@ -34,15 +34,15 @@ public class
                 cancellationToken
             );
 
-            ContainerListResponse? containerListResponse =
-                containers.SingleOrDefault(c => c.ID.Contains(command.ContainerId));
-            ContainerInspectResponse containerInspect =
-                await _dockerClient.Containers.InspectContainerAsync(command.ContainerId, cancellationToken);
+            ContainerListResponse? containerListResponse = containers.SingleOrDefault(c => c.ID == command.ContainerId);
 
             if (containerListResponse is null)
             {
                 return new Error(ErrorType.NotFound);
             }
+            
+            ContainerInspectResponse containerInspect =
+                await _dockerClient.Containers.InspectContainerAsync(command.ContainerId, cancellationToken);
 
             Task<MultiplexedStream> logsTask = _dockerClient.Containers.GetContainerLogsAsync(
                 command.ContainerId,
