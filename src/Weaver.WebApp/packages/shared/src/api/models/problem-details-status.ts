@@ -5,4 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ServiceType = number;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+export type ProblemDetailsStatus = null | number | string;

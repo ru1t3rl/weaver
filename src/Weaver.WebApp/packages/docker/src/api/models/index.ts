@@ -69,6 +69,7 @@ export * from './endpoint-settings-ip-prefix-len';
 export * from './endpoint-settings-links';
 export * from './endpoint-settings-mac-address';
 export * from './endpoint-settings-network-i-d';
+export * from './environment-variable';
 export * from './health';
 export * from './health-summary';
 export * from './health-summary-failing-streak';

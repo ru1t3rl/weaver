@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import { PropsWithChildren, useCallback, useReducer, useRef } from "react";
 import { resolveCollisionsVoronoi } from "../components";
 import { GraphContextRef, IGraphContextRef } from "../contexts/graph-context-ref";
+import { InspectorProvider } from "./inspector-provider";
 
 export type ChangeType = 'add' | 'remove' | 'replace' | 'select' | 'position' | 'dimensions' | 'any';
 export type EventType = 'node' | 'edge'
@@ -252,5 +253,11 @@ export const GraphProviderRef = (props: PropsWithChildren) => {
         removeChangeListener
     }
 
-    return <GraphContextRef.Provider value={value}>{children}</GraphContextRef.Provider>
+    return (
+        <GraphContextRef.Provider value={value}>
+            <InspectorProvider>
+                {children}
+            </InspectorProvider>
+        </GraphContextRef.Provider>
+    );
 }

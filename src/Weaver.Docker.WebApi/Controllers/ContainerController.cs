@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using OneOf;
 using OneOf.Types;
 using Weaver.Docker.Commands.Containers;
+using Weaver.Docker.Common;
 using Weaver.Docker.WebApi.Models;
 using Weaver.Extensions;
 using Error = Weaver.Docker.Common.Error;
@@ -83,46 +84,42 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string identifier, CancellationToken cancellationToken)
     {
-        Task<MultiplexedStream> logsTask = _dockerClient.Containers.GetContainerLogsAsync(
-            identifier,
-            new ContainerLogsParameters()
-            {
-                Follow = false,
-                ShowStderr = true,
-                ShowStdout = true,
-                Timestamps = true
-            },
-            cancellationToken
-        );
+        GetContainerDetailsCommand command = new(identifier.AsSha256());
+        OneOf<ContainerDetail, Error> response = await _mediator.SendAsync(command, cancellationToken);
 
-        IList<ContainerListResponse> containers = await _dockerClient.Containers.ListContainersAsync(
-            new ContainersListParameters() { All = true },
-            cancellationToken
-        );
-
-        ContainerListResponse? response = containers.SingleOrDefault(c => c.ID.Contains(identifier));
-
-        if (response is null)
+        if (response.IsT1 && response.AsT1 is var error)
         {
-            return NotFound();
+            return error.Type switch
+            {
+                ErrorType.NotFound => NotFound(),
+                _ => BadRequest(error.Messages)
+            };
         }
 
-        (string stdout, string stderr) = await (await logsTask).ReadOutputToEndAsync(cancellationToken);
-
+        ContainerDetail details = response.AsT0;
         ContainerDetailModel model = new()
         {
-            Id = response.ID,
-            Names = response.Names.ToList(),
-            Image = response.Image,
-            ImageId = response.ImageID,
-            Created = response.Created,
-            Ports = response.Ports.DistinctBy(p => p.PublicPort).ToList(),
-            Status = response.State.ToEnum<Status>(),
-            Health = response.Health.Status.ToEnum<Health>(),
-            HealthSummary = response.Health,
-            NetworkSettingsSummary = response.NetworkSettings,
-            Mounts = response.Mounts.ToList(),
-            Log = stdout
+            Id = details.InspectResponse.ID,
+            Names = [details.InspectResponse.Name, ..details.ListResponse.Names ?? []],
+            Image = details.InspectResponse.Image,
+            ImageId = details.ListResponse.ImageID,
+            Created = details.ListResponse.Created,
+            Ports = details.ListResponse.Ports.DistinctBy(p => p.PublicPort).ToList(),
+            Status = details.ListResponse.State.ToEnum<Status>(),
+            Health = details.ListResponse.Health.Status.ToEnum<Health>(),
+            HealthSummary = details.ListResponse.Health,
+            NetworkSettingsSummary = details.ListResponse.NetworkSettings,
+            Mounts = details.ListResponse.Mounts.ToList(),
+            EnvironmentVariables = details
+                .InspectResponse
+                .Config.Env.Select(e =>
+                    {
+                        var splitValue = e.Split('=');
+                        return new EnvironmentVariable(splitValue[0], splitValue[1]);
+                    }
+                )
+                .ToList(),
+            Log = details.OutputLogs
         };
 
         return Ok(model);
@@ -181,7 +178,7 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Start(string identifier, CancellationToken cancellationToken)
     {
-        StartContainerCommand command = new(identifier.ToSha256Hash());
+        StartContainerCommand command = new(identifier.ComputeSha256());
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(
@@ -196,7 +193,7 @@ public class ContainerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Stop(string identifier, CancellationToken cancellationToken)
     {
-        StopContainerCommand command = new(identifier.ToSha256Hash());
+        StopContainerCommand command = new(identifier.ComputeSha256());
         OneOf<Success, Error> result = await _mediator.SendAsync(command, cancellationToken);
 
         return result.Match<IActionResult>(

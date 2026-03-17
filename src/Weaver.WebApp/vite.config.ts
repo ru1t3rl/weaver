@@ -1,4 +1,6 @@
-import react from '@vitejs/plugin-react-swc';
+import babelPlugin from '@rolldown/plugin-babel';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import BabelPluginReactCompiler from 'babel-plugin-react-compiler';
 import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
@@ -16,9 +18,13 @@ export default defineConfig(({ mode }) => {
       port: 4300,
       host: 'localhost',
     },
-    plugins: [react()],
-    ssr: {
-      external: ['dockerode']
-    }
+    plugins: [
+      react(),
+      BabelPluginReactCompiler(
+        reactCompilerPreset({
+
+        })
+      )
+    ]
   };
 });

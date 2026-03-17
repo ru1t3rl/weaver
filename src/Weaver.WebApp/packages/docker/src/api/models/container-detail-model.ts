@@ -10,6 +10,7 @@ import type { Health } from './health';
 import type { HealthSummary } from './health-summary';
 import type { NetworkSettingsSummary } from './network-settings-summary';
 import type { MountPoint } from './mount-point';
+import type { EnvironmentVariable } from './environment-variable';
 
 export interface ContainerDetailModel {
   id: string;
@@ -23,5 +24,6 @@ export interface ContainerDetailModel {
   healthSummary: HealthSummary;
   networkSettingsSummary: NetworkSettingsSummary;
   mounts: MountPoint[];
+  environmentVariables: EnvironmentVariable[];
   log: string;
 }

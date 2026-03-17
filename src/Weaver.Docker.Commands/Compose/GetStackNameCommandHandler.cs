@@ -32,7 +32,7 @@ public class GetStackNameCommandHandler : ICommandHandler<GetStackNameCommand, O
             ContainerListResponse? stackContainers = containers
                 .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL))
                 .FirstOrDefault(c =>
-                    c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() == command.StackIdentifier
+                    c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL].ComputeSha256() == command.StackIdentifier
                 );
             
             if (stackContainers is null)

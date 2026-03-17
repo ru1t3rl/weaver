@@ -33,7 +33,7 @@ public class
 
             List<ContainerListResponse> stackContainers = containers
                 .Where(c => c.Labels is not null && c.Labels.ContainsKey(ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL))
-                .Where(c => c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL].ToSha256Hash() == command.StackIdentifier)
+                .Where(c => c.Labels[ContainerLabels.DOCKER_COMPOSE_PROJECT_LABEL].ComputeSha256() == command.StackIdentifier)
                 .ToList();
 
             if (stackContainers.Count == 0)
