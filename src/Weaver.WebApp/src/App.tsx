@@ -11,7 +11,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <DockerProvider dockerApiAddress={environment.dockerApiAddress}>          
+        <DockerProvider dockerApiAddress={environment.dockerApiAddress}>
             <RouterProvider router={AppRouter} />
         </DockerProvider>
       </ThemeProvider>
