@@ -6,7 +6,8 @@ export const InspectorProvider = (props: PropsWithChildren) => {
     const { children } = props;
     const components = useRef<Record<string, ReactNode>>({});
     const [activeComponent, setActiveComponent] = useState<ReactNode | null>(null);
-    const [activeId, setActiveId] = useState<string | null>(null);
+
+    const activeId = useRef<string | null>(null);
 
     const keyExists = useCallback((key: string): boolean => {
         const keys = Object.keys(components.current);
@@ -16,13 +17,13 @@ export const InspectorProvider = (props: PropsWithChildren) => {
     const show = useCallback((key: string, id: string) => {
         if (!keyExists(key)) return;
 
+        activeId.current = id;
         setActiveComponent(components.current[key])
-        setActiveId(id);
     }, [keyExists]);
 
     const hide = useCallback(() => {
+        activeId.current = null;
         setActiveComponent(null)
-        setActiveId(null);
     }, []);
 
     const tryRegister = useCallback((key: string, element: ReactNode): boolean => {

@@ -48,7 +48,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
     useEffect(() => {
         if (selected) {
             showInspector(containerNode, data.model.id);
-        } else if (!activeId) {
+        } else if (activeId.current === props.id) {
             hideInspector();
         }
     }, [selected])
