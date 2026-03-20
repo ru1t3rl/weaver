@@ -56,7 +56,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
             {lines.map((line, i) => {
               const lineNumber = i + 1;
               const highlight = i === 0;
-              console.log(theme.token);
+              
               return (
                 <tr
                   key={lineNumber}
