@@ -6,6 +6,8 @@ export const darkThemeColors: Partial<AliasToken> = {
     colorInfo: "#06b6d4",
     colorSuccess: "#84cc16",
     colorWarning: "#f59e0b",
+    colorError: "#ff4455",
+    colorErrorBg: "#dd445522",
     colorTextBase: "#f2f2f2",
     colorBgBase: "#1a1a1a",
     colorBgContainer: "#1f1f1f",
