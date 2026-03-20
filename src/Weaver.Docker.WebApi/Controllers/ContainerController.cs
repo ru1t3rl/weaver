@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Text;
 using Cortex.Mediator;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -200,5 +202,57 @@ public class ContainerController : ControllerBase
             _ => Ok(),
             error => BadRequest(error.Messages)
         );
+    }
+
+    [HttpGet("{identifier}/logs")]
+    public async IAsyncEnumerable<string> StreamContainerLogs(
+        string identifier,
+        bool follow = true,
+        bool timestamps = false,
+        string? tail = "100",
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
+    {
+        MultiplexedStream logStream = await _dockerClient.Containers.GetContainerLogsAsync(
+            identifier,
+            new ContainerLogsParameters
+            {
+                Follow = follow,
+                ShowStdout = true,
+                ShowStderr = true,
+                Timestamps = timestamps,
+                Tail = tail,
+            },
+            cancellationToken
+        );
+
+        var buffer = new byte[4096];
+        var sb = new StringBuilder();
+
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var result = await logStream.ReadOutputAsync(buffer, 0, buffer.Length, cancellationToken);
+
+            if (result.EOF)
+                break;
+
+            sb.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
+
+            var text = sb.ToString();
+            var start = 0;
+            int newline;
+
+            while ((newline = text.IndexOf('\n', start)) >= 0)
+            {
+                yield return text[start..newline].TrimEnd('\r');
+                start = newline + 1;
+            }
+
+            sb.Clear();
+            sb.Append(text[start..]);
+        }
+
+        if (sb.Length > 0)
+            yield return sb.ToString();
     }
 }
