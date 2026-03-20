@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Docker.DotNet.Enhanced" Version="3.131.1" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
-        <PackageReference Include="Scalar.AspNetCore" Version="2.12.35" />
+        <PackageReference Include="Docker.DotNet.Enhanced" Version="4.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.13.13" />
     </ItemGroup>
 
     <ItemGroup>
