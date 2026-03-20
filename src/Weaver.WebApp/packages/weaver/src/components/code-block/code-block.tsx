@@ -1,4 +1,4 @@
-import { Card, Tag, Typography } from 'antd';
+import { Card, Typography } from 'antd';
 import { LuCode } from 'react-icons/lu';
 import BlinkingCursor from './blinking-cursor';
 import styles from './code-block.module.scss';
