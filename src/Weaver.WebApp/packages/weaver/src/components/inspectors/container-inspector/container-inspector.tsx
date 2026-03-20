@@ -53,41 +53,51 @@ export const ContainerInspector = () => {
             <Flex vertical>
                 <Typography.Title level={3}>Networks</Typography.Title>
                 <table className={styles['table']}>
-                    <tr>
-                        <th><Typography.Text>IPv4</Typography.Text></th>
-                        <th><Typography.Text>Gateway</Typography.Text></th>
-                        <th><Typography.Text>Subnet</Typography.Text></th>
-                    </tr>
-                    {networks && Object.keys(networks).map(network => (
+                    <thead>
                         <tr>
-                            <td><Typography.Text>{networks[network].IPAddress}</Typography.Text></td>
-                            <td><Typography.Text>{networks[network].Gateway}</Typography.Text></td>
-                            <td><Typography.Text>{prefixLenToSubnetMask(Number(networks[network].IPPrefixLen))}</Typography.Text></td>
+                            <th><Typography.Text>IPv4</Typography.Text></th>
+                            <th><Typography.Text>Gateway</Typography.Text></th>
+                            <th><Typography.Text>Subnet</Typography.Text></th>
                         </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                        {networks && Object.keys(networks).map((network, i) => (
+                            <tr key={networks[network].IPAddress ?? `network-${i}`}>
+                                <td><Typography.Text>{networks[network].IPAddress}</Typography.Text></td>
+                                <td><Typography.Text>{networks[network].Gateway}</Typography.Text></td>
+                                <td><Typography.Text>{prefixLenToSubnetMask(Number(networks[network].IPPrefixLen))}</Typography.Text></td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
             </Flex>
             <Flex vertical>
                 <Typography.Title level={3}>Environment Variables</Typography.Title>
                 <table className={[styles['table'], styles['table-environment']].join(' ')}>
-                    <col style={{ width: '50%' }} />
-                    <col style={{ width: '50%' }} />
-                    <tr>
-                        <th><Typography.Text>Variable</Typography.Text></th>
-                        <th><Typography.Text>Value</Typography.Text></th>
-                    </tr>
-                    {data.environmentVariables && data.environmentVariables.map(variable => (
+                    <colgroup>
+                        <col style={{ width: '50%' }} />
+                        <col style={{ width: '50%' }} />
+                    </colgroup>
+                    <thead>
                         <tr>
-                            <td><Typography.Text>{variable.name}</Typography.Text></td>
-                            <td><Typography.Text>{variable.value}</Typography.Text></td>
+                            <th><Typography.Text>Variable</Typography.Text></th>
+                            <th><Typography.Text>Value</Typography.Text></th>
                         </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                        {data.environmentVariables && data.environmentVariables.map((variable, i) => (
+                            <tr key={variable.name ?? `variable-${i}`}>
+                                <td><Typography.Text>{variable.name}</Typography.Text></td>
+                                <td><Typography.Text>{variable.value}</Typography.Text></td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
             </Flex>
             <Flex vertical>
                 <Typography.Title level={3}>Mounts</Typography.Title>
                 <Flex wrap gap={'small'}>
-                    {data.mounts?.map(mount => {
+                    {data.mounts?.map((mount, i) => {
                         const isFile: boolean = (mount.Source?.match(/.*\.(\d|\w){1,4}$/)?.length ?? 0) > 0;
                         const isDirectory: boolean = !isFile && !mount.Name;
 
@@ -101,7 +111,7 @@ export const ContainerInspector = () => {
                         );
 
                         return (
-                            <Tooltip title={tooltipText}>
+                            <Tooltip title={tooltipText} key={mount.Source ?? `mount-${i}`}>
                                 <Card className={styles['mount-card']}>
                                     <Flex gap='medium'>
                                         <Flex vertical align='center' justify='center'>
