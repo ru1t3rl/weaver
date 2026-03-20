@@ -1,11 +1,11 @@
-import { ReactNode, createContext } from "react";
+import { ReactNode, createContext, RefObject } from "react";
 
 export interface InspectorContext {
     show: (key: string, id: string) => void;
     hide: () => void;
     tryRegister: (key: string, element: ReactNode) => boolean;
     tryUnregister: (key: string) => boolean;
-    activeId: string | null;
+    activeId: RefObject<string | null>;
 }
 
 export const InspectorContext = createContext<InspectorContext>({
@@ -13,5 +13,5 @@ export const InspectorContext = createContext<InspectorContext>({
     hide: (): void => undefined,
     tryRegister: (): boolean => false,
     tryUnregister: (): boolean => false,
-    activeId: null
+    activeId: { current: null }
 })

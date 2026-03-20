@@ -7,7 +7,7 @@ import styles from './container-inspector.module.scss';
 
 export const ContainerInspector = () => {
     const { activeId } = useInspector();
-    const { dataIsLoading, data } = useContainer(activeId ?? '');
+    const { dataIsLoading, data } = useContainer(activeId.current ?? '');
     const networks = useMemo(() => data?.networkSettingsSummary.Networks, [data])
 
     if (dataIsLoading || !data) {
