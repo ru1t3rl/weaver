@@ -3,7 +3,7 @@ import { Button, Divider, Typography } from 'antd';
 import { LuRefreshCw } from 'react-icons/lu';
 import { useRouteError } from 'react-router-dom';
 import useErrorDetail from '../../../hooks/use-error-detail';
-import CodeBlock from '../../code-block/code-block';
+import { CodeBlock } from '@weaver/shared';
 import LostIcon from '../../icons/lost-icon/lost-icon';
 import styles from './error-page.module.scss';
 
