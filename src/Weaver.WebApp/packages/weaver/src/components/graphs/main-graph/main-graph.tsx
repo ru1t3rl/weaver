@@ -51,7 +51,6 @@ export function InternalMainGraph() {
   return (
     <NotificationProvider>
       {/* <ModalsProvider> */}
-      <ContainerLogModal />
       <Outlet />
       <StyledGraph
         nodes={nodes.current}

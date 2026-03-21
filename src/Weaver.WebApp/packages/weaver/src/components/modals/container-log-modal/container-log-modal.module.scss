@@ -6,6 +6,15 @@
   z-index: 10;
 }
 
-.text, .text > span {
+.text,
+.text>span {
   margin-bottom: 0 !important;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  transform: translate(150%, -150%);
 }

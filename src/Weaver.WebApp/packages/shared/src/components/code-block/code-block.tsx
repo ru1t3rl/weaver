@@ -13,6 +13,7 @@ interface CodeBlockProps {
   highlightLines?: number[];
   tools?: React.ReactNode[];
   width?: Width;
+  maxWidth?: Width;
   height?: Height;
   className?: string;
   style?: CardStylesType;
@@ -26,6 +27,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
     tools = [],
     height = '400px',
     width = '50vw',
+    maxWidth,
     className,
     style
   } = props;
@@ -41,7 +43,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
           paddingTop: 0,
           paddingRight: 0,
           paddingBottom: 0,
-          width: width
+          width: width,
+          maxWidth: maxWidth
         },
         ...style,
       }}

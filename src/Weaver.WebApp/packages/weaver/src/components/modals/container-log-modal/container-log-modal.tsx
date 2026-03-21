@@ -1,13 +1,20 @@
 import { useContainer, useContainerLogs } from "@weaver/docker";
 import { ClickAwayListener } from "@weaver/graph";
 import { CodeBlock } from "@weaver/shared";
-import { Card, Checkbox, CheckboxChangeEvent, Flex, Input, Spin, Tooltip, Typography } from "antd";
+import { Button, Card, Checkbox, CheckboxChangeEvent, Flex, Input, Spin, Tooltip, Typography } from "antd";
 import { ChangeEvent, useState } from "react";
 import styles from './container-log-modal.module.scss';
 import { Backdrop } from "../backdrop/backdrop";
+import { LuCross, LuX } from "react-icons/lu";
 
-export const ContainerLogModal = () => {
-    const containerId = '8803a75db1a5936f06efbc152d1b8e0b55d26e4c0cac2cef4510815b5121f75f';
+interface ContainerLogModalProps {
+    containerId: string;
+    show: boolean;
+    hide: () => void;
+}
+
+export const ContainerLogModal = (props: ContainerLogModalProps) => {
+    const { containerId, show, hide } = props;
     const { dataIsLoading, data } = useContainer(containerId);
 
     const [linesToShow, setLinesToShow] = useState<string>('100');
@@ -36,40 +43,44 @@ export const ContainerLogModal = () => {
     }
 
     return (
-        <Backdrop>
-            <ClickAwayListener onClickAway={() => { }}>
-                <Card className={styles['modal-container']}>
-                    <Flex vertical gap={10}>
-                        {dataIsLoading && <Spin />}
-                        {!dataIsLoading && <CodeBlock
-                            title={data?.names[0] ?? 'Log'}
-                            content={lines.join('\n')}
-                            tools={[
-                                <Flex align={'center'} gap={4} key={'live-toggle'}>
-                                    <Typography.Paragraph className={styles['text']}>
-                                        Live:
-                                    </Typography.Paragraph>
-                                    <Checkbox onChange={handleLiveToggle} checked={live} />
-                                </Flex>,
-                                <Flex align={'center'} gap={5} key={'tail-amount'}>
-                                    <Typography.Paragraph className={styles['text']}>
-                                        Tail:
-                                    </Typography.Paragraph>
-                                    <Tooltip title={'Options: all, 100, 500, 1000, etc. '}>
-                                        <Input
-                                            title={'tail'}
-                                            size={'small'}
-                                            onChange={handleTailChanged}
-                                            value={linesToShow}
-                                            status={linesError ? 'error' : 'success'}
-                                            style={{ width: '100px', height: '25px' }} />
-                                    </Tooltip>
-                                </Flex>
-                            ]}
-                        />}
-                    </Flex>
-                </Card>
-            </ClickAwayListener>
-        </Backdrop>
+        show && (
+            <Backdrop>
+                <ClickAwayListener onClickAway={hide}>
+                    <Card className={styles['modal-container']}>
+                        <Button icon={<LuX />} onClick={hide} className={styles['close-button']} />
+                        <Flex vertical gap={10}>
+                            {dataIsLoading && <Spin />}
+                            {!dataIsLoading && <CodeBlock
+                                title={data?.names[0] ?? 'Log'}
+                                content={lines.join('\n')}
+                                maxWidth={'1200px'}
+                                tools={[
+                                    <Flex align={'center'} gap={4} key={'live-toggle'}>
+                                        <Typography.Paragraph className={styles['text']}>
+                                            Live:
+                                        </Typography.Paragraph>
+                                        <Checkbox onChange={handleLiveToggle} checked={live} />
+                                    </Flex>,
+                                    <Flex align={'center'} gap={5} key={'tail-amount'}>
+                                        <Typography.Paragraph className={styles['text']}>
+                                            Tail:
+                                        </Typography.Paragraph>
+                                        <Tooltip title={'Options: all, 100, 500, 1000, etc. '}>
+                                            <Input
+                                                title={'tail'}
+                                                size={'small'}
+                                                onChange={handleTailChanged}
+                                                value={linesToShow}
+                                                status={linesError ? 'error' : 'success'}
+                                                style={{ width: '100px', height: '25px' }} />
+                                        </Tooltip>
+                                    </Flex>
+                                ]}
+                            />}
+                        </Flex>
+                    </Card>
+                </ClickAwayListener>
+            </Backdrop>
+        )
     )
 }
