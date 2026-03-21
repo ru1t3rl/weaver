@@ -27,8 +27,9 @@ builder.Services.AddSingleton<IDockerClient>(_ =>
             throw new InvalidOperationException("Can't start the docker web api without configuration");
         }
 
-        var uri = new Uri(dockerOptions.Host);
-        return new DockerClientConfiguration(uri).CreateClient();
+        return new DockerClientBuilder()
+            .WithEndpoint(new Uri(dockerOptions.Host))
+            .Build();
     }
 );
 

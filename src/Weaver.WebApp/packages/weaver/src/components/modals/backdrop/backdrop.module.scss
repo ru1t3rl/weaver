@@ -1,0 +1,12 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100dvw;
+    height: 100dvh;
+
+    z-index: 9999;
+
+    background-color: #0000005a;
+    backdrop-filter: blur(2px);
+}

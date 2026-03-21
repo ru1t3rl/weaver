@@ -29,6 +29,7 @@ import type {
   ContainerDetailModel,
   ContainerListItemModel,
   CreateContainerParameters,
+  GetContainerIdentifierLogsParams,
   ProblemDetails
 } from '../models';
 
@@ -380,4 +381,69 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
       return useMutation(mutationOptions);
     }
+    export const getContainerIdentifierLogs = (
+    identifier: string,
+    params?: GetContainerIdentifierLogsParams, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
     
+    
+    return axios.get(
+      `/Container/${identifier}/logs`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+
+
+
+export const getGetContainerIdentifierLogsQueryKey = (identifier?: string,
+    params?: GetContainerIdentifierLogsParams,) => {
+    return [
+    `/Container/${identifier}/logs`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetContainerIdentifierLogsQueryOptions = <TData = Awaited<ReturnType<typeof getContainerIdentifierLogs>>, TError = AxiosError<unknown>>(identifier: string,
+    params?: GetContainerIdentifierLogsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getContainerIdentifierLogs>>, TError, TData>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetContainerIdentifierLogsQueryKey(identifier,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getContainerIdentifierLogs>>> = ({ signal }) => getContainerIdentifierLogs(identifier,params, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(identifier), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getContainerIdentifierLogs>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetContainerIdentifierLogsQueryResult = NonNullable<Awaited<ReturnType<typeof getContainerIdentifierLogs>>>
+export type GetContainerIdentifierLogsQueryError = AxiosError<unknown>
+
+
+
+export function useGetContainerIdentifierLogs<TData = Awaited<ReturnType<typeof getContainerIdentifierLogs>>, TError = AxiosError<unknown>>(
+ identifier: string,
+    params?: GetContainerIdentifierLogsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getContainerIdentifierLogs>>, TError, TData>, axios?: AxiosRequestConfig}
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetContainerIdentifierLogsQueryOptions(identifier,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

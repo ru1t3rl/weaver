@@ -1,0 +1,20 @@
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.text,
+.text>span {
+  margin-bottom: 0 !important;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  transform: translate(150%, -150%);
+}

@@ -104,7 +104,7 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
                         boxShadow: selected ? `0 0 5px 2px ${theme.token?.colorPrimary}20` : 'initial'
                     }}>
                     <LuContainer className={styles['container-node-icon']} />
-                    <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>{model?.name.replace(`/`, '') ?? 'N/A'}</Typography.Title>
+                    <Typography.Title level={5} >{model?.name.replace(`/`, '') ?? 'N/A'}</Typography.Title>
                     <StateCircle state={containerData?.status ?? 'Restarting'} />
                 </Card>
                 {expanded && (

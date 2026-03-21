@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Text;
 using Cortex.Mediator;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -200,5 +202,30 @@ public class ContainerController : ControllerBase
             _ => Ok(),
             error => BadRequest(error.Messages)
         );
+    }
+
+    [HttpGet("{identifier}/logs")]
+    public async Task StreamContainerLogs(
+        string identifier,
+        bool follow = true,
+        bool timestamps = false,
+        string? tail = "100",
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
+    {
+        Response.ContentType = "text/plain";
+        Response.Headers.CacheControl = "no-cache";
+        Response.Headers.Connection = "keep-alive";
+        
+        IAsyncEnumerable<string> stream = await _mediator.SendQueryAsync(
+            new StreamContainerLogsQuery(identifier, follow, timestamps, tail),
+            cancellationToken
+        );
+        
+        await foreach (var line in stream.WithCancellation(cancellationToken))
+        {
+            await Response.WriteAsync(line, cancellationToken);
+            await Response.Body.FlushAsync(cancellationToken);
+        }
     }
 }

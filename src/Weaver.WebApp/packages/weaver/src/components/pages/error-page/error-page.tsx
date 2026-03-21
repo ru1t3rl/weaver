@@ -3,7 +3,7 @@ import { Button, Divider, Typography } from 'antd';
 import { LuRefreshCw } from 'react-icons/lu';
 import { useRouteError } from 'react-router-dom';
 import useErrorDetail from '../../../hooks/use-error-detail';
-import CodeBlock from '../../code-block/code-block';
+import { CodeBlock } from '@weaver/shared';
 import LostIcon from '../../icons/lost-icon/lost-icon';
 import styles from './error-page.module.scss';
 
@@ -26,7 +26,7 @@ export const ErrorPage: React.FC = () => {
         <div style={{ height: '5vh' }} />
         <div className={styles['detail-container']}>
           <Divider>Details</Divider>
-          <CodeBlock title='Error' content={`${message}\n${stack}`} />
+          <CodeBlock title='Error' content={`${message}\n${stack}`} highlightLines={[0]} />
         </div>
       </div>
     </div>

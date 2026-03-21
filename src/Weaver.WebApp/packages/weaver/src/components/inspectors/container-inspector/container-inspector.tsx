@@ -1,13 +1,15 @@
 import { useContainer } from '@weaver/docker';
 import { StateHeart, useInspector } from '@weaver/graph';
 import { Button, Card, Flex, Spin, Tooltip, Typography } from 'antd';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 import { LuFile, LuFolder, LuHardDrive, LuLogs, LuPlay, LuSquare } from 'react-icons/lu';
 import styles from './container-inspector.module.scss';
+import { ContainerLogModal } from '../../modals/container-log-modal/container-log-modal';
 
 export const ContainerInspector = () => {
     const { activeId } = useInspector();
     const { dataIsLoading, data } = useContainer(activeId.current ?? '');
+    const [showLog, setShowLog] = useState<boolean>(false);
     const networks = useMemo(() => data?.networkSettingsSummary.Networks, [data])
 
     if (dataIsLoading || !data) {
@@ -31,6 +33,7 @@ export const ContainerInspector = () => {
 
     return (
         <Flex vertical gap={16} style={{ paddingBottom: '1.5rem' }}>
+            {!dataIsLoading && <ContainerLogModal containerId={data.id} show={showLog} hide={() => { setShowLog(false) }} />}
             <Flex vertical gap={8}>
                 <Typography.Title level={2} className={styles['text-fix']}>{data.names[0]}</Typography.Title>
                 <Typography.Paragraph>
@@ -47,7 +50,7 @@ export const ContainerInspector = () => {
                         disabled={data.status !== 'Running' && data.status !== 'Restarting' && data.status !== 'Removing'}>
                         Stop
                     </Button>
-                    <Button icon={<LuLogs />}>Logs</Button>
+                    <Button icon={<LuLogs />} onClick={() => setShowLog(true)}>Logs</Button>
                 </div>
             </Flex>
             <Flex vertical>
@@ -111,7 +114,7 @@ export const ContainerInspector = () => {
                         );
 
                         return (
-                            <Tooltip title={tooltipText} key={mount.Source ?? `mount-${i}`}>
+                            <Tooltip title={tooltipText} key={mount.Source && mount.Source.length > 0 ? mount.Source : `mount-${mount.Name}-${i}`}>
                                 <Card className={styles['mount-card']}>
                                     <Flex gap='medium'>
                                         <Flex vertical align='center' justify='center'>
