@@ -1,8 +1,7 @@
-import { useDeleteContainerIdentifier, useGetContainerIdentifier, useGetContainerIdentifierLogs, usePutContainerIdentifierStart, usePutContainerIdentifierStop } from '../api/endpoints/container';
-import { useDocker } from './use-docker';
-import { AxiosConfig } from '../utils';
+import { useDeleteContainerIdentifier, useGetContainerIdentifier, usePutContainerIdentifierStart, usePutContainerIdentifierStop } from '../api/endpoints/container';
 import { ContainerDetailModel } from '../api/models';
-import { useContainerLogs } from './use-container-log';
+import { AxiosConfig } from '../utils';
+import { useDocker } from './use-docker';
 
 interface useContainer {
   start: () => Promise<void>;

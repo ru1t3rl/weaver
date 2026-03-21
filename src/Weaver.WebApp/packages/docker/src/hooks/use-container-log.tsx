@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
+import useDocker from './use-docker';
 
 export function useContainerLogs(
     identifier: string,
     params?: { follow?: boolean; timestamps?: boolean; tail?: string }
 ) {
+    const { dockerApiAddress } = useDocker();
     const [lines, setLines] = useState<string[]>([]);
     const [error, setError] = useState<Error | null>(null);
     const [isStreaming, setIsStreaming] = useState(false);
@@ -24,7 +26,7 @@ export function useContainerLogs(
         (async () => {
             try {
                 const response = await fetch(
-                    `http://localhost:5297/Container/${identifier}/logs?${query}`,
+                    `${dockerApiAddress}/Container/${identifier}/logs?${query}`,
                     {
                         signal: abortRef.current!.signal
                     },
@@ -48,11 +50,16 @@ export function useContainerLogs(
                     const result = await reader.read();
                     if (result.done) break;
 
-                    console.log(result.value);
                     const newLines = result.value
                         .split('\n')
                         .filter(l => l.length > 0);
-                    setLines(prev => [...prev, ...newLines]);
+
+                    setLines(prev => {
+                        const combined = [...prev, ...newLines];
+                        const maxTail = params?.tail === 'all' ? combined.length : parseInt(params?.tail ?? '100', 10);
+                        const excess = combined.length - maxTail;
+                        return excess > 0 ? combined.slice(excess) : combined;
+                    });
                 }
             } catch (err) {
                 if ((err as Error).name !== 'AbortError') {
