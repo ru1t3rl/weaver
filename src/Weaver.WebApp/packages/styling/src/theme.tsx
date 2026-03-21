@@ -1,7 +1,7 @@
 import { MappingAlgorithm, theme, ThemeConfig } from "antd";
-import { typographyOverride, cardOverrides } from "./component-overrides";
-import { darkThemeColors, lightThemeColors } from './palettes';
 import { ComponentTokenMap } from "antd/es/theme/interface";
+import { typographyOverride } from "./component-overrides";
+import { darkThemeColors, lightThemeColors } from './palettes';
 
 export type ThemeMode = 'light' | 'dark';
 
