@@ -114,7 +114,7 @@ export const ContainerInspector = () => {
                         );
 
                         return (
-                            <Tooltip title={tooltipText} key={mount.Source ?? `mount-${i}`}>
+                            <Tooltip title={tooltipText} key={mount.Source && mount.Source.length > 0 ? mount.Source : `mount-${mount.Name}-${i}`}>
                                 <Card className={styles['mount-card']}>
                                     <Flex gap='medium'>
                                         <Flex vertical align='center' justify='center'>
