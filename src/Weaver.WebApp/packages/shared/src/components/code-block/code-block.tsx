@@ -1,5 +1,5 @@
 import { useTheme } from '@weaver/styling';
-import { Card, Typography } from 'antd';
+import { Card, Flex, Typography } from 'antd';
 import { CardStylesType } from 'antd/es/card/Card';
 import { LuCode } from 'react-icons/lu';
 import styles from './code-block.module.scss';
@@ -10,6 +10,8 @@ type Height = `${number}dvh` | `${number}vh` | `${number}px` | `${number}%` | nu
 interface CodeBlockProps {
   title: string;
   content: string;
+  highlightLines?: number[];
+  tools?: React.ReactNode[];
   width?: Width;
   height?: Height;
   className?: string;
@@ -17,7 +19,16 @@ interface CodeBlockProps {
 }
 
 export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
-  const { title, content, height = '400px', width = '50vw', className, style } = props;
+  const {
+    title,
+    content,
+    highlightLines = [],
+    tools = [],
+    height = '400px',
+    width = '50vw',
+    className,
+    style
+  } = props;
   const lines = content.split('\n');
   const { theme } = useTheme();
 
@@ -51,6 +62,9 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
           <LuCode />
           <Typography.Text>{title}</Typography.Text>
         </div>
+        <Flex>
+          {tools}
+        </Flex>
       </div>
       <div className={styles['code-body']} style={{ height: height }}>
         <div
@@ -58,7 +72,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
         >
           {lines.map((_, i) => {
             const lineNumber = i + 1;
-            const highlight = i === 0;
+            const highlight = highlightLines.includes(i);
             return (
               <div
                 key={lineNumber}
@@ -84,7 +98,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
         >
           {lines.map((line, i) => {
             const lineNumber = i + 1;
-            const highlight = i === 0;
+            const highlight = highlightLines.includes(i);
             return (
               <div
                 key={lineNumber}

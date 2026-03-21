@@ -26,7 +26,7 @@ export const ErrorPage: React.FC = () => {
         <div style={{ height: '5vh' }} />
         <div className={styles['detail-container']}>
           <Divider>Details</Divider>
-          <CodeBlock title='Error' content={`${message}\n${stack}`} />
+          <CodeBlock title='Error' content={`${message}\n${stack}`} highlightLines={[0]} />
         </div>
       </div>
     </div>

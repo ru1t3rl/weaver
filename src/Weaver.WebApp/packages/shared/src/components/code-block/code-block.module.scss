@@ -3,6 +3,7 @@ $gutter-width: 48px;
 
 .gutter {
   display: flex;
+  justify-content: space-between;
   align-items: stretch;
   height: 34px;
   gap: 0;
@@ -26,7 +27,7 @@ $gutter-width: 48px;
     border-radius: 0 0 var(--ant-border-radius-lg) var(--ant-border-radius-lg);
   }
 
-  &-gutter {
+  &-gutter {    
     position: sticky;
     left: -0.05px;
     z-index: 2;
