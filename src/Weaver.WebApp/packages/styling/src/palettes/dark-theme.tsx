@@ -53,7 +53,7 @@ export const darkThemeColors: Partial<AliasToken> = {
 
     // Error / Danger
     colorError: "#ff4455",
-    colorErrorBg: "#dd445522",
+    colorErrorBg: "#552233",
     colorErrorBgHover: "#dd445533",
     colorErrorBorder: "#ff445555",
     colorErrorBorderHover: "#ff445577",
@@ -99,7 +99,7 @@ export const darkThemeColors: Partial<AliasToken> = {
     // Fill
     colorFill: "#ffffff0f",
     colorFillSecondary: "#ffffff0a",
-    colorFillTertiary: "#ffffff07",
+    colorFillTertiary: "#2a2a2a",
     colorFillQuaternary: "#ffffff04",
     colorFillAlter: "#ffffff05",
     colorFillContent: "#ffffff0a",

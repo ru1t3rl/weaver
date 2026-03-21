@@ -1,22 +1,23 @@
-import { Card, Typography } from 'antd';
-import { LuCode } from 'react-icons/lu';
-import BlinkingCursor from './blinking-cursor';
-import styles from './code-block.module.scss';
 import { useTheme } from '@weaver/styling';
+import { Card, Typography } from 'antd';
 import { CardStylesType } from 'antd/es/card/Card';
+import { LuCode } from 'react-icons/lu';
+import styles from './code-block.module.scss';
 
-type Width = `${number}dvh` | `${number}vh` | `${number}px` | `${number}%` | number;
+type Width = `${number}dvw` | `${number}vw` | `${number}px` | `${number}%` | number;
+type Height = `${number}dvh` | `${number}vh` | `${number}px` | `${number}%` | number;
 
 interface CodeBlockProps {
   title: string;
   content: string;
   width?: Width;
+  height?: Height;
   className?: string;
   style?: CardStylesType;
 }
 
 export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
-  const { title, content, width = '50vw', className, style } = props;
+  const { title, content, height = '400px', width = '50vw', className, style } = props;
   const lines = content.split('\n');
   const { theme } = useTheme();
 
@@ -51,7 +52,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
           <Typography.Text>{title}</Typography.Text>
         </div>
       </div>
-      <div className={styles['code-body']}>
+      <div className={styles['code-body']} style={{ height: height }}>
         <div
           className={styles['code-gutter']}
         >
@@ -80,7 +81,6 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
         </div>
         <div
           className={styles['code-content']}
-          style={{ backgroundColor: theme.token?.colorBgSpotlight }}
         >
           {lines.map((line, i) => {
             const lineNumber = i + 1;
@@ -90,7 +90,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
                 key={lineNumber}
                 className={styles['code-line-content']}
                 style={{
-                  backgroundColor: highlight ? theme.token?.colorErrorBg : undefined,
+                  backgroundColor: highlight ? theme.token?.colorErrorBg : 'transparent',
                 }}
               >
                 <Typography.Paragraph
@@ -100,7 +100,6 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
                   }}
                 >
                   {line || ' '}
-                  {highlight && <BlinkingCursor />}
                 </Typography.Paragraph>
               </div>
             );

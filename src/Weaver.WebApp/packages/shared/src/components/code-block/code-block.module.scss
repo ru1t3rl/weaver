@@ -1,4 +1,4 @@
-$line-height: 20px;
+$line-height: var(--ant-line-height);
 $gutter-width: 48px;
 
 .gutter {
@@ -14,6 +14,7 @@ $gutter-width: 48px;
   gap: 6px;
   padding: 0 14px;
   flex-shrink: 0;
+  border-radius: var(--ant-border-radius-sm) var(--ant-border-radius-sm) 0 0;
 }
 
 .code {
@@ -21,12 +22,13 @@ $gutter-width: 48px;
     display: flex;
     overflow-y: auto;
     overflow-x: auto;
-    height: 15vh;
+
+    border-radius: 0 0 var(--ant-border-radius-lg) var(--ant-border-radius-lg);
   }
 
   &-gutter {
     position: sticky;
-    left: 0;
+    left: -0.05px;
     z-index: 2;
     flex-shrink: 0;
     width: $gutter-width;
@@ -43,8 +45,8 @@ $gutter-width: 48px;
       padding: 0 10px 0 4px;
       user-select: none;
       border-right: 1px solid;
-      line-height: $line-height;
       height: $line-height;
+      line-height: $line-height;
 
       &-text {
         opacity: 0.5;
@@ -53,10 +55,10 @@ $gutter-width: 48px;
     }
 
     &-content {
-      padding: 0 16px;
+      padding: 0 16px 0px 16px;
       white-space: pre;
-      line-height: $line-height;
       height: $line-height;
+      line-height: $line-height;
 
       &-text {
         margin-bottom: 0 !important;
