@@ -62,7 +62,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
           <LuCode />
           <Typography.Text>{title}</Typography.Text>
         </div>
-        <Flex>
+        <Flex className={styles['gutter-tools']}>
           {tools}
         </Flex>
       </div>
