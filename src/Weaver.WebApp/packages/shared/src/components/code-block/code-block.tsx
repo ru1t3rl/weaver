@@ -62,13 +62,16 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props: CodeBlockProps) => {
           <LuCode />
           <Typography.Text>{title}</Typography.Text>
         </div>
-        <Flex className={styles['gutter-tools']} gap={8}>
+        <Flex className={styles['gutter-tools']} gap={12}>
           {tools}
         </Flex>
       </div>
       <div className={styles['code-body']} style={{ height: height }}>
         <div
           className={styles['code-gutter']}
+          style={{
+            backgroundColor: theme.token?.colorFillTertiary,
+          }}
         >
           {lines.map((_, i) => {
             const lineNumber = i + 1;

@@ -37,6 +37,7 @@ $gutter-width: 48px;
     z-index: 2;
     flex-shrink: 0;
     width: $gutter-width;
+    min-height: 100%;
   }
 
   &-content {
