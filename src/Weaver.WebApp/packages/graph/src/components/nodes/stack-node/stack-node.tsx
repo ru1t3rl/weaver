@@ -85,7 +85,7 @@ export const StackNode = memo((props: NodeProps<StackNode>) => {
                     style={{ backgroundColor: theme.token?.colorBgElevated }}>
                     <Flex gap={'small'} align='center'>
                         <LuBoxes className={styles['stack-node-icon']} />
-                        <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>{name}</Typography.Title>
+                        <Typography.Title level={5}>{name}</Typography.Title>
                     </Flex>
                     <StateCircle state={state} />
                 </Card>

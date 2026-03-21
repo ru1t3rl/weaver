@@ -205,7 +205,7 @@ public class ContainerController : ControllerBase
     }
 
     [HttpGet("{identifier}/logs")]
-    public async IAsyncEnumerable<string> StreamContainerLogs(
+    public async Task StreamContainerLogs(
         string identifier,
         bool follow = true,
         bool timestamps = false,
@@ -213,46 +213,19 @@ public class ContainerController : ControllerBase
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
     {
-        MultiplexedStream logStream = await _dockerClient.Containers.GetContainerLogsAsync(
-            identifier,
-            new ContainerLogsParameters
-            {
-                Follow = follow,
-                ShowStdout = true,
-                ShowStderr = true,
-                Timestamps = timestamps,
-                Tail = tail,
-            },
+        Response.ContentType = "text/plain";
+        Response.Headers.CacheControl = "no-cache";
+        Response.Headers.Connection = "keep-alive";
+        
+        IAsyncEnumerable<string> stream = await _mediator.SendQueryAsync(
+            new StreamContainerLogsQuery(identifier, follow, timestamps, tail),
             cancellationToken
         );
-
-        var buffer = new byte[4096];
-        var sb = new StringBuilder();
-
-        while (!cancellationToken.IsCancellationRequested)
+        
+        await foreach (var line in stream.WithCancellation(cancellationToken))
         {
-            var result = await logStream.ReadOutputAsync(buffer, 0, buffer.Length, cancellationToken);
-
-            if (result.EOF)
-                break;
-
-            sb.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
-
-            var text = sb.ToString();
-            var start = 0;
-            int newline;
-
-            while ((newline = text.IndexOf('\n', start)) >= 0)
-            {
-                yield return text[start..newline].TrimEnd('\r');
-                start = newline + 1;
-            }
-
-            sb.Clear();
-            sb.Append(text[start..]);
+            await Response.WriteAsync(line, cancellationToken);
+            await Response.Body.FlushAsync(cancellationToken);
         }
-
-        if (sb.Length > 0)
-            yield return sb.ToString();
     }
 }

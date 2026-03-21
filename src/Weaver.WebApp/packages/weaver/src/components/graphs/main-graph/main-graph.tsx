@@ -8,6 +8,7 @@ import { NotificationProvider } from '../../../providers';
 import styles from './main-graph.module.scss';
 import { useMemo, useReducer, useRef } from 'react';
 import { ContainerInspector } from '../../inspectors/container-inspector/container-inspector';
+import { ContainerLogModal } from '../../modals/container-log-modal/container-log-modal';
 
 export function InternalMainGraph() {
   const { show: showServiceModal } = useServiceTemplateSearchModal();
@@ -39,7 +40,7 @@ export function InternalMainGraph() {
   const { tryRegister: tryRegisterInspector } = useInspector();
   useMemo(() => {
     registerPersistent(items);
-    tryRegisterInspector(containerNode, <ContainerInspector />);    
+    tryRegisterInspector(containerNode, <ContainerInspector />);
   }, [items])
 
   function showContext(e: React.MouseEvent) {
@@ -50,6 +51,7 @@ export function InternalMainGraph() {
   return (
     <NotificationProvider>
       {/* <ModalsProvider> */}
+      <ContainerLogModal />
       <Outlet />
       <StyledGraph
         nodes={nodes.current}

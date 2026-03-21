@@ -70,6 +70,7 @@ export * from './endpoint-settings-links';
 export * from './endpoint-settings-mac-address';
 export * from './endpoint-settings-network-i-d';
 export * from './environment-variable';
+export * from './get-container-identifier-logs-params';
 export * from './health';
 export * from './health-summary';
 export * from './health-summary-failing-streak';

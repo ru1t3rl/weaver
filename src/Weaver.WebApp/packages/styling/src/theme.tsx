@@ -1,9 +1,17 @@
-import {MappingAlgorithm, theme, ThemeConfig} from "antd";
-import {darkThemeColors, lightThemeColors} from './palettes';
+import { MappingAlgorithm, theme, ThemeConfig } from "antd";
+import { typographyOverride, cardOverrides } from "./component-overrides";
+import { darkThemeColors, lightThemeColors } from './palettes';
+import { ComponentTokenMap } from "antd/es/theme/interface";
 
 export type ThemeMode = 'light' | 'dark';
 
 export function createTheme(mode: ThemeMode): ThemeConfig {
+
+    const componentOverrides: Partial<ComponentTokenMap> = {
+        // ...cardOverrides,
+        ...typographyOverride
+    };
+
     function getAlgorithm(mode: ThemeMode): MappingAlgorithm | undefined {
         switch (mode) {
             case 'dark':
@@ -28,6 +36,7 @@ export function createTheme(mode: ThemeMode): ThemeConfig {
     return ({
         algorithm: getAlgorithm(mode),
         token: getTokens(mode),
+        components: componentOverrides
     })
 }
 
