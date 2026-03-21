@@ -1,14 +1,13 @@
-import { GraphProviderRef, NodeTypes, EdgeTypes, StyledGraph, useGraphRef, ContextMenuProvider, useContextMenu, ContextMenuItem, useInspector, containerNode } from '@weaver/graph';
+import { containerNode, ContextMenuItem, ContextMenuProvider, EdgeTypes, GraphProviderRef, NodeTypes, StyledGraph, useContextMenu, useGraphRef, useInspector } from '@weaver/graph';
 import { Background, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { useMemo, useReducer, useRef } from 'react';
 import { LuPlus } from 'react-icons/lu';
 import { Outlet } from 'react-router';
 import { useServiceTemplateSearchModal } from '../../../hooks';
 import { NotificationProvider } from '../../../providers';
-import styles from './main-graph.module.scss';
-import { useMemo, useReducer, useRef } from 'react';
 import { ContainerInspector } from '../../inspectors/container-inspector/container-inspector';
-import { ContainerLogModal } from '../../modals/container-log-modal/container-log-modal';
+import styles from './main-graph.module.scss';
 
 export function InternalMainGraph() {
   const { show: showServiceModal } = useServiceTemplateSearchModal();
