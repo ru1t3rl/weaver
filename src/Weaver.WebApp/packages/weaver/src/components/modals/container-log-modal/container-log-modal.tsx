@@ -3,9 +3,9 @@ import { ClickAwayListener } from "@weaver/graph";
 import { CodeBlock } from "@weaver/shared";
 import { Button, Card, Checkbox, CheckboxChangeEvent, Flex, Input, Spin, Tooltip, Typography } from "antd";
 import { ChangeEvent, useState } from "react";
-import styles from './container-log-modal.module.scss';
+import { LuX } from "react-icons/lu";
 import { Backdrop } from "../backdrop/backdrop";
-import { LuCross, LuX } from "react-icons/lu";
+import styles from './container-log-modal.module.scss';
 
 interface ContainerLogModalProps {
     containerId: string;
