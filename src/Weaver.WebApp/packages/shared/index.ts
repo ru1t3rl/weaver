@@ -5,3 +5,4 @@ export * from './src/components/code-block/code-block';
 export * from './src/environment';
 export * from './src/routes';
 export * from './src/weaver-logo';
+export * from './src/hooks/use-device';
