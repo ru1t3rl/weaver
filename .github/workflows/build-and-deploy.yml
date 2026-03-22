@@ -63,7 +63,7 @@ jobs:
         run: aspire publish --output-path ../../aspire-output
 
       - name: Upload Aspire output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: aspire-output
           path: aspire-output/
