@@ -112,7 +112,7 @@ branches:
 
   pull-request:
     mode: ContinuousDelivery
-    label: {EscapedBranchName}{Number}
+    label: '{BranchName}'
     increment: Inherit
     prevent-increment:
       of-merged-branch: true
