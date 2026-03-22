@@ -20,7 +20,6 @@ jobs:
       contents: read
     outputs:
       semVer: ${{ steps.version_step.outputs.semVer }}
-      semVerLower: ${{ steps.version_step.outputs.semVerLower }}
 
     steps:
       - name: Checkout repository
@@ -44,10 +43,6 @@ jobs:
       - name: Determine Version
         id: version_step
         uses: gittools/actions/gitversion/execute@v4.0.1
-        
-      - name: Lowercase version for Docker tags
-        id: version_lower
-        run: echo "semVerLower=$(echo '${{ steps.version_step.outputs.semVer }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Install Aspire CLI
         working-directory: src/Weaver.AppHost
@@ -106,7 +101,7 @@ jobs:
           file: src/Weaver.Docker.WebApi/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:amd64-${{ needs.setup.outputs.semVerLower }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:amd64-${{ needs.setup.outputs.semVer }}
           cache-from: type=gha,scope=api-amd64
           cache-to: type=gha,mode=max,scope=api-amd64
 
@@ -118,7 +113,7 @@ jobs:
           file: src/Weaver.Docker.WebApi/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:amd64-${{ needs.setup.outputs.semVerLower }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:amd64-${{ needs.setup.outputs.semVer }}
           cache-from: type=gha,scope=docker-api-amd64
           cache-to: type=gha,mode=max,scope=docker-api-amd64
 
@@ -130,7 +125,7 @@ jobs:
           file: src/Weaver.WebApp/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:amd64-${{ needs.setup.outputs.semVerLower }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:amd64-${{ needs.setup.outputs.semVer }}
           cache-from: type=gha,scope=webapp-amd64
           cache-to: type=gha,mode=max,scope=webapp-amd64
 
@@ -169,7 +164,7 @@ jobs:
           file: src/Weaver.Docker.WebApi/Dockerfile
           platforms: linux/arm64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:arm64-${{ needs.setup.outputs.semVerLower }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:arm64-${{ needs.setup.outputs.semVer }}
           cache-from: type=gha,scope=api-arm64
           cache-to: type=gha,mode=max,scope=api-arm64
 
@@ -181,7 +176,7 @@ jobs:
           file: src/Weaver.Docker.WebApi/Dockerfile
           platforms: linux/arm64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:arm64-${{ needs.setup.outputs.semVerLower }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:arm64-${{ needs.setup.outputs.semVer }}
           cache-from: type=gha,scope=docker-api-arm64
           cache-to: type=gha,mode=max,scope=docker-api-arm64
 
@@ -193,7 +188,7 @@ jobs:
           file: src/Weaver.WebApp/Dockerfile
           platforms: linux/arm64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:arm64-${{ needs.setup.outputs.semVerLower }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:arm64-${{ needs.setup.outputs.semVer }}
           cache-from: type=gha,scope=webapp-arm64
           cache-to: type=gha,mode=max,scope=webapp-arm64
 
@@ -222,7 +217,7 @@ jobs:
 
       - name: Create and push multi-arch manifests
         env:
-          SEM_VER: ${{ needs.setup.outputs.semVerLower }}
+          SEM_VER: ${{ needs.setup.outputs.semVer }}
           IS_DEFAULT_BRANCH: ${{ github.ref_name == 'main' || github.ref_name == 'develop' }}
         run: |
           for IMAGE in \
@@ -252,7 +247,7 @@ jobs:
 
       - name: Prepare release artifacts
         env:
-          SEM_VER: ${{ needs.setup.outputs.semVerLower }}
+          SEM_VER: ${{ needs.setup.outputs.semVer }}
         run: |
           mkdir -p release-artifacts
 
@@ -322,7 +317,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.setup.outputs.semVerLower }}
+          tag_name: ${{ needs.setup.outputs.semVer }}
           name: Release ${{ needs.setup.outputs.semVer }}
           body: |
             ## Changes
@@ -334,19 +329,19 @@ jobs:
 
             ### WebAPI Image
             ```
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${{ needs.setup.outputs.semVerLower }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${{ needs.setup.outputs.semVer }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:latest
             ```
 
             ### Docker WebAPI Image
             ```
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${{ needs.setup.outputs.semVerLower }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${{ needs.setup.outputs.semVer }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:latest
             ```
 
             ### WebApp Image
             ```
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${{ needs.setup.outputs.semVerLower }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${{ needs.setup.outputs.semVer }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:latest
             ```
 
@@ -361,7 +356,7 @@ jobs:
 
       - name: Output image information
         env:
-          SEM_VER: ${{ needs.setup.outputs.semVerLower }}
+          SEM_VER: ${{ needs.setup.outputs.semVer }}
         run: |
           echo "=== Docker Images Published (multi-arch: amd64 + arm64) ==="
           echo ""
