@@ -1,6 +1,8 @@
 import { PropsWithChildren, ReactNode, useCallback, useRef, useState } from "react";
 import { Inspector } from "../components/utils/inspector/inspector";
 import { InspectorContext } from "../contexts/inspector-context";
+import { LuX } from 'react-icons/lu';
+import { Button } from "antd";
 
 export const InspectorProvider = (props: PropsWithChildren) => {
     const { children } = props;
@@ -52,6 +54,7 @@ export const InspectorProvider = (props: PropsWithChildren) => {
         <InspectorContext.Provider value={value}>
             {activeComponent && (
                 <Inspector>
+                    <Button onClick={hide} icon={<LuX />} style={{position: 'absolute', top: '1.25rem', right: '1.25rem'}} />
                     {activeComponent}
                 </Inspector>
             )}
