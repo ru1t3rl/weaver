@@ -5,10 +5,12 @@ import { ThemeToggle, useTheme } from "@weaver/styling";
 import WeaverLogo from "../../weaver-logo";
 import { useNavigate } from "react-router";
 import { routes } from "../../routes";
+import { useDevice } from "../../hooks/use-device";
 
 export const NavBar = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const { isMobile } = useDevice();
 
     function handleHomeClicked() {
         navigate(routes.home);
@@ -17,12 +19,12 @@ export const NavBar = () => {
     return (
         <Card className={styles['nav-bar-container']}>
             <div className={styles['nav-bar-top']}>
-                <WeaverLogo size={'150%'} onClick={handleHomeClicked} color={theme.theme.token?.colorTextBase} />
-                <Button icon={<LuHouse />} onClick={handleHomeClicked} className={styles['icon-button']}/>
+                <WeaverLogo className={styles['logo']} onClick={handleHomeClicked} color={theme.theme.token?.colorTextBase} />
+                {!isMobile && <Button icon={<LuHouse />} onClick={handleHomeClicked} className={styles['icon-button']} />}
             </div>
             <div className={styles['nav-bar-bottom']}>
                 <ThemeToggle />
-                <Button icon={<LuLogOut />} className={styles['icon-button']} />
+                {!isMobile && <Button icon={<LuLogOut />} className={styles['icon-button']} />}
             </div>
         </Card>
     );
