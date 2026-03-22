@@ -5,7 +5,7 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 env:
   REGISTRY: ghcr.io
@@ -14,11 +14,12 @@ env:
   IMAGE_NAME_WEBAPP: ${{ github.repository }}/webapp
 
 jobs:
-  build-and-deploy:
+  setup:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
+      contents: read
+    outputs:
+      semVer: ${{ steps.version_step.outputs.semVer }}
 
     steps:
       - name: Checkout repository
@@ -43,6 +44,46 @@ jobs:
         id: version_step
         uses: gittools/actions/gitversion/execute@v4.0.1
 
+      - name: Install Aspire CLI
+        working-directory: src/Weaver.AppHost
+        run: curl -sSL https://aspire.dev/install.sh | bash
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Publish Aspire application
+        working-directory: src/Weaver.AppHost
+        run: aspire publish --output-path ../../aspire-output
+
+      - name: Upload Aspire output
+        uses: actions/upload-artifact@v4
+        with:
+          name: aspire-output
+          path: aspire-output/
+          include-hidden-files: true
+          retention-days: 1
+
+  build-amd64:
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    outputs:
+      digest-api: ${{ steps.push-api.outputs.digest }}
+      digest-docker-api: ${{ steps.push-docker-api.outputs.digest }}
+      digest-webapp: ${{ steps.push-webapp.outputs.digest }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -53,95 +94,177 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Aspire.Hosting.Docker package
-        working-directory: src/Weaver.AppHost
-        run: |
-          # Package should already be installed based on the csproj
-          # dotnet add package Aspire.Hosting.Docker --version 13.1.0-preview.1.25616.3 || true
-          curl -sSL https://aspire.dev/install.sh | bash
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Publish Aspire application
-        working-directory: src/Weaver.AppHost
-        run: aspire publish --output-path ../../aspire-output
-
-      - name: Build and tag Docker images
-        run: |
-          # Build webapi image
-          docker build -f src/Weaver.Docker.WebApi/Dockerfile -t webapi:latest .
-          
-          # Build webapp image  
-          docker build -f src/Weaver.WebApp/Dockerfile -t webapp:latest src/Weaver.WebApp
-
-      - name: Extract metadata for API image
-        id: meta-api
-        uses: docker/metadata-action@v5
+      - name: Build and push API image (amd64)
+        id: push-api
+        uses: docker/build-push-action@v6
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=next
-            type=raw,value=${{ steps.version_step.outputs.semVer }}
+          context: .
+          file: src/Weaver.Docker.WebApi/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:amd64-${{ needs.setup.outputs.semVer }}
+          cache-from: type=gha,scope=api-amd64
+          cache-to: type=gha,mode=max,scope=api-amd64
 
-      - name: Extract metadata for Docker API image
-        id: meta-docker-api
-        uses: docker/metadata-action@v5
+      - name: Build and push Docker API image (amd64)
+        id: push-docker-api
+        uses: docker/build-push-action@v6
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=next
-            type=raw,value=${{ steps.version_step.outputs.semVer }}
+          context: .
+          file: src/Weaver.Docker.WebApi/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:amd64-${{ needs.setup.outputs.semVer }}
+          cache-from: type=gha,scope=docker-api-amd64
+          cache-to: type=gha,mode=max,scope=docker-api-amd64
 
-      - name: Extract metadata for WebApp image
-        id: meta-webapp
-        uses: docker/metadata-action@v5
+      - name: Build and push WebApp image (amd64)
+        id: push-webapp
+        uses: docker/build-push-action@v6
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=next
-            type=raw,value=${{ steps.version_step.outputs.semVer }}
+          context: src/Weaver.WebApp
+          file: src/Weaver.WebApp/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:amd64-${{ needs.setup.outputs.semVer }}
+          cache-from: type=gha,scope=webapp-amd64
+          cache-to: type=gha,mode=max,scope=webapp-amd64
 
-      - name: Tag and push images
+  build-arm64:
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    outputs:
+      digest-api: ${{ steps.push-api.outputs.digest }}
+      digest-docker-api: ${{ steps.push-docker-api.outputs.digest }}
+      digest-webapp: ${{ steps.push-webapp.outputs.digest }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push API image (arm64)
+        id: push-api
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/Weaver.Docker.WebApi/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:arm64-${{ needs.setup.outputs.semVer }}
+          cache-from: type=gha,scope=api-arm64
+          cache-to: type=gha,mode=max,scope=api-arm64
+
+      - name: Build and push Docker API image (arm64)
+        id: push-docker-api
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/Weaver.Docker.WebApi/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:arm64-${{ needs.setup.outputs.semVer }}
+          cache-from: type=gha,scope=docker-api-arm64
+          cache-to: type=gha,mode=max,scope=docker-api-arm64
+
+      - name: Build and push WebApp image (arm64)
+        id: push-webapp
+        uses: docker/build-push-action@v6
+        with:
+          context: src/Weaver.WebApp
+          file: src/Weaver.WebApp/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:arm64-${{ needs.setup.outputs.semVer }}
+          cache-from: type=gha,scope=webapp-arm64
+          cache-to: type=gha,mode=max,scope=webapp-arm64
+
+  release:
+    needs: [ setup, build-amd64, build-arm64 ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create and push multi-arch manifests
+        env:
+          SEM_VER: ${{ needs.setup.outputs.semVer }}
+          IS_DEFAULT_BRANCH: ${{ github.ref_name == 'main' || github.ref_name == 'develop' }}
         run: |
-          # Retag and push webapi images
-          for tag in $(echo '${{ steps.meta-api.outputs.tags }}' | tr '\n' ' '); do
-            docker tag webapi:latest $tag
-            docker push $tag
+          for IMAGE in \
+            "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}" \
+            "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}" \
+            "${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}"; do
+
+            AMD64_TAG="${IMAGE}:amd64-${SEM_VER}"
+            ARM64_TAG="${IMAGE}:arm64-${SEM_VER}"
+
+            # Always push versioned and :next tags
+            for TAG in "${IMAGE}:${SEM_VER}" "${IMAGE}:next"; do
+              docker buildx imagetools create -t "$TAG" "$AMD64_TAG" "$ARM64_TAG"
+            done
+
+            # Push :latest only on default branches
+            if [ "$IS_DEFAULT_BRANCH" = "true" ]; then
+              docker buildx imagetools create -t "${IMAGE}:latest" "$AMD64_TAG" "$ARM64_TAG"
+            fi
           done
-          
-          # Retag and push docker-webapi images (uses same base image)
-          for tag in $(echo '${{ steps.meta-docker-api.outputs.tags }}' | tr '\n' ' '); do
-            docker tag webapi:latest $tag
-            docker push $tag
-          done
-          
-          # Retag and push webapp images
-          for tag in $(echo '${{ steps.meta-webapp.outputs.tags }}' | tr '\n' ' '); do
-            docker tag webapp:latest $tag
-            docker push $tag
-          done
+
+      - name: Download Aspire output
+        uses: actions/download-artifact@v4
+        with:
+          name: aspire-output
+          path: aspire-output/
 
       - name: Prepare release artifacts
+        env:
+          SEM_VER: ${{ needs.setup.outputs.semVer }}
         run: |
           mkdir -p release-artifacts
-          
+
           # Copy docker-compose and env files if they exist
           if [ -f aspire-output/docker-compose.yaml ]; then
             cp aspire-output/docker-compose.yaml release-artifacts/
           elif [ -f aspire-output/compose.yaml ]; then
             cp aspire-output/compose.yaml release-artifacts/docker-compose.yaml
           fi
-          
+
           if [ -f aspire-output/.env ]; then
             cp aspire-output/.env release-artifacts/
           fi
-          
+
           # Create a deployment guide
-          cat > release-artifacts/DEPLOY.md << 'EOF'
+          cat > release-artifacts/DEPLOY.md << EOF
           # Deployment Guide
 
           ## Prerequisites
@@ -151,35 +274,34 @@ jobs:
           ## Deployment Steps
 
           1. Log in to GitHub Container Registry:
-             ```bash
-             echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-             ```
+             \`\`\`bash
+             echo \$GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+             \`\`\`
 
           2. Pull the images:
-             ```bash
-             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${{ steps.version_step.outputs.semVer }}
-             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${{ steps.version_step.outputs.semVer }}
-             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${{ steps.version_step.outputs.semVer }}
-             ```
+             \`\`\`bash
+             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${SEM_VER}
+             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${SEM_VER}
+             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${SEM_VER}
+             \`\`\`
 
           3. Update the docker-compose.yaml with the correct image tags
 
           4. Run the application:
-             ```bash
+             \`\`\`bash
              docker-compose up -d
-             ```
+             \`\`\`
 
           ## Version
-          ${{ steps.version_step.outputs.semVer }}
+          ${SEM_VER}
           EOF
-          
+
           echo "=== Release artifacts prepared ==="
           ls -la release-artifacts/
 
       - name: Generate changelog from commits
         id: changelog
         run: |
-          # Get commits since last release (or all commits if no releases)
           if git describe --tags --abbrev=0 2>/dev/null; then
             LAST_TAG=$(git describe --tags --abbrev=0)
             echo "Generating changelog since $LAST_TAG"
@@ -188,8 +310,7 @@ jobs:
             echo "No previous tags found, generating changelog from all commits"
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
           fi
-          
-          # Set output for use in release
+
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -197,32 +318,34 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version_step.outputs.semVer }}
-          name: Release ${{ steps.version_step.outputs.semVer }}
+          tag_name: ${{ needs.setup.outputs.semVer }}
+          name: Release ${{ needs.setup.outputs.semVer }}
           body: |
             ## Changes
             ${{ steps.changelog.outputs.changelog }}
-            
+
             ## Docker Images
-            
+
+            All images are multi-arch and support `linux/amd64` and `linux/arm64`.
+
             ### WebAPI Image
             ```
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${{ steps.version_step.outputs.semVer }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${{ needs.setup.outputs.semVer }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:latest
             ```
-            
+
             ### Docker WebAPI Image
             ```
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${{ steps.version_step.outputs.semVer }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${{ needs.setup.outputs.semVer }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:latest
             ```
-            
+
             ### WebApp Image
             ```
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${{ steps.version_step.outputs.semVer }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${{ needs.setup.outputs.semVer }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:latest
             ```
-            
+
             ## Deployment
             See the `DEPLOY.md` file in the release artifacts for deployment instructions.
           files: |
@@ -233,14 +356,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Output image information
+        env:
+          SEM_VER: ${{ needs.setup.outputs.semVer }}
         run: |
-          echo "=== Docker Images Published ==="
+          echo "=== Docker Images Published (multi-arch: amd64 + arm64) ==="
           echo ""
-          echo "WebAPI Image Tags:"
-          echo '${{ steps.meta-api.outputs.tags }}'
-          echo ""
-          echo "Docker WebAPI Image Tags:"
-          echo '${{ steps.meta-docker-api.outputs.tags }}'
-          echo ""
-          echo "WebApp Image Tags:"
-          echo '${{ steps.meta-webapp.outputs.tags }}'
+          echo "WebAPI:        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}:${SEM_VER}"
+          echo "Docker WebAPI: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_DOCKER_API }}:${SEM_VER}"
+          echo "WebApp:        ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEBAPP }}:${SEM_VER}"

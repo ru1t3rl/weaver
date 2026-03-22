@@ -21,8 +21,10 @@ var apiService = builder
     .WithReference(database)
     .WithMigrator<Projects.Weaver_Migrator>(database);
 
+var dockerEngineHost = builder.AddParameter("DockerEngineHost", secret: false);
 var dockerApiService = builder
     .AddProject<Projects.Weaver_Docker_WebApi>("docker-webapi")
+    .WithEnvironment("DockerEngine__Host", dockerEngineHost)
     .WithHttpHealthCheck("/health")
     .WithUrlForEndpoint(
         "http",
