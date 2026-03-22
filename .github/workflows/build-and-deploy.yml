@@ -67,6 +67,7 @@ jobs:
         with:
           name: aspire-output
           path: aspire-output/
+          include-hidden-files: true
           retention-days: 1
 
   build-amd64:
