@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { GraphContextRef, IGraphContextRef } from "../contexts/graph-context-ref";
 import { ChangeCallback } from "../providers/graph-provider-ref";
 
-export const useGraphRef = (callbacks?: ChangeCallback[]): IGraphContextRef => {
+export const useGraphRf = (callbacks?: ChangeCallback[]): IGraphContextRef => {
     const graphContext = useContext(GraphContextRef)
 
     useEffect(() => {

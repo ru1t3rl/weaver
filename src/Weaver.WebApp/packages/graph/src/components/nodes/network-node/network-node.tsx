@@ -1,17 +1,17 @@
 import { Node, NodeProps, NodeResizer, useNodesInitialized, useReactFlow, useStore } from '@xyflow/react';
 import { Card, Tag, theme, Typography } from 'antd';
 import { memo, useEffect, useMemo } from 'react';
-import { useGraphRef } from '../../../hooks/use-graph-ref';
 import styles from './network-node.module.scss';
+import { useGraph } from '../../../..';
 
 const { useToken } = theme;
 
 const DRIVER_COLOR: Record<string, string> = {
-  bridge:  'cyan',
-  host:    'orange',
+  bridge: 'cyan',
+  host: 'orange',
   overlay: 'purple',
   macvlan: 'green',
-  none:    'default',
+  none: 'default',
 };
 
 const PADDING = 100;
@@ -40,7 +40,7 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
   const { data, selected, id } = props;
   const { model, onClick } = data;
   const { token } = useToken();
-  const { updateNode } = useGraphRef();
+  const { updateNode } = useGraph();
   const { getNodesBounds } = useReactFlow();
   const initialized = useNodesInitialized();
 
@@ -52,36 +52,36 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
 
     // bounds.x/y is the top-left corner of the tightest box around all children,
     // expressed in the parent's local coordinate space.
-    const bounds = getNodesBounds(children);
-
-    const shiftX = PADDING - bounds.x;
-    const shiftY = PADDING + HEADER_HEIGHT - bounds.y;
-
-    const targetW = bounds.width  + PADDING * 2;
-    const targetH = bounds.height + PADDING * 2 + HEADER_HEIGHT;
-
-    if (shiftX === 0 && shiftY === 0 && targetW === props.width && targetH === props.height) return;
-
-    updateNode(id, { width: targetW, height: targetH });
-
+    
     async function delayed() {
-      children.forEach((child) => {
-        updateNode(child.id, (node) => ({
-          position: {
-            x: node.position.x + shiftX/2,
-            y: node.position.y + shiftY/2 + HEADER_HEIGHT,
-          },
-        }));
+      await new Promise(r => setTimeout(r, 750));      
+      const bounds = getNodesBounds(children);
+  
+      const shiftX = PADDING - bounds.x;
+      const shiftY = PADDING + HEADER_HEIGHT - bounds.y;
+  
+      const targetW = bounds.width + PADDING * 2;
+      const targetH = bounds.height + PADDING * 2 + HEADER_HEIGHT;
+  
+      if (shiftX === 0 && shiftY === 0 && targetW === props.width && targetH === props.height) return;
+      
+      updateNode(id, {
+        width: targetW, height: targetH
       });
 
-      await new Promise(r => setTimeout(r, 1000));
       children.forEach((child) => {
-        updateNode(child.id, { extent: 'parent' });
+        updateNode(child.id, {
+          extent: 'parent',
+          position: {
+            x: child.position.x + shiftX,
+            y: child.position.y + shiftY,
+          }
+        });
       });
     }
 
     delayed();
-  }, [initialized, id]);
+  }, [initialized]);
 
   const borderColor = selected ? token.colorPrimary : token.colorBorderSecondary;
 
@@ -139,9 +139,9 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
       </header>
 
       <div className={styles.meta}>
-        <MetaItem icon="⬡" label="id"         value={model.networkId.slice(0, 12)} />
-        {model.subnet  && <MetaItem icon="⊟" label="subnet"     value={model.subnet} />}
-        {model.gateway && <MetaItem icon="⇥" label="gateway"    value={model.gateway} />}
+        <MetaItem icon="⬡" label="id" value={model.networkId.slice(0, 12)} />
+        {model.subnet && <MetaItem icon="⊟" label="subnet" value={model.subnet} />}
+        {model.gateway && <MetaItem icon="⇥" label="gateway" value={model.gateway} />}
         <MetaItem icon="⬡" label="containers" value={String(childCount)} />
       </div>
 
@@ -149,8 +149,6 @@ export const DockerNetworkNode = memo((props: NodeProps<DockerNetworkNode>) => {
     </Card>
   );
 });
-
-DockerNetworkNode.displayName = 'DockerNetworkNode';
 
 /* ─── Sub-components ─────────────────────────────────────────────────────── */
 

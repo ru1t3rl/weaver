@@ -114,10 +114,12 @@ export const ContainerNode = (props: NodeProps<ContainerNode>) => {
                 <Handle type="source" position={Position.Top} />
             </Card>
             {hover && (
-                <Button
-                    icon={expanded ? <LuChevronUp /> : <LuChevronDown />}
-                    onClick={handleExpandClicked}
-                />
+                <div className={styles['button-container']}>
+                    <Button
+                        icon={expanded ? <LuChevronUp /> : <LuChevronDown />}
+                        onClick={handleExpandClicked}
+                    />
+                </div>
             )}
         </div>
     )

@@ -42,6 +42,7 @@ builder
     .WaitFor(dockerApiService)
     .PublishAsDockerFile()
     .WithHttpEndpoint(4200, env: "PORT")
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .WithEnvironment("APP_ENV_PREFIX", "WEAVER_");
 
 builder.Build().Run();
