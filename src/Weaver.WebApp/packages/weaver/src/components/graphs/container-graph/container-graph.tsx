@@ -1,12 +1,16 @@
 import { useStack } from "@weaver/docker";
-import { ChangeCallback, ContainerNode, containerNode, DashedEdge, dashedEdge, dockerNetworkNode, DockerNetworkNode, useGraphRef } from "@weaver/graph";
+import { ChangeCallback, ContainerNode, containerNode, DashedEdge, dashedEdge, dockerNetworkNode, DockerNetworkNode, useGraph } from "@weaver/graph";
 import { useTheme } from "@weaver/styling";
-import type { EdgeChange, NodeChange, NodeSelectionChange } from '@xyflow/react';
+import type { Edge, EdgeChange, Node, NodeChange, NodeSelectionChange } from '@xyflow/react';
 import { useReactFlow } from '@xyflow/react';
 import { Flex, Typography } from "antd";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router";
 import styles from './container-graph.module.scss';
+
+function instanceOf<TObject>(item: unknown): item is TObject {
+    return item !== undefined && item !== null && typeof item === "object";
+}
 
 export const ContainerGraph = () => {
     const { stackId = '' } = useParams();
@@ -72,22 +76,25 @@ export const ContainerGraph = () => {
             }
         })
         ));
-    }, [containers]);
+    }, [containers, theme]);
 
+    const edgesRef = useRef<DashedEdge[]>(containerDependencyEdges);
+    useEffect(() => {
+        edgesRef.current = containerDependencyEdges;
+    }, [containerDependencyEdges]);
+    
+    const replaceEdgesRef = useRef<((edges: Edge[]) => void) | null>(null);
     const onNodeSelectionChange = useCallback((change: NodeChange | EdgeChange) => {
         if (!instanceOf<NodeSelectionChange>(change)) {
             return;
         }
 
-        const updatedEdges = containerDependencyEdges
+        const updatedEdges = edgesRef.current
             .filter(e => e.source == change.id || e.target == change.id)
-            .map(e => {
-                e.selected = true;
-                return e;
-            });
+            .map((e): DashedEdge => ({ ...e, selected: true }));
 
-        replaceEdges(updatedEdges);
-    }, [containerDependencyEdges]);
+        replaceEdgesRef.current?.(updatedEdges);
+    }, []);
 
     const callbacks = useMemo((): ChangeCallback[] => [
         {
@@ -95,37 +102,42 @@ export const ContainerGraph = () => {
             callback: onNodeSelectionChange
         }
     ], [onNodeSelectionChange]);
-    const { nodes, addNodes, addEdges, replaceEdges, clear, resolveCollision } = useGraphRef(callbacks);
 
+    const graph = useGraph(callbacks);
 
-    function instanceOf<TObject>(item: unknown): item is TObject {
-        return item !== undefined && item !== null && typeof item === "object";
-    }
+    const graphRef = useRef(graph);
+    useEffect(() => {
+        graphRef.current = graph;
+        replaceEdgesRef.current = graph.replaceEdges;
+    });
 
     useEffect(() => {
+        const { addNodes, addEdges, clear } = graphRef.current;
+
         clear();
-        addNodes([...networkNodes, ...containerNodes], nodes.current?.length);
-        addEdges(containerDependencyEdges);
-    }, [networkNodes, containerNodes, containerDependencyEdges])
+
+        const combinedNodes: Node[] = [...networkNodes, ...containerNodes];
+        if (combinedNodes.length > 0) {
+            addNodes(combinedNodes, combinedNodes.length);
+        }
+        if (containerDependencyEdges.length > 0) {
+            addEdges(containerDependencyEdges);
+        }
+    }, [networkNodes, containerNodes, containerDependencyEdges]);
 
     useEffect(() => {
-        async function refreshAfter(timeInMillis: number) {
-            await new Promise(resolve => setTimeout(resolve, timeInMillis))
-            resolveCollision();
-            await new Promise(resolve => setTimeout(resolve, timeInMillis))
+        const timeoutId = setTimeout(() => {
             fitView();
-        }
+        }, 250);
 
-        refreshAfter(250);
-    }, [])
+        return () => clearTimeout(timeoutId);
+    }, [fitView]);
 
     return (
         <Flex vertical className={styles['overlay-ui']}>
             <Flex align="center">
                 <Typography.Title className={styles['title']}>{name}</Typography.Title>
             </Flex>
-            {/* <Toolbar /> */}
-            {/* <NodeInfoPanel /> */}
         </Flex>
     )
 }

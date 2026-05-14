@@ -1,7 +1,7 @@
-import { containerNode, ContextMenuItem, ContextMenuProvider, EdgeTypes, GraphProviderRef, NodeTypes, StyledGraph, useContextMenu, useGraphRef, useInspector } from '@weaver/graph';
+import { containerNode, ContextMenuItem, ContextMenuProvider, EdgeTypes, GraphProvider, NodeTypes, StyledGraph, useContextMenu, useGraph, useInspector } from '@weaver/graph';
 import { Background, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useMemo, useReducer, useRef } from 'react';
+import { useMemo } from 'react';
 import { LuPlus } from 'react-icons/lu';
 import { Outlet } from 'react-router';
 import { useServiceTemplateSearchModal } from '../../../hooks';
@@ -11,21 +11,9 @@ import styles from './main-graph.module.scss';
 
 export function InternalMainGraph() {
   const { show: showServiceModal } = useServiceTemplateSearchModal();
-  const [, render] = useReducer(x => !x, false);
-  const _render = useRef(render);
-
 
   const { close, show } = useContextMenu();
-  const { nodes, edges, resolveCollision, onNodesChange, onEdgesChange } = useGraphRef([
-    {
-      key: { type: 'edge', change: 'any' },
-      callback: () => _render.current()
-    },
-    {
-      key: { type: 'node', change: 'any' },
-      callback: () => _render.current()
-    }
-  ]);
+  const { nodes, edges, resolveCollision, onNodesChange, onEdgesChange } = useGraph();
 
   const items = useMemo<ContextMenuItem[]>(() => [
     {
@@ -37,6 +25,7 @@ export function InternalMainGraph() {
 
   const { registerPersistent } = useContextMenu();
   const { tryRegister: tryRegisterInspector } = useInspector();
+
   useMemo(() => {
     registerPersistent(items);
     tryRegisterInspector(containerNode, <ContainerInspector />);
@@ -52,8 +41,8 @@ export function InternalMainGraph() {
       {/* <ModalsProvider> */}
       <Outlet />
       <StyledGraph
-        nodes={nodes.current}
-        edges={edges.current}
+        nodes={nodes}
+        edges={edges}
         nodeTypes={NodeTypes}
         edgeTypes={EdgeTypes}
         onNodesChange={onNodesChange}
@@ -76,13 +65,21 @@ export function InternalMainGraph() {
 export const MainGraph = () => {
   return (
     <div style={{ width: '100%', height: '100%' }} className={styles['main-graph-container']}>
-      <GraphProviderRef>
-        <ContextMenuProvider>
-          <ReactFlowProvider>
+      <ReactFlowProvider>
+        <GraphProvider collisionOptions={{
+          maxIterations: 10,
+          overlapThreshold: 0.5,
+          repulsionStrength: .25,
+          damping: 1,
+          margin: 0,
+          layerSeparation: 0,
+          noiseScale: 10000,
+        }}>
+          <ContextMenuProvider>
             <InternalMainGraph />
-          </ReactFlowProvider>
-        </ContextMenuProvider>
-      </GraphProviderRef>
+          </ContextMenuProvider>
+        </GraphProvider>
+      </ReactFlowProvider>
     </div>
   )
 }
