@@ -1,5 +1,5 @@
 import { containerNode, ContextMenuItem, ContextMenuProvider, EdgeTypes, GraphProvider, NodeTypes, StyledGraph, useContextMenu, useGraph, useInspector } from '@weaver/graph';
-import { Background, MiniMap, ReactFlowProvider } from '@xyflow/react';
+import { Background, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useMemo } from 'react';
 import { LuPlus } from 'react-icons/lu';
