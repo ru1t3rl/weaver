@@ -8,14 +8,14 @@
 
     <ItemGroup>
       <PackageReference Include="Cortex.Mediator" Version="3.1.2" />
-      <PackageReference Include="Docker.DotNet.Enhanced" Version="4.0.2" />
-      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.5" />
+      <PackageReference Include="Docker.DotNet.Enhanced" Version="4.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+      <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.8" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.8" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
       <PackageReference Include="OneOf" Version="3.0.271" />
     </ItemGroup>
 
